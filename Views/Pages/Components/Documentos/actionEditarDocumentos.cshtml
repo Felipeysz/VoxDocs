@@ -1,0 +1,132 @@
+@model VoxDocs.DTO.DTODocumentoCreate
+
+<style>
+  .details-modal-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.2rem;
+    font-size: 1rem;
+  }
+  .details-modal-value {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 1.02rem;
+    color: #212529;
+    word-break: break-word;
+  }
+  .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.12);
+  }
+  .modal-header {
+    background: #f1f3f6;
+    border-bottom: 1px solid #e3e6ea;
+    border-radius: 12px 12px 0 0;
+  }
+  .modal-title {
+    font-weight: 700;
+    color: #2d3748;
+    letter-spacing: 0.5px;
+  }
+  .modal-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #e3e6ea;
+    border-radius: 0 0 12px 12px;
+  }
+</style>
+
+@if (Model.NivelSeguranca != "Publico")
+{
+    <!-- Modal 1: Token -->
+    <div class="modal fade" id="editTokenModal-@Model.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Token de Segurança</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="tokenForm-@Model.Id">
+                        <div class="mb-3">
+                            <label class="form-label">Token de Segurança</label>
+                            <input type="password" class="form-control" id="tokenInput-@Model.Id" required 
+                                   placeholder="Digite o token de segurança" />
+                            <div id="tokenError-@Model.Id" class="text-danger mt-2" style="display:none;"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" 
+                            onclick="validarTokenParaEdicao('@Model.Id', '@Model.NomeArquivo')">
+                        Validar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Formulário de edição -->
+    <div class="modal fade" id="editFormModal-@Model.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Documento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm-@Model.Id" onsubmit="editarDocumento('editForm-@Model.Id'); return false;">
+                        <input type="hidden" name="Id" value="@Model.Id" />
+                        <input type="hidden" name="UsuarioUltimaAlteracao" value="@User.Identity.Name" />
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Descrição</label>
+                            <textarea class="form-control" name="Descrição" required>@Model.Descrição</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Substituir arquivo</label>
+                            <input type="file" class="form-control" name="NovoArquivo" accept="*" required />
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Modal único para documentos públicos -->
+    <div class="modal fade" id="editPublicModal-@Model.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Documento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editFormPublic-@Model.Id" onsubmit="editarDocumento('editFormPublic-@Model.Id'); return false;">
+                        <input type="hidden" name="Id" value="@Model.Id" />
+                        <input type="hidden" name="UsuarioUltimaAlteracao" value="@User.Identity.Name" />
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Descrição</label>
+                            <textarea class="form-control" name="Descrição" required>@Model.Descrição</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Substituir arquivo</label>
+                            <input type="file" class="form-control" name="NovoArquivo" accept="*" required />
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}

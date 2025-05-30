@@ -32,6 +32,34 @@ namespace VoxDocs.Services
                 Quantidade = sp.Documentos?.Count ?? 0 // Set Quantidade
             });
         }
+        
+        public async Task<IEnumerable<DTOSubPasta>> GetByEmpresaAsync(string empresa)
+        {
+            return await _context.SubPastas
+                .Where(s => s.EmpresaContratante == empresa)
+                .Select(s => new DTOSubPasta
+                {
+                    Id = s.Id,
+                    NomeSubPasta = s.NomeSubPasta,
+                    EmpresaContratante = s.EmpresaContratante
+                })
+                .ToListAsync();
+        }
+
+            public async Task<DTOSubPasta> GetByNameSubPastaAsync(string nomeSubPasta)
+        {
+            var model = await _context.SubPastas
+                .FirstOrDefaultAsync(s => s.NomeSubPasta == nomeSubPasta);
+            return model is null
+                ? null
+                : new DTOSubPasta
+                {
+                    Id = model.Id,
+                    NomeSubPasta = model.NomeSubPasta,
+                    // … demais campos
+                };
+        }
+
 
         public async Task<DTOSubPasta?> GetByIdAsync(int id)
         {
@@ -81,7 +109,7 @@ namespace VoxDocs.Services
         public async Task<IEnumerable<DTOSubPasta>> GetSubChildrenAsync(string nomePastaPrincipal)
             {
                 var subPastas = await _context.SubPastas
-                    .Where(sp => sp.NomePastaPrincipal == nomePastaPrincipal)
+                    .Where(sp => sp.NomePastaPrincipal.Trim().ToLower() == nomePastaPrincipal.Trim().ToLower())
                     .ToListAsync();
 
                 return subPastas.Select(sp => new DTOSubPasta

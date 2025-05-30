@@ -68,8 +68,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcQXV0aFBhZ2VcUmVjdXBlcmFyU2VuaGEuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/Components/Documentos/DocumentosExibirOffline.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcQ29tcG9uZW50c1xEb2N1bWVudG9zXERvY3VtZW50b3NFeGliaXJPZmZsaW5lLmNzaHRtbA==
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/Components/Documentos/actionDeleteDocumentos.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcQ29tcG9uZW50c1xEb2N1bWVudG9zXGFjdGlvbkRlbGV0ZURvY3VtZW50b3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/Components/Documentos/actionDownloadDocumentos.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcQ29tcG9uZW50c1xEb2N1bWVudG9zXGFjdGlvbkRvd25sb2FkRG9jdW1lbnRvcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/Components/Documentos/actionEditarDocumentos.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcQ29tcG9uZW50c1xEb2N1bWVudG9zXGFjdGlvbkVkaXRhckRvY3VtZW50b3MuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/Components/modalManualUser.cshtml]
@@ -78,6 +86,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/Components/modalToken.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcQ29tcG9uZW50c1xtb2RhbFRva2VuLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/DocumentosPage/DocumentosExibirOffline.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcRG9jdW1lbnRvc1BhZ2VcRG9jdW1lbnRvc0V4aWJpck9mZmxpbmUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/DocumentosPage/DocumentosPagina.cshtml]

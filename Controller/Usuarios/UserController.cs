@@ -157,7 +157,9 @@ namespace VoxDocs.Controllers.Api
                 {
                     usuario = user.Usuario,
                     email = user.Email,
-                    permissionAccount = user.PermissionAccount
+                    permissionAccount = user.PermissionAccount,
+                    empresaContratante = user.EmpresaContratante,
+                    mensagem = "Login realizado com sucesso!"
                 });
             }
             catch (KeyNotFoundException ex)

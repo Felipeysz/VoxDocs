@@ -9,6 +9,11 @@ namespace VoxDocs.BusinessRules
     public class DocumentoBusinessRules
     {
         private readonly IDocumentoService _documentoService;
+        private readonly List<string> _allowedExtensions = new List<string> 
+        { 
+            ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", 
+            ".txt", ".jpg", ".jpeg", ".png", ".gif" 
+        };
 
         public DocumentoBusinessRules(IDocumentoService documentoService)
         {
@@ -20,7 +25,7 @@ namespace VoxDocs.BusinessRules
             if (dto.Arquivo == null)
                 throw new ArgumentException("Arquivo é obrigatório");
 
-            if (string.IsNullOrWhiteSpace(dto.Empresa))
+            if (string.IsNullOrWhiteSpace(dto.EmpresaContratante))
                 throw new ArgumentException("Empresa é obrigatória");
 
             if (string.IsNullOrWhiteSpace(dto.NomePastaPrincipal))
@@ -37,6 +42,55 @@ namespace VoxDocs.BusinessRules
 
             if (dto.NivelSeguranca != "Publico" && string.IsNullOrEmpty(dto.TokenSeguranca))
                 throw new ArgumentException("Token de segurança é obrigatório para documentos restritos ou confidenciais");
+
+                // Validação de duplicidade no Blob
+            var fileName = Path.GetFileName(dto.Arquivo.FileName);
+            if (await _documentoService.ArquivoExisteAsync(fileName))
+            throw new ArgumentException($"Documento '{fileName}' já existe no sistema.");
+
+            // Validação de duplicidade no banco de dados
+            var documentosExistentes = await _documentoService.GetAllAsync();
+            if (documentosExistentes.Any(d => d.NomeArquivo.Equals(fileName, StringComparison.OrdinalIgnoreCase)))
+                throw new ArgumentException($"Documento '{fileName}' já existe no sistema.");
+        }
+
+        public async Task ValidateDocumentoUpdateAsync(DocumentoUpdateDto dto, string tokenSeguranca = null)
+        {
+            if (dto.Id <= 0)
+                throw new ArgumentException("ID do documento inválido");
+
+            // Valida existência do documento
+            var documento = await _documentoService.GetByIdAsync(dto.Id);
+            if (documento == null)
+                throw new ArgumentException("Documento não encontrado");
+
+            // Valida novo arquivo se fornecido
+            if (dto.NovoArquivo != null && dto.NovoArquivo.Length > 0)
+            {
+                // Valida tamanho do arquivo (100MB)
+                if (dto.NovoArquivo.Length > 100 * 1024 * 1024)
+                    throw new ArgumentException("Tamanho máximo do arquivo excedido (100MB)");
+                
+                // Valida tipo de arquivo (opcional)
+                var extension = Path.GetExtension(dto.NovoArquivo.FileName).ToLowerInvariant();
+                if (!_allowedExtensions.Contains(extension))
+                    throw new ArgumentException($"Tipo de arquivo não permitido: {extension}");
+            }
+
+            // Valida descrição
+            if (string.IsNullOrWhiteSpace(dto.Descrição))
+                throw new ArgumentException("Descrição é obrigatória");
+
+            // Valida usuário
+            if (string.IsNullOrWhiteSpace(dto.UsuarioUltimaAlteracao))
+                throw new ArgumentException("Usuário da última alteração é obrigatório");
+
+            // Valida nível de segurança para documentos confidenciais
+            if (documento.NivelSeguranca == "Confidencial" && 
+                string.IsNullOrWhiteSpace(tokenSeguranca))
+            {
+                throw new ArgumentException("Token de segurança é obrigatório para documentos confidenciais");
+            }
         }
 
         public async Task ValidateDocumentoUpdateAsync(DocumentoModel documento)
@@ -60,26 +114,37 @@ namespace VoxDocs.BusinessRules
             return validLevels.Contains(nivelSeguranca);
         }
 
-        public async Task CheckDocumentoExistsAsync(int id)
+        public async Task CheckDocumentoExistsAsync(int Id)
         {
-            var documento = await _documentoService.GetByIdAsync(id);
-            if (documento == null)
-                throw new ArgumentException("Documento não encontrado");
+            var doc = await _documentoService.GetByIdAsync(Id);
+            if (doc == null)
+            {
+                throw new ArgumentException("Documento não encontrado.");
+            }
         }
-
-        public async Task ValidateDocumentoDeleteAsync(int id)
+       public async Task ValidateDocumentoDeleteAsync(int id, string token = null)
         {
-            var documento = await _documentoService.GetByIdAsync(id);
-            if (documento == null)
-                throw new ArgumentException("Documento não encontrado");
+            var doc = await _documentoService.GetByIdAsync(id);
+            if (doc == null)
+            {
+                throw new ArgumentException("Documento não encontrado.");
+            }
 
-            if (documento.NivelSeguranca == "Confidencial")
-                throw new ArgumentException("Documentos com nível de segurança 'Confidencial' não podem ser deletados");
+            // Verifica se o documento não é público e se o token foi fornecido
+            if (doc.NivelSeguranca != "Publico" && string.IsNullOrEmpty(token))
+            {
+                throw new UnauthorizedAccessException("Token de segurança é obrigatório para documentos restritos ou confidenciais.");
+            }
+
+            // Verifica se o token fornecido é válido
+            if (doc.NivelSeguranca != "Publico" && doc.TokenSeguranca != token)
+            {
+                throw new UnauthorizedAccessException("Token de segurança inválido.");
+            }
         }
-
-        public async Task ValidateDocumentoAccessAsync(int id, string usuario, string? token)
+        public async Task ValidateDocumentoAccessAsync(int Id, string usuario, string? token)
         {
-            var documento = await _documentoService.GetByIdAsync(id);
+            var documento = await _documentoService.GetByIdAsync(Id);
             if (documento == null)
                 throw new ArgumentException("Documento não encontrado");
 

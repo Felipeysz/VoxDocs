@@ -36,6 +36,7 @@ namespace VoxDocs.DTO
         public required string Usuario { get; init; }
         public required string Email { get; init; }
         public required string PermissionAccount { get; init; }
+        public string? EmpresaContratante { get; init; }
     }
 
     public class DTOUserLoginPasswordChange

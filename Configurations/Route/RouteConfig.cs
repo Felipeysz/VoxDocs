@@ -26,18 +26,20 @@ namespace VoxDocs.Configurations
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}");
 
             // Rotas MVC específicas
-
             app.MapControllerRoute(
-            name: "root",
-            pattern: "",
+            name: "/",
+            pattern: "/",
+            defaults: new { controller = "IndexMvc", action = "Index" });
+            app.MapControllerRoute(
+            name: "index",
+            pattern: "index",
             defaults: new { controller = "IndexMvc", action = "Index" });
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "Index",
-                defaults: new { controller = "IndexMvc", action = "Index" });
 
             app.MapControllerRoute(
                 name: "Pagamentos",
@@ -63,12 +65,7 @@ namespace VoxDocs.Configurations
                 name: "DocumentosPagina",
                 pattern: "DocumentosPagina",
                 defaults: new { controller = "DocumentosPaginaMvc", action = "DocumentosPagina" });
-
-            app.MapControllerRoute(
-                name: "DocumentosExibirOffline",
-                pattern: "DocumentosExibirOffline",
-                defaults: new { controller = "DocumentosMvc", action = "DocumentosExibirOffline" });
-
+            
             app.MapControllerRoute(
                 name: "UploadDocumentos",
                 pattern: "UploadDocumentos",

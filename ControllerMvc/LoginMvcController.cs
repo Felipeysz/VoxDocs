@@ -62,6 +62,8 @@ namespace VoxDocs.Controllers
                     new Claim(ClaimTypes.Name, model.Usuario),
                     new Claim("PermissionAccount", userInfo?.PermissionAccount ?? "usuario"),
                     new Claim("Email", userInfo?.Email ?? ""),
+                    // ADICIONE ESTA LINHA:
+                    new Claim("Empresa", userInfo?.EmpresaContratante ?? "")
                 };
 
                 var identity  = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

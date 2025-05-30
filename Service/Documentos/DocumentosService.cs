@@ -8,6 +8,10 @@ using VoxDocs.DTO;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography;
+using System.Text;
+using System;
+using System.IO;
 
 namespace VoxDocs.Services
 {
@@ -25,13 +29,60 @@ namespace VoxDocs.Services
             _containerName = configuration["AzureBlobStorage:ContainerName"];
         }
 
-        public async Task<DTODocumentoCreate> GetByIdAsync(int id, string? token = null)
+        private string GenerateTokenHash(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return null;
+
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(token);
+                byte[] hash = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
+            }
+        }
+
+        public async Task<bool> ValidateTokenDocumentoAsync(string nomeArquivo, string token)
+        {
+            var doc = await _context.Documentos
+                .FirstOrDefaultAsync(d => d.NomeArquivo.ToLower() == nomeArquivo.ToLower());
+
+            if (doc == null)
+                throw new ArgumentException("Documento não encontrado.");
+
+            if (doc.NivelSeguranca == "Publico")
+                return true;
+
+            if (string.IsNullOrWhiteSpace(token))
+                throw new UnauthorizedAccessException("Token de segurança é obrigatório para este documento.");
+
+            token = token.Trim();
+            string hashedToken = GenerateTokenHash(token);
+            
+            if (doc.TokenSeguranca == hashedToken)
+                return true;
+
+            throw new UnauthorizedAccessException("Token de segurança inválido.");
+        }
+
+        public async Task<DTODocumentoCreate> GetByIdAsync(int id, string token = null)
         {
             var doc = await _context.Documentos.FindAsync(id);
-            if (doc != null && doc.NivelSeguranca != "Publico" && doc.TokenSeguranca != token)
-                throw new UnauthorizedAccessException("Token de segurança inválido");
+            if (doc == null) throw new ArgumentException("Documento não encontrado.");
 
-            return doc != null ? MapToDTO(doc) : null;
+            if (doc.NivelSeguranca == "Publico") 
+                return MapToDTO(doc);
+
+            if (string.IsNullOrWhiteSpace(token))
+                throw new UnauthorizedAccessException("Token de segurança é obrigatório para documentos restritos ou confidenciais.");
+
+            token = token.Trim();
+            string hashedToken = GenerateTokenHash(token);
+            
+            if (doc.TokenSeguranca != hashedToken)
+                throw new UnauthorizedAccessException("Token de segurança inválido.");
+
+            return MapToDTO(doc);
         }
 
         public async Task<IEnumerable<DTODocumentoCreate>> GetAllAsync()
@@ -60,46 +111,39 @@ namespace VoxDocs.Services
         {
             try
             {
-                // Extrair extensão do arquivo
-                var ext = Path.GetExtension(dto.Arquivo.FileName);
+                // Upload do arquivo para o Blob Storage
+                var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+                await containerClient.CreateIfNotExistsAsync();
 
-                // Nome base do arquivo (sem extensão)
-                var nomeBase = Path.GetFileNameWithoutExtension(dto.Arquivo.FileName);
+                var blobName = dto.Arquivo.FileName;
+                var blobClient = containerClient.GetBlobClient(blobName);
 
-                // Novo nome do arquivo (sem o ":")
-                var fileName = $"{nomeBase}{ext}";
-
-                // Verificar se o arquivo já existe e adicionar sufixo numérico se necessário
-                int contador = 1;
-                while (await _context.Documentos.AnyAsync(d => d.NomeArquivo == fileName))
-                {
-                    fileName = $"{nomeBase}_{contador}{ext}";
-                    contador++;
-                }
-
-                // Upload do arquivo
-                string url;
                 using (var stream = dto.Arquivo.OpenReadStream())
                 {
-                    url = await UploadFileAsync(fileName, stream);
+                    await blobClient.UploadAsync(stream, overwrite: false);
                 }
 
-                // Criar o documento
+                var url = blobClient.Uri.ToString();
+
+                // Gera hash do token antes de armazenar
+                string tokenHash = GenerateTokenHash(dto.TokenSeguranca);
+
+                // Criação do documento no banco de dados
                 var doc = new DocumentoModel
                 {
-                    NomeArquivo = fileName,
+                    NomeArquivo = dto.Arquivo.FileName,
                     UrlArquivo = url,
                     UsuarioCriador = dto.Usuario,
-                    DataCriacao = DateTime.UtcNow,
+                    DataCriacao = ConvertToBrasiliaTime(DateTime.UtcNow),
                     UsuarioUltimaAlteracao = dto.Usuario,
-                    DataUltimaAlteracao = DateTime.UtcNow,
-                    Empresa = dto.Empresa,
+                    DataUltimaAlteracao = ConvertToBrasiliaTime(DateTime.UtcNow),
+                    Empresa = dto.EmpresaContratante,
                     NomePastaPrincipal = dto.NomePastaPrincipal,
                     NomeSubPasta = dto.NomeSubPasta,
                     TamanhoArquivo = dto.Arquivo.Length,
                     NivelSeguranca = dto.NivelSeguranca,
-                    TokenSeguranca = dto.TokenSeguranca,
-                    Descrição = dto.Descrição // Garantir que a descrição seja preenchida
+                    TokenSeguranca = tokenHash, // Armazena o HASH
+                    Descrição = dto.Descrição
                 };
 
                 _context.Documentos.Add(doc);
@@ -109,48 +153,91 @@ namespace VoxDocs.Services
             }
             catch (Exception ex)
             {
-                // Log do erro para depuração
-                Console.WriteLine($"Erro ao salvar o documento: {ex.Message}");
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
-                }
-                throw; // Re-lança a exceção para ser tratada no controller
+                Console.WriteLine($"Erro ao criar documento: {ex.Message}");
+                throw;
             }
         }
-        public async Task<DTODocumentoCreate> UpdateAsync(DTODocumentoCreate dto)
+
+        private DateTime ConvertToBrasiliaTime(DateTime utcTime)
+        {
+            try
+            {
+                var brasiliaZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                return TimeZoneInfo.ConvertTimeFromUtc(utcTime, brasiliaZone);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao converter para Brasília: {ex.Message}");
+                return utcTime;
+            }
+        }      
+        
+        public async Task DeleteAsync(int id, string token = null)
+        {
+            var doc = await _context.Documentos.FindAsync(id);
+            if (doc == null)
+                throw new ArgumentException("Documento não encontrado.");
+
+            // Validação de token para documentos não públicos
+            if (doc.NivelSeguranca != "Publico")
+            {
+                if (string.IsNullOrWhiteSpace(token))
+                    throw new UnauthorizedAccessException("Token obrigatório para documentos restritos.");
+
+                string hashedToken = GenerateTokenHash(token.Trim());
+                if (doc.TokenSeguranca != hashedToken)
+                    throw new UnauthorizedAccessException("Token inválido.");
+            }
+
+            // USO DIRETO DO NOME DO ARQUIVO - ABORDAGEM CONSISTENTE
+            var blobName = doc.NomeArquivo;
+
+            // Exclusão do blob
+            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+            var blobClient = containerClient.GetBlobClient(blobName);
+            await blobClient.DeleteIfExistsAsync();
+
+            // Exclusão do registro
+            _context.Documentos.Remove(doc);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<DTODocumentoCreate> UpdateAsync(DocumentoUpdateDto dto)
         {
             var doc = await _context.Documentos.FindAsync(dto.Id);
-            if (doc == null) return null;
+            if (doc == null)
+            {
+                throw new ArgumentException("Documento não encontrado.");
+            }
 
-            doc.NomeArquivo = dto.NomeArquivo;
-            doc.UrlArquivo = dto.UrlArquivo;
-            doc.UsuarioCriador = dto.UsuarioCriador;
-            doc.DataCriacao = dto.DataCriacao;
+            // Campos que serão atualizados
             doc.UsuarioUltimaAlteracao = dto.UsuarioUltimaAlteracao;
-            doc.DataUltimaAlteracao = dto.DataUltimaAlteracao;
-            doc.Empresa = dto.Empresa;
-            doc.NomePastaPrincipal = dto.NomePastaPrincipal;
-            doc.NomeSubPasta = dto.NomeSubPasta;
-            doc.TamanhoArquivo = dto.TamanhoArquivo;
-            doc.NivelSeguranca = dto.NivelSeguranca;
-            doc.TokenSeguranca = dto.TokenSeguranca;
+            doc.DataUltimaAlteracao = ConvertToBrasiliaTime(DateTime.UtcNow);
             doc.Descrição = dto.Descrição;
+
+            // Processa novo arquivo se fornecido
+            if (dto.NovoArquivo != null && dto.NovoArquivo.Length > 0)
+            {
+                // Exclui o blob antigo
+                var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+                var oldBlobClient = containerClient.GetBlobClient(doc.NomeArquivo);
+                await oldBlobClient.DeleteIfExistsAsync();
+
+                // Faz upload do novo blob
+                var newBlobClient = containerClient.GetBlobClient(doc.NomeArquivo);
+                using (var stream = dto.NovoArquivo.OpenReadStream())
+                {
+                    await newBlobClient.UploadAsync(stream, overwrite: true);
+                }
+
+                // Atualiza o tamanho do arquivo
+                doc.TamanhoArquivo = dto.NovoArquivo.Length;
+            }
 
             _context.Documentos.Update(doc);
             await _context.SaveChangesAsync();
 
             return MapToDTO(doc);
-        }
-
-        public async Task DeleteAsync(int id)
-        {
-            var doc = await _context.Documentos.FindAsync(id);
-            if (doc != null)
-            {
-                _context.Documentos.Remove(doc);
-                await _context.SaveChangesAsync();
-            }
         }
 
         public async Task<DTOQuantidadeDocumentoEmpresa> GetEstatisticasEmpresaAsync(string empresa)
@@ -161,7 +248,7 @@ namespace VoxDocs.Services
 
             return new DTOQuantidadeDocumentoEmpresa
             {
-                NomeEmpresa = empresa,
+                EmpresaContratante = empresa,
                 Quantidade = documentos.Count,
                 TamanhoTotalGb = documentos.Sum(d => d.TamanhoArquivo) / 1024.0 / 1024.0 / 1024.0
             };
@@ -191,21 +278,39 @@ namespace VoxDocs.Services
             }
         }
 
-       private async Task<string> UploadFileAsync(string fileName, Stream fileStream)
-        {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-            // Cria o container se não existir, mantendo a política padrão (sem acesso público)
-            await containerClient.CreateIfNotExistsAsync();
-
-            var blobClient = containerClient.GetBlobClient(fileName);
-            await blobClient.UploadAsync(fileStream, overwrite: true);
-
-            return blobClient.Uri.ToString();
-        }
-
         public async Task<bool> ArquivoExisteAsync(string nomeArquivo)
         {
             return await _context.Documentos.AnyAsync(d => d.NomeArquivo == nomeArquivo);
+        }
+
+        public async Task<(Stream stream, string contentType)> DownloadDocumentoProtegidoAsync(string nomeArquivo, string token = null)
+        {
+            var doc = await _context.Documentos.FirstOrDefaultAsync(d => d.NomeArquivo == nomeArquivo);
+            if (doc == null)
+                throw new ArgumentException("Documento não encontrado.");
+
+            // Validação com hash
+            if (doc.NivelSeguranca != "Publico")
+            {
+                if (string.IsNullOrWhiteSpace(token))
+                    throw new UnauthorizedAccessException("Token de segurança é obrigatório para este documento.");
+
+                token = token.Trim();
+                string hashedToken = GenerateTokenHash(token);
+                
+                if (doc.TokenSeguranca != hashedToken)
+                    throw new UnauthorizedAccessException("Token de segurança inválido.");
+            }
+
+            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+            var blobClient = containerClient.GetBlobClient(nomeArquivo);
+
+            if (!await blobClient.ExistsAsync())
+                throw new FileNotFoundException("Arquivo não encontrado no Blob Storage.");
+
+            var downloadInfo = await blobClient.DownloadAsync();
+            var contentType = downloadInfo.Value.ContentType ?? "application/octet-stream";
+            return (downloadInfo.Value.Content, contentType);
         }
 
         private DTODocumentoCreate MapToDTO(DocumentoModel doc)
@@ -219,12 +324,14 @@ namespace VoxDocs.Services
                 DataCriacao = doc.DataCriacao,
                 UsuarioUltimaAlteracao = doc.UsuarioUltimaAlteracao,
                 DataUltimaAlteracao = doc.DataUltimaAlteracao,
-                Empresa = doc.Empresa,
+                EmpresaContratante = doc.Empresa,
                 NomePastaPrincipal = doc.NomePastaPrincipal,
                 NomeSubPasta = doc.NomeSubPasta,
                 TamanhoArquivo = doc.TamanhoArquivo,
                 NivelSeguranca = doc.NivelSeguranca,
-                TokenSeguranca = doc.TokenSeguranca,
+                TokenSeguranca = doc.TokenSeguranca != null 
+                    ? $"{doc.TokenSeguranca.Substring(0, 4)}..." 
+                    : null,
                 Descrição = doc.Descrição
             };
         }

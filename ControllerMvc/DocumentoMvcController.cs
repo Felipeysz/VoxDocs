@@ -1,8 +1,19 @@
-using Microsoft.AspNetCore.Mvc;
-using VoxDocs.Services;
-using VoxDocs.DTO;
-using Microsoft.AspNetCore.Authorization;
+using System;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Azure.Storage.Blobs;
+using VoxDocs.DTO;
+using VoxDocs.Models.ViewModels;
+using VoxDocs.Services;
 
 namespace VoxDocs.Controllers
 {
@@ -10,132 +21,182 @@ namespace VoxDocs.Controllers
     public class DocumentosMvcController : Controller
     {
         private readonly IDocumentoService _documentoService;
-        private readonly AzureBlobService _blobService;
-        private readonly IPastaPrincipalService _pastaPrincipalService;
+        private readonly IPastaPrincipalService _pastaService;
         private readonly ISubPastaService _subPastaService;
         private readonly IUserService _userService;
+        private readonly BlobServiceClient _blobServiceClient;
+        private readonly string _containerName;
 
         public DocumentosMvcController(
             IDocumentoService documentoService,
-            AzureBlobService blobService,
-            IPastaPrincipalService pastaPrincipalService,
+            IPastaPrincipalService pastaService,
             ISubPastaService subPastaService,
-            IUserService userService)
+            IUserService userService,
+            IConfiguration configuration,
+            BlobServiceClient blobServiceClient)
         {
             _documentoService = documentoService;
-            _blobService = blobService;
-            _pastaPrincipalService = pastaPrincipalService;
+            _pastaService = pastaService;
             _subPastaService = subPastaService;
             _userService = userService;
+            _blobServiceClient = blobServiceClient;
+            _containerName = configuration["AzureBlobStorage:ContainerName"];
         }
 
         [HttpGet]
         public async Task<IActionResult> UploadDocumentos()
         {
-            var user = HttpContext.User;
-            bool isAdmin = user.Identity?.IsAuthenticated ?? false && user.HasClaim("PermissionAccount", "admin");
-
-            // Busca o usuário logado
-            var username = user.FindFirst(ClaimTypes.Name)?.Value;
-            var userModel = await _userService.GetUserByUsernameAsync(username);
-
-            if (userModel == null)
-            {
-                // Tratar o caso em que o usuário não é encontrado
+            var userName = User.FindFirstValue(ClaimTypes.Name);
+            var user = await _userService.GetUserByUsernameAsync(userName);
+            if (user == null)
                 return RedirectToAction("Error", "Home");
+
+            var vm = new UploadDocumentoViewModel
+            {
+                PastaPrincipais = await _pastaService.GetByEmpresaAsync(user.EmpresaContratante),
+                SubPastas = await _subPastaService.GetByEmpresaAsync(user.EmpresaContratante)
+            };
+
+            ViewBag.Usuario = user.Usuario;
+            ViewBag.Empresa = user.EmpresaContratante;
+            ViewBag.IsAdmin = User.HasClaim("PermissionAccount", "admin");
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> UploadDocumentos([FromForm] UploadDocumentoViewModel vm)
+        {
+            var userName = User.FindFirstValue(ClaimTypes.Name);
+            var user = await _userService.GetUserByUsernameAsync(userName);
+            if (user == null)
+                return Json(new { success = false, message = "Usuário não encontrado." });
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToArray();
+                return Json(new { success = false, message = "Erro de validação.", errors });
             }
 
-            // Carrega as listas de Pastas Principais e SubPastas
-            var pastasPrincipais = await _pastaPrincipalService.GetAllAsync();
-            var subPastas = await _subPastaService.GetAllAsync();
+            if (vm.NivelSeguranca != "Publico" && string.IsNullOrWhiteSpace(vm.TokenSeguranca))
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Token de segurança obrigatório para nível Restrito ou Confidencial.",
+                    errors = new[] { "Token de Segurança é obrigatório." }
+                });
+            }
 
-            // Passa as listas e a informação de admin para a View
-            ViewBag.PastasPrincipais = pastasPrincipais;
-            ViewBag.SubPastas = subPastas;
-            ViewBag.IsAdmin = isAdmin;
+            if (vm.NivelSeguranca == "Confidencial" &&
+                !User.HasClaim("PermissionAccount", "admin"))
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Apenas admins podem criar documentos confidenciais."
+                });
+            }
 
-            // Passa as informações do usuário para a View
-            ViewBag.Usuario = userModel.Usuario;
-            ViewBag.Empresa = userModel.EmpresaContratante;
+            try
+            {
+                var pasta = await _pastaService.GetByIdAsync(vm.SelectedPastaPrincipalId);
+                var sub = await _subPastaService.GetByIdAsync(vm.SelectedSubPastaId);
 
-            return View();
+                if (pasta == null || sub == null ||
+                    pasta.EmpresaContratante != user.EmpresaContratante ||
+                    sub.EmpresaContratante != user.EmpresaContratante)
+                {
+                    return Json(new { success = false, message = "Categoria ou subcategoria inválida." });
+                }
+
+                var empresaPrefix = user.EmpresaContratante.Substring(0, 3).ToUpper();
+                var pastaPrefix = pasta.NomePastaPrincipal.Substring(0, 3).ToUpper();
+                var datePrefix = DateTime.UtcNow.ToString("ddMMyyyy");
+                var subPrefix = sub.NomeSubPasta.Substring(0, 3).ToUpper();
+                var nomeOriginal = Path.GetFileNameWithoutExtension(vm.Arquivo.FileName);
+
+                var ultimoNome = nomeOriginal.Split(' ', StringSplitOptions.RemoveEmptyEntries).LastOrDefault() ?? nomeOriginal;
+                var ext = Path.GetExtension(vm.Arquivo.FileName);
+                var name = $"{empresaPrefix}_{pastaPrefix}{datePrefix}{subPrefix}_{ultimoNome}{ext}";
+
+                // ✅ Verificação de duplicidade (sem considerar a data)
+                var baseNameWithoutDate = Regex.Replace(name, @"\d{8}", ""); // Remove a data de 8 dígitos
+                var baseNameWithoutDateAndExtension = Path.GetFileNameWithoutExtension(baseNameWithoutDate);
+                var extension = Path.GetExtension(name);
+
+                var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+                bool blobExists = false;
+
+                await foreach (var blob in containerClient.GetBlobsAsync())
+                {
+                    var blobName = blob.Name;
+                    var blobBaseName = Path.GetFileNameWithoutExtension(blobName);
+                    var blobExt = Path.GetExtension(blobName);
+
+                    if (blobBaseName == baseNameWithoutDateAndExtension && blobExt == extension)
+                    {
+                        blobExists = true;
+                        break;
+                    }
+                }
+
+                if (blobExists)
+                {
+                    return Json(new 
+                    { 
+                        success = false, 
+                        message = "Já existe um documento com esse nome. Por favor, renomeie o arquivo e tente novamente." 
+                    });
+                }
+
+                using var ms = new MemoryStream();
+                await vm.Arquivo.CopyToAsync(ms);
+                ms.Position = 0;
+
+                var dto = new DocumentoDto
+                {
+                    Arquivo = new FormFile(ms, 0, ms.Length, vm.Arquivo.Name, name)
+                    {
+                        Headers = vm.Arquivo.Headers,
+                        ContentType = vm.Arquivo.ContentType
+                    },
+                    NomePastaPrincipal = pasta.NomePastaPrincipal,
+                    NomeSubPasta = sub.NomeSubPasta,
+                    NivelSeguranca = vm.NivelSeguranca,
+                    TokenSeguranca = vm.TokenSeguranca,
+                    Descrição = vm.Descricao,
+                    Usuario = user.Usuario,
+                    EmpresaContratante = user.EmpresaContratante
+                };
+
+                await _documentoService.CreateAsync(dto);
+                return Json(new { success = true, message = "Upload realizado com sucesso!" });
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("BlobAlreadyExists") || ex.Message.Contains("already exists"))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Já existe um documento com esse nome. Por favor, renomeie o arquivo e tente novamente."
+                    });
+                }
+
+                return Json(new { success = false, message = "Erro ao fazer upload: " + ex.Message });
+            }
         }
 
-
-[HttpPost]
-public async Task<IActionResult> UploadDocumentos([FromForm] DocumentoDto dto)
-{
-    var user = HttpContext.User;
-    bool isAdmin = user.Identity?.IsAuthenticated ?? false && user.HasClaim("PermissionAccount", "admin");
-
-    // Busca o usuário logado
-    var username = user.FindFirst(ClaimTypes.Name)?.Value;
-    var userModel = await _userService.GetUserByUsernameAsync(username);
-
-    if (userModel == null)
-    {
-        return Json(new { success = false, message = "Usuário não encontrado." });
-    }
-
-    // Preenche Usuário e Empresa automaticamente
-    dto.Usuario = userModel.Usuario;
-    dto.Empresa = userModel.EmpresaContratante;
-
-    // Validação para documentos confidenciais
-    if (dto.NivelSeguranca == "Confidencial" && !isAdmin)
-    {
-        return Json(new { success = false, message = "Apenas administradores podem criar documentos confidenciais." });
-    }
-
-    if (!ModelState.IsValid)
-    {
-        var errors = ModelState.Values
-            .SelectMany(v => v.Errors)
-            .Select(e => e.ErrorMessage)
-            .ToList();
-        return Json(new { success = false, message = "Erro de validação.", errors });
-    }
-
-    try
-    {
-        // --- Renomear o arquivo ---
-        var pasta = dto.NomePastaPrincipal?.Substring(0, 3).ToUpper() ?? "XXX";
-        var subpasta = dto.NomeSubPasta?.Substring(0, 3).ToUpper() ?? "YYY";
-        var hoje = DateTime.UtcNow;
-        var dia = hoje.Day.ToString("00");
-        var mes = hoje.Month.ToString("00");
-        var ano = hoje.Year.ToString();
-
-        // Montar código: XXXDDMMAAAAYYY (sem o ":")
-        var code = $"{pasta}{dia}{mes}{ano}{subpasta}";
-
-        // Extrair extensão do arquivo
-        var ext = Path.GetExtension(dto.Arquivo.FileName);
-
-        // Novo nome do arquivo
-        var fileName = $"{code}{ext}";
-
-        // Verificar se o arquivo já existe
-        if (await _documentoService.ArquivoExisteAsync(fileName))
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<JsonResult> GetSubPastasByPastaPrincipal(string nomePastaPrincipal)
         {
-            return Json(new { success = false, message = "O arquivo já existe no sistema." });
+            var subPastas = await _subPastaService.GetSubChildrenAsync(nomePastaPrincipal);
+            var result = subPastas.Select(s => new { s.Id, s.NomeSubPasta }).ToList();
+            return Json(result);
         }
-
-        // Upload do arquivo
-        string url;
-        using (var stream = dto.Arquivo.OpenReadStream())
-        {
-            url = await _blobService.UploadAsync(fileName, stream);
-        }
-
-        // Criar o documento no banco de dados
-        await _documentoService.CreateAsync(dto);
-        return Json(new { success = true, message = "Upload realizado com sucesso!" });
-    }
-    catch (Exception ex)
-    {
-        return Json(new { success = false, message = $"Erro ao realizar o upload: {ex.Message}" });
-    }
-}
     }
 }

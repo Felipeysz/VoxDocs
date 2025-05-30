@@ -28,7 +28,32 @@ namespace VoxDocs.Services
                 Quantidade = p.SubPastas?.Count ?? 0 // Set Quantidade
             });
         }
+        public async Task<DTOPastaPrincipal> GetByNamePrincipalAsync(string nomePasta)
+        {
+            var model = await _context.PastaPrincipal
+                .FirstOrDefaultAsync(p => p.NomePastaPrincipal == nomePasta);
+            return model is null 
+                ? null 
+                : new DTOPastaPrincipal {
+                    Id = model.Id,
+                    NomePastaPrincipal = model.NomePastaPrincipal,
+                };
+        }
+        public async Task<IEnumerable<DTOPastaPrincipal>> GetByEmpresaAsync(string empresaContratante)
+        {
+            var pastas = await _context.PastaPrincipal
+                .Include(p => p.SubPastas) // Inclui SubPastas para contar documentos
+                .Where(p => p.EmpresaContratante == empresaContratante) // Filtra pela empresa
+                .ToListAsync();
 
+            return pastas.Select(p => new DTOPastaPrincipal
+            {
+                Id = p.Id,
+                NomePastaPrincipal = p.NomePastaPrincipal,
+                EmpresaContratante = p.EmpresaContratante,
+                Quantidade = p.SubPastas?.Count ?? 0 // Define a quantidade de subpastas
+            });
+        }
         public async Task<DTOPastaPrincipal?> GetByIdAsync(int id)
         {
             var pasta = await _context.PastaPrincipal.FindAsync(id);
@@ -41,7 +66,6 @@ namespace VoxDocs.Services
                 EmpresaContratante = pasta.EmpresaContratante
             };
         }
-
         public async Task<DTOPastaPrincipal> CreateAsync(DTOPastaPrincipalCreate dto)
         {
             var pasta = new PastaPrincipalModel
@@ -60,7 +84,6 @@ namespace VoxDocs.Services
                 EmpresaContratante = pasta.EmpresaContratante
             };
         }
-
         public async Task<bool> DeleteAsync(int id)
         {
             var pasta = await _context.PastaPrincipal.FindAsync(id);

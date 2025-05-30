@@ -1,0 +1,65 @@
+@model VoxDocs.DTO.DTODocumentoCreate
+
+<style>
+  .details-modal-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.2rem;
+    font-size: 1rem;
+  }
+  .details-modal-value {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 1.02rem;
+    color: #212529;
+    word-break: break-word;
+  }
+  .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.12);
+  }
+  .modal-header {
+    background: #f1f3f6;
+    border-bottom: 1px solid #e3e6ea;
+    border-radius: 12px 12px 0 0;
+  }
+  .modal-title {
+    font-weight: 700;
+    color: #2d3748;
+    letter-spacing: 0.5px;
+  }
+  .modal-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #e3e6ea;
+    border-radius: 0 0 12px 12px;
+  }
+</style>
+
+<div class="modal fade" id="deleteModal-@Model.Id" tabindex="-1" aria-labelledby="deleteModalLabel-@Model.Id" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      @Html.AntiForgeryToken()
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel-@Model.Id">Excluir Documento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Deseja excluir "@Model.NomeArquivo"?</p>
+        @if(Model.NivelSeguranca != "Publico")
+        {
+          <div class="mb-3">
+            <label for="token-@Model.Id" class="form-label">Token de Segurança</label>
+            <input type="password" id="token-@Model.Id" class="form-control" required />
+          </div>
+        }
+        <div id="deleteMessage-@Model.Id" class="alert" style="display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" onclick="excluirDocumento(@Model.Id, '@Model.NivelSeguranca')">Excluir</button>
+      </div>
+    </div>
+  </div>
+</div>

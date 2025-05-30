@@ -57,10 +57,6 @@
       "PackagePath": "staticwebassets\\js\\DashboardScripts\\scriptSideBar.js"
     },
     {
-      "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\js\\DocumentosScripts\\EtapasDoc.js",
-      "PackagePath": "staticwebassets\\js\\DocumentosScripts\\EtapasDoc.js"
-    },
-    {
       "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\js\\DocumentosScripts\\service-worker.js",
       "PackagePath": "staticwebassets\\js\\DocumentosScripts\\service-worker.js"
     },
@@ -311,14 +307,6 @@
     {
       "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\lib\\jquery\\dist\\jquery.slim.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.min.map"
-    },
-    {
-      "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\uploads\\DOCIMG052025_CONTABEIS.png",
-      "PackagePath": "staticwebassets\\uploads\\DOCIMG052025_CONTABEIS.png"
-    },
-    {
-      "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\uploads\\DOCPDF052025_COMERCIAIS.pdf",
-      "PackagePath": "staticwebassets\\uploads\\DOCPDF052025_COMERCIAIS.pdf"
     },
     {
       "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.VoxDocs.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",

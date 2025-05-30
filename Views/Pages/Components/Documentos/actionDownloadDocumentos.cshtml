@@ -1,0 +1,148 @@
+@model VoxDocs.DTO.DTODocumentoCreate
+
+@if (Model.NivelSeguranca != "Publico")
+{
+    <div class="modal fade" id="downloadTokenModal-@Model.Id" tabindex="-1" aria-labelledby="downloadTokenModalLabel-@Model.Id" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="downloadTokenModalLabel-@Model.Id">Download Protegido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <span class="details-modal-label">Arquivo:</span>
+                        <div class="details-modal-value">@Model.NomeArquivo</div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="details-modal-label">Tamanho:</span>
+                        <div class="details-modal-value">@((Model.TamanhoArquivo / 1024.0 / 1024.0).ToString("F2")) MB</div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="details-modal-label">Data de Criação:</span>
+                        <div class="details-modal-value">@Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="details-modal-label">Última Alteração:</span>
+                        <div class="details-modal-value">@Model.DataUltimaAlteracao.ToString("dd/MM/yyyy HH:mm") por @Model.UsuarioUltimaAlteracao</div>
+                    </div>
+                    <form id="downloadTokenForm-@Model.Id">
+                        <div class="mb-3">
+                            <label for="download-token-@Model.Id" class="form-label">Token de Segurança</label>
+                            <input type="password" class="form-control" id="download-token-@Model.Id" required />
+                        </div>
+                        <div id="downloadTokenError-@Model.Id" class="text-danger mb-2" style="display:none;"></div>
+                        <button type="submit" class="btn btn-success">
+                            <span class="material-symbols-outlined align-middle">download</span>
+                            Baixar Documento
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    $(document).ready(function () {
+        $('#downloadTokenForm-@Model.Id').on('submit', function (e) {
+            e.preventDefault();
+            const token = $('#download-token-@Model.Id').val();
+            const errorDiv = $('#downloadTokenError-@Model.Id');
+            errorDiv.hide().empty();
+
+            if (!token) {
+                errorDiv.text('Informe o token de segurança!').show();
+                return;
+            }
+
+            // Primeiro validar o token
+            $.ajax({
+                url: '@Url.Action("ValidateToken", "DocumentosPaginaMvc")',
+                type: 'GET',
+                data: {
+                    nomeArquivo: '@Model.NomeArquivo',
+                    token: token
+                },
+                success: function (validationResult) {
+                    if (validationResult.sucesso) {
+                        // Token válido, proceder com download
+                        const downloadUrl = '@Url.Action("DownloadPorNome", "DocumentosPaginaMvc")' +
+                            `?nomeArquivo=${encodeURIComponent('@Model.NomeArquivo')}&token=${encodeURIComponent(token)}`;
+
+                        fetch(downloadUrl, { method: 'GET' })
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.blob();
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data instanceof Blob) {
+                                    const blobUrl = window.URL.createObjectURL(data);
+                                    const a = document.createElement('a');
+                                    a.href = blobUrl;
+                                    a.download = '@Model.NomeArquivo';
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    window.URL.revokeObjectURL(blobUrl);
+                                    document.body.removeChild(a);
+                                    $('#downloadTokenModal-@Model.Id').modal('hide');
+                                } else {
+                                    errorDiv.text(data.message || 'Erro ao baixar o documento.').show();
+                                }
+                            })
+                            .catch(error => {
+                                errorDiv.text('Erro ao baixar o documento. Tente novamente.').show();
+                                console.error('Erro:', error);
+                            });
+                    } else {
+                        errorDiv.text('Token de segurança inválido!').show();
+                    }
+                },
+                error: function () {
+                    errorDiv.text('Erro ao validar token. Tente novamente.').show();
+                }
+            });
+        });
+    });
+</script>
+}
+else
+{
+    <!-- Modal para documentos públicos -->
+    <div class="modal fade" id="downloadPublicModal-@Model.Id" tabindex="-1" aria-labelledby="downloadPublicModalLabel-@Model.Id" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="downloadPublicModalLabel-@Model.Id">Download do Documento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <span class="details-modal-label">Arquivo:</span>
+                        <div class="details-modal-value">@Model.NomeArquivo</div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="details-modal-label">Tamanho:</span>
+                        <div class="details-modal-value">@((Model.TamanhoArquivo / 1024.0 / 1024.0).ToString("F2")) MB</div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="details-modal-label">Data de Criação:</span>
+                        <div class="details-modal-value">@Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="details-modal-label">Última Alteração:</span>
+                        <div class="details-modal-value">@Model.DataUltimaAlteracao.ToString("dd/MM/yyyy HH:mm") por @Model.UsuarioUltimaAlteracao</div>
+                    </div>
+                    
+                    <!-- Container para mensagens de erro -->
+                    <div id="downloadPublicError-@Model.Id" class="mb-2"></div>
+                    
+                    <button type="button" class="btn btn-success" onclick="baixarDocumentoPublico('@Model.NomeArquivo', '@Model.Id')">
+                        <span class="material-symbols-outlined align-middle">download</span>
+                        Baixar Documento
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

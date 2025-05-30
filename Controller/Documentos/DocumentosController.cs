@@ -18,7 +18,7 @@ namespace VoxDocs.Controllers
         private readonly DocumentoBusinessRules _rules;
 
         public DocumentosController(
-            IDocumentoService service, 
+            IDocumentoService service,
             AzureBlobService blobService,
             DocumentoBusinessRules rules)
         {
@@ -55,11 +55,10 @@ namespace VoxDocs.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id, [FromQuery] string? token)
+        public async Task<IActionResult> GetById(int id, [FromQuery] string token = null)
         {
             try
             {
-                await _rules.CheckDocumentoExistsAsync(id);
                 var doc = await _service.GetByIdAsync(id, token);
                 await _service.IncrementarAcessoAsync(id);
                 return Ok(doc);
@@ -78,56 +77,17 @@ namespace VoxDocs.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            try
-            {
-                var docs = await _service.GetAllAsync();
-                return Ok(docs);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
-            }
-        }
-
-        [HttpGet("subpasta/{subPasta}")]
-        public async Task<IActionResult> GetBySubPasta(string subPasta)
-        {
-            try
-            {
-                var docs = await _service.GetBySubPastaAsync(subPasta);
-                return Ok(docs);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
-            }
-        }
-
-        [HttpGet("pastaprincipal/{pastaPrincipal}")]
-        public async Task<IActionResult> GetByPastaPrincipal(string pastaPrincipal)
-        {
-            try
-            {
-                var docs = await _service.GetByPastaPrincipalAsync(pastaPrincipal);
-                return Ok(docs);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
-            }
-        }
-
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, [FromQuery] string token = null)
         {
             try
             {
-                await _rules.ValidateDocumentoDeleteAsync(id);
-                await _service.DeleteAsync(id);
+                await _service.DeleteAsync(id, token);
                 return NoContent();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
             }
             catch (ArgumentException ex)
             {
@@ -139,13 +99,13 @@ namespace VoxDocs.Controllers
             }
         }
 
-        [HttpGet("estatisticas/{empresa}")]
-        public async Task<IActionResult> GetEstatisticasEmpresa(string empresa)
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
             try
             {
-                var stats = await _service.GetEstatisticasEmpresaAsync(empresa);
-                return Ok(stats);
+                var docs = await _service.GetAllAsync();
+                return Ok(docs);
             }
             catch (Exception ex)
             {
@@ -169,53 +129,75 @@ namespace VoxDocs.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] DocumentoModel documento)
+        public async Task<IActionResult> UpdateDocumento(int id, [FromForm] DocumentoUpdateDto updateDto,[FromForm] string? tokenSeguranca)
         {
             try
             {
-                await _rules.CheckDocumentoExistsAsync(id);
-                await _rules.ValidateDocumentoUpdateAsync(documento);
-
-                var existingDoc = await _service.GetByIdAsync(id);
-                if (existingDoc == null) return NotFound();
-
-                // Preserve campos imutáveis
-                documento.Id = id;
-                documento.DataCriacao = existingDoc.DataCriacao;
-                documento.UsuarioCriador = existingDoc.UsuarioCriador;
-
-                // 1) Monta o DTO esperado pelo serviço
-                var dtoUpdate = new DTODocumentoCreate
-                {
-                    Id = documento.Id,
-                    NomeArquivo = documento.NomeArquivo,
-                    UrlArquivo = documento.UrlArquivo,
-                    UsuarioCriador = documento.UsuarioCriador,
-                    DataCriacao = documento.DataCriacao,
-                    UsuarioUltimaAlteracao = documento.UsuarioUltimaAlteracao,
-                    DataUltimaAlteracao = documento.DataUltimaAlteracao,
-                    Empresa = documento.Empresa,
-                    NomePastaPrincipal = documento.NomePastaPrincipal,
-                    NomeSubPasta = documento.NomeSubPasta,
-                    TamanhoArquivo = documento.TamanhoArquivo,
-                    NivelSeguranca = documento.NivelSeguranca,
-                    TokenSeguranca = documento.TokenSeguranca,
-                    Descrição = documento.Descrição
-                };
-
-                // 2) Passa o DTO para o serviço
-                var updatedDoc = await _service.UpdateAsync(dtoUpdate);
+                updateDto.Id = id;
+                // Validação com token separado
+                await _rules.ValidateDocumentoUpdateAsync(updateDto, tokenSeguranca);
+                
+                var updatedDoc = await _service.UpdateAsync(updateDto);
                 return Ok(updatedDoc);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Erro interno no servidor", detalhes = ex.Message });
+                return BadRequest(ex.Message);
             }
         }
 
+        [HttpGet("download/{nomeArquivo}")]
+        public async Task<IActionResult> DownloadDocumento(string nomeArquivo, [FromQuery] string token = null)
+        {
+            try
+            {
+                var (stream, contentType) = await _service.DownloadDocumentoProtegidoAsync(nomeArquivo, token);
+                return File(stream, contentType, nomeArquivo);
+            }
+            catch (FileNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro ao baixar o documento", detalhes = ex.Message });
+            }
+        }
+
+        [HttpGet("validate-token")]
+        public async Task<IActionResult> ValidateToken([FromQuery] string nomeArquivo, [FromQuery] string token)
+        {
+            try
+            {
+                // Chama a service para validar o token
+                var valido = await _service.ValidateTokenDocumentoAsync(nomeArquivo, token);
+
+                // Se quiser retornar 200 mesmo quando inválido, apenas muda o corpo
+                return Ok(new { sucesso = valido });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                // 401 Unauthorized com corpo detalhado
+                return Unauthorized(new { sucesso = false, mensagem = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                // 404 Not Found (nomeArquivo inválido, etc)
+                return NotFound(new { sucesso = false, mensagem = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // 500 Internal Server Error
+                return StatusCode(500, new { sucesso = false, mensagem = "Erro ao validar token", detalhes = ex.Message });
+            }
+        }
     }
 }

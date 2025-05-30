@@ -10,6 +10,9 @@ namespace VoxDocs.Services
         Task<DTOSubPasta?> GetByIdAsync(int id);
         Task<DTOSubPasta> CreateAsync(DTOSubPastaCreate dto);
         Task<bool> DeleteAsync(int id);
+        Task<DTOSubPasta> GetByNameSubPastaAsync(string nomeSubPasta);
         Task<IEnumerable<DTOSubPasta>> GetSubChildrenAsync(string nomePastaPrincipal);
+        Task<IEnumerable<DTOSubPasta>> GetByEmpresaAsync(string empresa);
+
     }
 }

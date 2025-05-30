@@ -560,9 +560,8 @@ C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\3t
 C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\qfawe5dr04-yv83z1z97l.gz
 C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\2a3y31vegs-ap4wu6agpg.gz
 C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\5cyiprzfcc-o392rt829q.gz
-C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\b4vn3fd9f1-i771pnrbdg.gz
 C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\18xnithwry-qthslv1y0e.gz
-C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\gux60x1ii1-bu8yhdaqhe.gz
-C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\dgdeic0766-cd817q0jx4.gz
-C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\bvvpbobb1g-h99iv0rdju.gz
-C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\t739s19ojw-7fne2e6zlv.gz
+C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\b4vn3fd9f1-7w3wc57eea.gz
+C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\gux60x1ii1-78dywv0mxy.gz
+C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\t739s19ojw-cuirrhvp8q.gz
+C:\Users\Felip\OneDrive\Área de Trabalho\VoxDocs\obj\Debug\net9.0\compressed\dgdeic0766-0v9dpf6js7.gz

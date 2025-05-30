@@ -10,3 +10,8 @@ input[type="password"]::-webkit-clear-button {
     display: none !important;
     -webkit-appearance: none;
 }
+
+/* Safari e todos os browsers iOS: remove o “eye” nativo */
+input[type="password"]::-webkit-textfield-decoration-button {
+  display: none !important;
+}

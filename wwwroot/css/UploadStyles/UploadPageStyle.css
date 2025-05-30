@@ -1,88 +1,67 @@
-.upload-card,
-.doc-card {
-    max-width: 600px;
-    margin: 3rem auto;
-    background: #fff;
-    border-radius: 1rem;
-    box-shadow: 0 4px 12px var(--shadow);
-    padding: 2.5rem;
+:root {
+  --color-primary:      #774c9e;
+  --color-accent:       #963fff;
+  --color-accent-hover: #852ed1;
+  --shadow: rgba(0,0,0,0.1);
 }
 
-.upload-card h2,
-.doc-header {
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: var(--color-primary);
-    margin-bottom: 1.5rem;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+.upload-card {
+  max-width: 600px;
+  margin: 3rem auto;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px var(--shadow);
+  padding: 2.5rem;
 }
 
-.form-group {
-    margin-bottom: 1.5rem;
+.upload-card h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
-.form-group label {
-    font-weight: 600;
-    color: var(--color-primary);
-    display: block;
-    margin-bottom: 0.5rem;
+.mb-3 {
+  margin-bottom: 1.5rem;
 }
 
 .form-control {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    transition: border-color 0.3s, box-shadow 0.3s;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .form-control:focus {
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(119, 76, 158, 0.1);
-    outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(119, 76, 158, 0.1);
+  outline: none;
 }
 
 .access-btn {
-    background-color: var(--color-primary);
-    border: none;
-    color: #fff;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    transition: background-color 0.3s;
+  background-color: var(--color-accent);
+  border: none;
+  color: #fff;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .access-btn:hover {
-    background-color: var(--color-accent);
-}
-
-.document-list h3 {
-    margin-top: 2rem;
-    color: var(--color-primary);
-    font-weight: 600;
-}
-
-.document-list ul {
-    padding-left: 1rem;
-}
-
-.document-list li {
-    margin-bottom: 0.5rem;
-    color: var(--text-dark);
-}
-
-.text-muted {
-    color: #6c757d;
+  background-color: var(--color-accent-hover);
 }

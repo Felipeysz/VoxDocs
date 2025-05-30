@@ -102,8 +102,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>cd817q0jx4</Fingerprint>
-      <Integrity>oK/IYxfNkT0eVz704FvASySqBX/V3RpZ8kUQRZkcGTE=</Integrity>
+      <Fingerprint>0v9dpf6js7</Fingerprint>
+      <Integrity>1BdVZ1+aCRPbwCiFsTZsMyJ/Nbr3TRJwL3x2KmQTLJ8=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\DocumentosStyles\EtapasDoc.css'))</OriginalItemSpec>
@@ -138,8 +138,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>bu8yhdaqhe</Fingerprint>
-      <Integrity>vXnXwk+S8RizCTKDrO+MzT+RWyCjscHQTDO8vaUjEaE=</Integrity>
+      <Fingerprint>78dywv0mxy</Fingerprint>
+      <Integrity>d/OoZQDyLUBsXAMagHTfY5sBGLTocyr96Hyy5rXFA8g=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\OculteCssNativoWeb.css'))</OriginalItemSpec>
@@ -192,8 +192,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>7fne2e6zlv</Fingerprint>
-      <Integrity>E8jwtjy2A8A/3WWsGo5SczBq1mW0SM+1/aduEX0VG7E=</Integrity>
+      <Fingerprint>cuirrhvp8q</Fingerprint>
+      <Integrity>JKczIq4et8k5ppIQURE4xaNjQZXTmMXiHSHWBws5gvw=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\UploadStyles\UploadPageStyle.css'))</OriginalItemSpec>
@@ -252,24 +252,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\DashboardScripts\scriptSideBar.js'))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\DocumentosScripts\EtapasDoc.js'))">
-      <SourceType>Package</SourceType>
-      <SourceId>VoxDocs</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/VoxDocs</BasePath>
-      <RelativePath>js/DocumentosScripts/EtapasDoc.js</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>h99iv0rdju</Fingerprint>
-      <Integrity>m5H9kdin2KvidsKII6NEPNeI593154Rkv7jwsk0Lu0M=</Integrity>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\DocumentosScripts\EtapasDoc.js'))</OriginalItemSpec>
-    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\DocumentosScripts\service-worker.js'))">
       <SourceType>Package</SourceType>
       <SourceId>VoxDocs</SourceId>
@@ -300,8 +282,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>i771pnrbdg</Fingerprint>
-      <Integrity>QkB5fXxIOuzCybfjWWdMbw3UjkiQdnsVIswD0gtNOb4=</Integrity>
+      <Fingerprint>7w3wc57eea</Fingerprint>
+      <Integrity>SXT5FKLd7BXt5m3EfazT+HDFxPPH1Xh/dBAXpjxdgjQ=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\PagamentoScript.js'))</OriginalItemSpec>
@@ -1403,42 +1385,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\jquery\LICENSE.txt'))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\DOCIMG052025_CONTABEIS.png'))">
-      <SourceType>Package</SourceType>
-      <SourceId>VoxDocs</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/VoxDocs</BasePath>
-      <RelativePath>uploads/DOCIMG052025_CONTABEIS.png</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>9svik49d1r</Fingerprint>
-      <Integrity>l5qJ1BgJeFqIVlDWdHCdjlUoUzbrqCg2Q4NKPvqNYLg=</Integrity>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\DOCIMG052025_CONTABEIS.png'))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\DOCPDF052025_COMERCIAIS.pdf'))">
-      <SourceType>Package</SourceType>
-      <SourceId>VoxDocs</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/VoxDocs</BasePath>
-      <RelativePath>uploads/DOCPDF052025_COMERCIAIS.pdf</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>wedzbtumd5</Fingerprint>
-      <Integrity>qA12g6MjZsRgU6DMmxzTIfKxaK181HppKGcTIgRv1js=</Integrity>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\DOCPDF052025_COMERCIAIS.pdf'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
 </Project>

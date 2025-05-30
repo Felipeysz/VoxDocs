@@ -19,6 +19,6 @@ namespace VoxDocs.DTO
     // PIX: etapa 2 — cliente confirma o pagamento
     public class DTOPixConfirmar
     {
-        public string Token { get; set; } // Agora confirmamos via token
+        public required string Token { get; set; } // Agora confirmamos via token
     }
 }
