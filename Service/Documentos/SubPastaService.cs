@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VoxDocs.Data;
+using VoxDocs.DTO;
 using VoxDocs.Models;
-using VoxDocs.Models.Dto;
+
 
 namespace VoxDocs.Services
 {

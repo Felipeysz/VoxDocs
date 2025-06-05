@@ -5,6 +5,7 @@ using VoxDocs.Services;
 using VoxDocs.BusinessRules;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Azure.Storage.Blobs;
+using VoxDocs.PagamentosBusinessRules;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,12 +87,16 @@ builder.Services.AddScoped<IDocumentoService, DocumentoService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPlanosVoxDocsService, PlanosVoxDocsService>();
 builder.Services.AddScoped<IEmpresasContratanteService, EmpresasContratanteService>();
-builder.Services.AddScoped<IPagamentoFalsoService, PagamentoFalsoService>();
+builder.Services.AddScoped<IPagamentoCartaoFalsoService, PagamentoCartaoFalsoService>();
+builder.Services.AddScoped<IPagamentoPixFalsoService, PagamentoPixFalsoService>();
+builder.Services.AddScoped<IPagamentoConcluidoService, PagamentoConcluidoService>();
+
 
 // --- Azure Blob Storage Service ---
 builder.Services.AddScoped<AzureBlobService>();
 
 // Regra de Negocios
+builder.Services.AddScoped<PagamentosPixBusinessRules>();
 builder.Services.AddScoped<PastaPrincipalBusinessRules>();
 builder.Services.AddScoped<SubPastaBusinessRules>();
 builder.Services.AddScoped<UserBusinessRules>();

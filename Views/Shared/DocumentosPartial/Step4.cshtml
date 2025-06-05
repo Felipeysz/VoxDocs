@@ -1,0 +1,73 @@
+@model VoxDocs.DTO.DTOCadastroEmpresa
+
+@{
+    int limiteUsuarios = ViewBag.LimiteUsuarios ?? 0;
+    int userCount = Model.Usuarios?.Count(u => u.PermissionAccount == "User") ?? 0;
+    int disponiveis = limiteUsuarios;
+}
+
+<div class="step-content" data-step="4">
+  <div>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h4>Usuários Comuns</h4>
+      <div class="badge bg-secondary">
+        <span id="userCount">@userCount</span> / <span id="userLimit">@disponiveis</span>
+      </div>
+    </div>
+
+    <div id="usersContainer" class="mb-4">
+      @if (Model.Usuarios != null)
+      {
+          var userIndex = 0;
+          foreach (var usuario in Model.Usuarios.Where(u => u.PermissionAccount == "User"))
+          {
+              <div class="user-card mb-4 p-4 border rounded">
+                <h5>Usuário @(userIndex + 1)</h5>
+                <div class="mb-4">
+                  <label class="form-label">Usuário (login)</label>
+                  <input data-field="Usuario" type="text" class="form-control"
+                         name="Users[@{Write(userIndex);}].Usuario"
+                         value="@usuario.Usuario" placeholder="user01" required>
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">E-mail do Usuário</label>
+                  <input data-field="Email" type="email" class="form-control"
+                         name="Users[@{Write(userIndex);}].Email"
+                         value="@usuario.Email" placeholder="user@empresa.com" required>
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">Senha</label>
+                  <input data-field="Senha" type="text" class="form-control"
+                         name="Users[@{Write(userIndex);}].Senha"
+                         placeholder="Digite Sua Senha" required>
+                </div>
+                <input data-field="PermissionAccount" type="hidden"
+                       name="Users[@{Write(userIndex);}].PermissionAccount"
+                       value="User" />
+                <button type="button" class="btn btn-outline-danger btn-sm remover-user">
+                  <span class="material-symbols-outlined">delete</span> Remover
+                </button>
+              </div>
+              userIndex++;
+          }
+      }
+    </div>
+
+    @if (disponiveis > 1)
+    {
+      <button type="button" class="btn btn-outline-primary mb-4" id="btnAdicionarUser">
+        <span class="material-symbols-outlined">add</span> Adicionar Usuário
+      </button>
+    }
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Limites do Plano:</strong>
+    <div>Total de usuários permitidos: <strong>@limiteUsuarios</strong></div>
+    <div>Usuários comuns disponíveis: <strong>@disponiveis</strong></div>
+  </div>
+  
+      <!-- Mensagens de erro e sucesso (estilo Step 1 / Step 4) -->
+    <div id="step4Error" class="text-danger mt-2 d-none"></div>
+    <div id="step4Success" class="text-success mt-2 d-none"></div>
+</div>

@@ -12,7 +12,7 @@ namespace VoxDocs.Services
         Task<PlanosVoxDocsModel> GetPlanByIdAsync(int id);
         Task<PlanosVoxDocsModel> CreatePlanAsync(DTOPlanosVoxDocs dto);
         Task<PlanosVoxDocsModel> UpdatePlanAsync(int id, DTOPlanosVoxDocs dto);
-        Task<PlanosVoxDocsModel?> GetPlanByNameAsync(string name);
+         Task<PlanosVoxDocsModel> GetPlanByNameAsync(string name);
         Task DeletePlanAsync(int id);
     }
 }

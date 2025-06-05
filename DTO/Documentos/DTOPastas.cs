@@ -1,4 +1,4 @@
-namespace VoxDocs.Models.Dto
+namespace VoxDocs.DTO
 {
     public class DTOPastaPrincipal
     {

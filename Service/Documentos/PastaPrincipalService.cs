@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using VoxDocs.Data;
+using VoxDocs.DTO;
 using VoxDocs.Models;
-using VoxDocs.Models.Dto;
 
 namespace VoxDocs.Services
 {

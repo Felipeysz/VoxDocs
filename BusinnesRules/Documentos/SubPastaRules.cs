@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using VoxDocs.Models.Dto;
+using VoxDocs.DTO;
 using VoxDocs.Services;
 
 namespace VoxDocs.BusinessRules

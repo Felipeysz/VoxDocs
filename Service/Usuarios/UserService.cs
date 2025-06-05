@@ -1,7 +1,4 @@
 // Services/UserService.cs
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;

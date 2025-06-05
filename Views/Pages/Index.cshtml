@@ -93,71 +93,70 @@
     </section>
 
     <!-- Planos -->
-   <section class="plans py-5" data-aos="fade-up">
-    <div class="container">
-        <h2 class="text-center mb-5">Escolha seu Plano</h2>
+    <section class="plans py-5" data-aos="fade-up">
+        <div class="container">
+            <h2 class="text-center mb-5">Escolha seu Plano</h2>
 
-        <div class="row gy-4 mb-5">
-            <!-- Plano Básico -->
-            <div class="col-md-4" data-aos="fade-up">
-                <div class="plan-card h-100 p-4 border rounded shadow-sm text-center">
-                    <div class="plan-name fw-bold">Planos Básicos</div>
-                    <div class="plan-price display-6 mb-3">A partir de R$ @Model.MenorPrecoBasico.ToString("F2")</div>
-                    <ul class="list-unstyled mb-4">
-                        <li><span class="material-symbols-outlined">storage</span> Armazenamento conforme plano</li>
-                        <li><span class="material-symbols-outlined">people</span> Usuários conforme plano</li>
-                        <li><span class="material-symbols-outlined">key</span> Tokens ilimitados</li>
-                    </ul>
-                    <a asp-controller="PagamentosMvc"
-                       asp-action="Pagamentos"
-                       asp-route-categoria="Básico"
-                       class="btn btn-subscribe">
-                        Selecionar
-                    </a>
+            <div class="row gy-4 mb-5">
+                <!-- Plano Básico -->
+                <div class="col-md-4" data-aos="fade-up">
+                    <div class="plan-card h-100 p-4 border rounded shadow-sm text-center">
+                        <div class="plan-name fw-bold">Planos Básicos</div>
+                        <div class="plan-price display-6 mb-3">A partir de R$ @Model.MenorPrecoBasico.ToString("F2")</div>
+                        <ul class="list-unstyled mb-4">
+                            <li><span class="material-symbols-outlined">storage</span> Armazenamento conforme plano</li>
+                            <li><span class="material-symbols-outlined">people</span> Usuários conforme plano</li>
+                            <li><span class="material-symbols-outlined">key</span> Tokens ilimitados</li>
+                        </ul>
+                        <a asp-controller="PagamentosMvc"
+                        asp-action="SelecionarPlano"
+                        asp-route-planoNome="Plano Básico Mensal"
+                        class="btn btn-subscribe">
+                            Selecionar
+                        </a>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Plano Intermediário -->
-            <div class="col-md-4" data-aos="fade-up">
-                <div class="plan-card h-100 p-4 border rounded shadow-sm text-center">
-                    <div class="plan-name fw-bold">Planos Intermediários</div>
-                    <div class="plan-price display-6 mb-3">A partir de R$ @Model.MenorPrecoIntermediario.ToString("F2")</div>
-                    <ul class="list-unstyled mb-4">
-                        <li><span class="material-symbols-outlined">storage</span> Armazenamento conforme plano</li>
-                        <li><span class="material-symbols-outlined">people</span> Usuários conforme plano</li>
-                        <li><span class="material-symbols-outlined">key</span> Tokens ilimitados</li>
-                    </ul>
-                    <a asp-controller="PagamentosMvc"
-                       asp-action="Pagamentos"
-                       asp-route-categoria="Intermediário"
-                       class="btn btn-subscribe">
-                        Selecionar
-                    </a>
+                <!-- Plano Intermediário -->
+                <div class="col-md-4" data-aos="fade-up">
+                    <div class="plan-card h-100 p-4 border rounded shadow-sm text-center">
+                        <div class="plan-name fw-bold">Planos Intermediários</div>
+                        <div class="plan-price display-6 mb-3">A partir de R$ @Model.MenorPrecoIntermediario.ToString("F2")</div>
+                        <ul class="list-unstyled mb-4">
+                            <li><span class="material-symbols-outlined">storage</span> Armazenamento conforme plano</li>
+                            <li><span class="material-symbols-outlined">people</span> Usuários conforme plano</li>
+                            <li><span class="material-symbols-outlined">key</span> Tokens ilimitados</li>
+                        </ul>
+                        <a asp-controller="PagamentosMvc"
+                        asp-action="SelecionarPlano"
+                        asp-route-planoNome="Plano Intermediário Mensal"
+                        class="btn btn-subscribe">
+                            Selecionar
+                        </a>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Plano Avançado -->
-            <div class="col-md-4" data-aos="fade-up">
-                <div class="plan-card h-100 p-4 border rounded shadow-sm text-center">
-                    <div class="plan-name fw-bold">Planos Avançados</div>
-                    <div class="plan-price display-6 mb-3">A partir de R$ @Model.MenorPrecoAvancado.ToString("F2")</div>
-                    <ul class="list-unstyled mb-4">
-                        <li><span class="material-symbols-outlined">storage</span> Armazenamento conforme plano</li>
-                        <li><span class="material-symbols-outlined">people</span> Usuários conforme plano</li>
-                        <li><span class="material-symbols-outlined">key</span> Tokens ilimitados</li>
-                    </ul>
-                    <a asp-controller="PagamentosMvc"
-                       asp-action="Pagamentos"
-                       asp-route-categoria="Avançado"
-                       class="btn btn-subscribe">
-                        Selecionar
-                    </a>
+                <!-- Plano Avançado -->
+                <div class="col-md-4" data-aos="fade-up">
+                    <div class="plan-card h-100 p-4 border rounded shadow-sm text-center">
+                        <div class="plan-name fw-bold">Planos Avançados</div>
+                        <div class="plan-price display-6 mb-3">A partir de R$ @Model.MenorPrecoAvancado.ToString("F2")</div>
+                        <ul class="list-unstyled mb-4">
+                            <li><span class="material-symbols-outlined">storage</span> Armazenamento conforme plano</li>
+                            <li><span class="material-symbols-outlined">people</span> Usuários conforme plano</li>
+                            <li><span class="material-symbols-outlined">key</span> Tokens ilimitados</li>
+                        </ul>
+                        <a asp-controller="PagamentosMvc"
+                        asp-action="SelecionarPlano"
+                        asp-route-planoNome="Plano Avançado Mensal"
+                        class="btn btn-subscribe">
+                            Selecionar
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
+    </section>
 
     <!-- Footer -->
     @await Html.PartialAsync("_FooterPartial")

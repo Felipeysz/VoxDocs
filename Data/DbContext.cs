@@ -18,27 +18,85 @@ namespace VoxDocs.Data
         public DbSet<EmpresasContratanteModel> EmpresasContratantes { get; set; }
         public DbSet<PagamentoCartaoFalsoModel> PagamentosCartao { get; set; }
         public DbSet<PagamentoPixModel> PagamentosPix { get; set; }
+        public DbSet<PagamentoConcluido> PagamentosConcluidos { get; set; }
+
+        // Novos DbSets para a funcionalidade de SuporteVoxDocs
+        public DbSet<ChamadoModel> Chamados { get; set; }
+        public DbSet<MensagemModel> Mensagens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             // Seed predefined plans
             modelBuilder.Entity<PlanosVoxDocsModel>().HasData(
-                // Planos Mensais
-                new PlanosVoxDocsModel { Id = 1, Name = "Plano Básico Mensal", Description = "Arquivamento de Dados Com Segurança", Price = 9.99m, Duration = 1, Periodicidade = "Mensal", ArmazenamentoDisponivel = 50, TokensDisponiveis = "Infinito", LimiteAdmin = 1, LimiteUsuario = 5 },
-                new PlanosVoxDocsModel { Id = 2, Name = "Plano Intermediário Mensal", Description = "Sistema de Criptografia de Ponta e Comando de Voz", Price = 19.99m, Duration = 1, Periodicidade = "Mensal", ArmazenamentoDisponivel = 50,  TokensDisponiveis = "Infinito", LimiteAdmin = 2, LimiteUsuario = 10 },
-                new PlanosVoxDocsModel { Id = 3, Name = "Plano Avançado Mensal", Description = "Todas Funcionalidades", Price = 29.99m, Duration = 1, Periodicidade = "Mensal", ArmazenamentoDisponivel = 50, TokensDisponiveis = "Infinito", LimiteAdmin = 5, LimiteUsuario = 20 },
+            // Plano Gratuito
+            new PlanosVoxDocsModel
+            {
+                Id = 1,
+                Name = "Gratuito",
+                Description = "Plano com funcionalidades básicas",
+                Price = 0m,
+                Duration = 0, // 0 = infinito
+                Periodicidade = "Ilimitada",
+                ArmazenamentoDisponivel = 10,
+                TokensDisponiveis = "Limitado",
+                LimiteAdmin = 2,
+                LimiteUsuario = 5
+            },
 
-                // Planos Trimestrais
-                new PlanosVoxDocsModel { Id = 4, Name = "Plano Básico Trimestral", Description = "Arquivamento de Dados Com Segurança", Price = 27.99m, Duration = 3, Periodicidade = "Trimestral", ArmazenamentoDisponivel = 100, TokensDisponiveis = "Infinito", LimiteAdmin = 1, LimiteUsuario = 5 },
-                new PlanosVoxDocsModel { Id = 5, Name = "Plano Intermediário Trimestral", Description = "Sistema de Criptografia de Ponta e Comando de Voz", Price = 54.99m, Duration = 3, Periodicidade = "Trimestral", ArmazenamentoDisponivel = 100, TokensDisponiveis = "Infinito", LimiteAdmin = 2, LimiteUsuario = 10 },
-                new PlanosVoxDocsModel { Id = 6, Name = "Plano Avançado Trimestral", Description = "Todas Funcionalidades", Price = 79.99m, Duration = 3, Periodicidade = "Trimestral", ArmazenamentoDisponivel = 100, TokensDisponiveis = "Infinito", LimiteAdmin = 5, LimiteUsuario = 20 },
+            // Plano Premium base para 1 mês (sem desconto)
+            new PlanosVoxDocsModel
+            {
+                Id = 2,
+                Name = "Premium",
+                Description = "Plano completo com funcionalidades avançadas",
+                Price = 29.99m,
+                Duration = 1,
+                Periodicidade = "Mensal",
+                ArmazenamentoDisponivel = 200,
+                TokensDisponiveis = "Infinito",
+                LimiteAdmin = -1, // -1 = Ilimitado
+                LimiteUsuario = -1
+            },
 
-                // Planos Semestrais
-                new PlanosVoxDocsModel { Id = 7, Name = "Plano Básico Semestral", Description = "Arquivamento de Dados Com Segurança", Price = 49.99m, Duration = 6, Periodicidade = "Semestral", ArmazenamentoDisponivel = 150, TokensDisponiveis = "Infinito", LimiteAdmin = 1, LimiteUsuario = 5 },
-                new PlanosVoxDocsModel { Id = 8, Name = "Plano Intermediário Semestral", Description = "Sistema de Criptografia de Ponta e Comando de Voz", Price = 99.99m, Duration = 6, Periodicidade = "Semestral", ArmazenamentoDisponivel = 150, TokensDisponiveis = "Infinito", LimiteAdmin = 2, LimiteUsuario = 10 },
-                new PlanosVoxDocsModel { Id = 9, Name = "Plano Avançado Semestral", Description = "Todas Funcionalidades", Price = 149.99m, Duration = 6, Periodicidade = "Semestral", ArmazenamentoDisponivel = 150, LimiteAdmin = 5, TokensDisponiveis = "Infinito", LimiteUsuario = 20 }
-            );
+            // Plano Premium 6 meses com 10% de desconto
+            new PlanosVoxDocsModel
+            {
+                Id = 3,
+                Name = "Premium",
+                Description = "Plano completo com desconto de 10% para 6 meses",
+                Price = Math.Round(29.99m * 6 * 0.9m, 2), // ~161.95
+                Duration = 6,
+                Periodicidade = "Semestral",
+                ArmazenamentoDisponivel = 200,
+                TokensDisponiveis = "Infinito",
+                LimiteAdmin = -1,
+                LimiteUsuario = -1
+            },
+
+            // Plano Premium 12 meses com 20% de desconto
+            new PlanosVoxDocsModel
+            {
+                Id = 4,
+                Name = "Premium",
+                Description = "Plano completo com desconto de 20% para 12 meses",
+                Price = Math.Round(29.99m * 12 * 0.8m, 2), // ~287.90
+                Duration = 12,
+                Periodicidade = "Anual",
+                ArmazenamentoDisponivel = 200,
+                TokensDisponiveis = "Infinito",
+                LimiteAdmin = -1,
+                LimiteUsuario = -1
+            }
+        );
+
+            // Configuração do relacionamento 1:N entre Chamado e Mensagem
+            modelBuilder.Entity<MensagemModel>()
+                .HasOne(m => m.Chamado)
+                .WithMany(c => c.Mensagens)
+                .HasForeignKey(m => m.ChamadoId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

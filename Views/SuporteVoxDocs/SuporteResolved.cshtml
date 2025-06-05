@@ -1,0 +1,80 @@
+@model VoxDocs.Models.ChamadoModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chamado @Model.Id • Resolvido</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --color-primary:#5c3c8a;--color-secondary:#f1f1f1;--bg:#ffffff;--text-dark:#17171f;--text-light:#fafafa;--radius:12px;--shadow:rgba(0,0,0,0.05);--transition:0.3s ease; }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text-dark);font-family:'Poppins',sans-serif;padding:1rem;}
+    .detail-hub{max-width:900px;margin:auto;background:var(--bg);border-radius:var(--radius);box-shadow:0 4px 12px var(--shadow);display:flex;flex-direction:column;overflow:hidden;}
+    .status-banner{background:#d4edda;color:#155724;padding:1rem;text-align:center;font-weight:600;}
+    .detail-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--color-secondary);border-bottom:1px solid var(--shadow);}
+    .detail-header h2{color:var(--color-primary);font-size:1.5rem;}
+    .actions{display:flex;gap:0.5rem;}
+    .ticket-info{padding:1rem;display:flex;gap:2rem;font-size:0.9rem;}
+    .ticket-info span{display:flex;align-items:center;gap:0.25rem;}
+    .conversation{flex:1;padding:1rem;background:var(--color-secondary);overflow-y:auto;}
+    .message{display:flex;margin-bottom:1rem;}
+    .message.support .bubble{background:var(--bg);color:var(--text-dark);}
+    .message.user .bubble{background:var(--color-primary);color:var(--text-light);margin-left:auto;}
+    .bubble{max-width:70%;padding:0.75rem 1rem;border-radius:var(--radius);box-shadow:0 2px 6px var(--shadow);}
+    .meta{font-size:0.75rem;color:#666;margin-bottom:0.25rem;}
+    .action-btn{background:transparent;border:none;cursor:pointer;font-size:1.2rem;color:var(--color-primary);transition:color var(--transition);}
+    .action-btn:hover{color:var(--color-accent);}
+  </style>
+</head>
+<body>
+  <div class="detail-hub">
+    <div class="status-banner">Problema resolvido. Chamado será arquivado em breve.</div>
+    <div class="detail-header">
+      <a asp-action="Listar" class="action-btn" title="Voltar">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <h2>Chamado @Model.Id: @Model.Assunto</h2>
+      <div class="actions">
+        @* Aqui você pode botar um botão “Arquivar” se quiser chamar o POST “Arquivar”. *@
+        <form asp-action="Arquivar" method="post" style="display:inline;">
+          <input type="hidden" name="id" value="@Model.Id" />
+          <button type="submit" title="Arquivar">
+            <span class="material-symbols-outlined">archive</span>
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="ticket-info">
+      <span><strong>Status:</strong> Resolvido</span>
+      <span><strong>Criado em:</strong> @Model.DataCriacao.ToString("dd/MM/yyyy")</span>
+      <span><strong>Responsável:</strong> @Model.NomeSuporteResponsavel</span>
+    </div>
+    <ul class="conversation">
+      @if (Model.Mensagens != null && Model.Mensagens.Any())
+      {
+        foreach (var m in Model.Mensagens.OrderBy(x => x.DataEnvio))
+        {
+          var css = m.EnviadoPorSuporte ? "support" : "user";
+          <li class="message @css">
+            <div>
+              <div class="meta">@m.NomeRemetente • @m.DataEnvio.ToString("dd/MM/yyyy HH:mm")</div>
+              <div class="bubble">@m.Conteudo</div>
+            </div>
+          </li>
+        }
+      }
+      else
+      {
+        <li style="text-align:center;color:#666;">Nenhuma mensagem registrada.</li>
+      }
+    </ul>
+  </div>
+</body>
+</html>

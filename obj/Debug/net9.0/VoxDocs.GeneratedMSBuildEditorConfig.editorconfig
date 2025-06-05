@@ -104,12 +104,36 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/PagamentosPages/ConfirmandoPagamentoPix.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcUGFnYW1lbnRvc1BhZ2VzXENvbmZpcm1hbmRvUGFnYW1lbnRvUGl4LmNzaHRtbA==
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/PagamentosPages/CadastroEmpresa.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcUGFnYW1lbnRvc1BhZ2VzXENhZGFzdHJvRW1wcmVzYS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/PagamentosPages/Pagamentos.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcUGFnYW1lbnRvc1BhZ2VzXFBhZ2FtZW50b3MuY3NodG1s
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/PagamentosPages/ConfirmarPagamento.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcUGFnYW1lbnRvc1BhZ2VzXENvbmZpcm1hclBhZ2FtZW50by5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Pages/Suporte/AbrirChamadoVoxDocs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcU3Vwb3J0ZVxBYnJpckNoYW1hZG9Wb3hEb2NzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Shared/DocumentosPartial/Step1.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXERvY3VtZW50b3NQYXJ0aWFsXFN0ZXAxLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Shared/DocumentosPartial/Step2.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXERvY3VtZW50b3NQYXJ0aWFsXFN0ZXAyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Shared/DocumentosPartial/Step3.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXERvY3VtZW50b3NQYXJ0aWFsXFN0ZXAzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Shared/DocumentosPartial/Step4.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXERvY3VtZW50b3NQYXJ0aWFsXFN0ZXA0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Shared/DocumentosPartial/Step5.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXERvY3VtZW50b3NQYXJ0aWFsXFN0ZXA1LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Shared/_FooterPartial.cshtml]
@@ -134,6 +158,22 @@ build_metadata.AdditionalFiles.CssScope =
 
 [c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/Shared/_VoiceAssistantModal.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Wb2ljZUFzc2lzdGFudE1vZGFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/SuporteVoxDocs/SuporteAtivo.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Vwb3J0ZVZveERvY3NcU3Vwb3J0ZUF0aXZvLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/SuporteVoxDocs/SuporteListar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Vwb3J0ZVZveERvY3NcU3Vwb3J0ZUxpc3Rhci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/SuporteVoxDocs/SuporteResolved.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Vwb3J0ZVZveERvY3NcU3Vwb3J0ZVJlc29sdmVkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/SuporteVoxDocs/SuporteVisualizar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Vwb3J0ZVZveERvY3NcU3Vwb3J0ZVZpc3VhbGl6YXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [c:/Users/Felip/OneDrive/Área de Trabalho/VoxDocs/Views/_ViewImports.cshtml]

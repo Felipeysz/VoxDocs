@@ -1,0 +1,14 @@
+@model VoxDocs.DTO.DTOCadastroEmpresa
+
+<div class="step-content active" data-step="1">
+  <div class="mb-3">
+    <label for="EmpresaContratante" class="form-label">Nome da Empresa</label>
+    <input type="text" class="form-control" asp-for="EmpresaContratante" placeholder="Nome Empresa" required>
+  </div>
+  <div class="mb-3">
+    <label for="EmailEmpresa" class="form-label">E-mail da Empresa</label>
+    <input type="email" class="form-control" asp-for="EmailEmpresa" placeholder="Email@empresa.com" required>
+    <div id="emailError" class="text-danger mt-2 d-none"></div>
+    <div id="emailSuccess" class="text-success mt-2 d-none"></div>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+@model VoxDocs.DTO.DTOCadastroEmpresa
+
+<div class="step-content" data-step="5">
+  <div class="payment-section">
+    <div class="checkout-tabs mb-4">
+      <button type="button" class="tab btn btn-outline-primary active me-2" data-target="card">Cartão</button>
+      <button type="button" class="tab btn btn-outline-secondary" data-target="pix">Pix</button>
+    </div>
+
+    <div class="tab-content active" id="card">
+      <h4>Cartão de Crédito</h4>
+      <div class="inputs mb-3">
+        <div class="input-group mb-3">
+          <input type="text" id="cartaoNumber" maxlength="19" required placeholder="Número do cartão" autocomplete="cc-number" class="form-control" />
+          <span class="material-symbols-outlined input-group-text">credit_card</span>
+          <div id="cc-flag" class="cc-flag"></div>
+        </div>
+        <div class="input-row d-flex gap-2 mb-3">
+          <div class="input-group flex-fill">
+            <input type="text" id="validadeCartao" maxlength="5" required placeholder="MM/AA" autocomplete="cc-exp" class="form-control" />
+            <span class="material-symbols-outlined input-group-text">event</span>
+          </div>
+          <div class="input-group flex-fill">
+            <input type="text" id="cvvCartao" maxlength="4" required placeholder="CVV" autocomplete="cc-csc" class="form-control" />
+            <span class="material-symbols-outlined input-group-text">lock</span>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success rounded-pill px-4" id="pagarCartao">
+        Pagar com Cartão
+      </button>
+      <div id="resCartao" class="alert d-none mt-3"></div>
+    </div>
+
+    <div class="tab-content" id="pix" style="display: none;">
+      <h4>Pix</h4>
+      <div class="pix-wrapper">
+        <button type="button" id="btnGerarPix" class="btn btn-outline-primary rounded-pill mb-3">Gerar QR Code</button>
+        <div id="qrPlaceholder" class="qr-placeholder hidden mb-3">
+          <span class="material-symbols-outlined">sync</span> Gerando...
+        </div>
+        <div id="qrCodeContainer" class="qr-container mb-3 hidden"></div>
+        <div id="resPix" class="alert d-none mt-3"></div>
+        <div id="pixCountdown" class="countdown"></div>
+      </div>
+    </div>
+  </div>
+</div>

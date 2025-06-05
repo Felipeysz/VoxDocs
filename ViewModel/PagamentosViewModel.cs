@@ -10,6 +10,7 @@ namespace VoxDocs.ViewModels
         public List<PlanosVoxDocsModel> Planos { get; set; }
         public int? PagamentoPixId { get; set; }
         public string QRCode { get; set; }
+        public string Empresa { get; internal set; }
     }
     public class GerarQrCodePixViewModel
     {

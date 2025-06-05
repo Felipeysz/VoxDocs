@@ -75,7 +75,7 @@
     </div>
     <div class="message">Pagamento Pix Confirmado!</div>
     <div class="countdown">
-      Você será redirecionado para a página inicial em <span id="timer">10</span>s.
+      Você será redirecionado para o cadastro em <span id="timer">10</span>s.
     </div>
   </div>
 
@@ -101,7 +101,7 @@
       el.textContent = sec;
       if (sec <= 0) {
         clearInterval(iv);
-        window.location.href = "/"; // volta à home
+        window.location.href = "/PagamentosMvc/CadastroEmpresa?token=" + encodeURIComponent('@token');
       }
     }, 1000);
   </script>

@@ -38,11 +38,26 @@ namespace VoxDocs.Services
 
         public async Task<PlanosVoxDocsModel> CreatePlanAsync(DTOPlanosVoxDocs dto)
         {
+            if (dto.Name.ToLower() != "gratuito" && dto.Name.ToLower() != "premium")
+                throw new InvalidOperationException("Somente os planos 'Gratuito' e 'Premium' são permitidos.");
+
+            // Lógica de desconto se for Premium
+            decimal finalPrice = dto.Price;
+            if (dto.Name.ToLower() == "premium")
+            {
+                if (dto.Duration == 6)
+                    finalPrice = Math.Round(dto.Price * 6 * 0.9m, 2);
+                else if (dto.Duration == 12)
+                    finalPrice = Math.Round(dto.Price * 12 * 0.8m, 2);
+                else if (dto.Duration == 1)
+                    finalPrice = dto.Price;
+            }
+
             var plan = new PlanosVoxDocsModel
             {
                 Name = dto.Name,
                 Description = dto.Description,
-                Price = dto.Price,
+                Price = finalPrice,
                 Duration = dto.Duration,
                 Periodicidade = dto.Periodicidade,
                 ArmazenamentoDisponivel = dto.ArmazenamentoDisponivel,
@@ -83,9 +98,11 @@ namespace VoxDocs.Services
             await _context.SaveChangesAsync();
         }
         
-        public async Task<PlanosVoxDocsModel?> GetPlanByNameAsync(string name)
-    => await _context.PlanosVoxDocs
-                     .AsNoTracking()
-                     .FirstOrDefaultAsync(p => p.Name == name);
+        public async Task<PlanosVoxDocsModel> GetPlanByNameAsync(string name)
+        {
+            // Busca case-insensitive e ignora espaços em branco
+            return await _context.PlanosVoxDocs
+                .FirstOrDefaultAsync(p => p.Name.Trim().ToLower() == name.Trim().ToLower());
+        }
     }
 }

@@ -1,0 +1,141 @@
+@using VoxDocs.Models
+@{
+    Layout = null;
+    var chamadosAbertos = ViewBag.ChamadosAbertos as IList<ChamadoModel>;
+    var chamadosFechados = ViewBag.ChamadosFechados as IList<ChamadoModel>;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Suporte • VoxDocs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+      :root { --color-primary:#5c3c8a;--color-accent:#774C9E;--bg:#ffffff;--text-dark:#17171f;--text-light:#fafafa;--radius:12px;--shadow:rgba(0,0,0,0.05);--transition:0.3s ease; }
+      *{margin:0;padding:0;box-sizing:border-box;}
+      body{background:var(--bg);color:var(--text-dark);font-family:'Poppins',sans-serif;padding:1rem;}
+      .support-hub{max-width:900px;margin:auto;background:var(--bg);border-radius:var(--radius);box-shadow:0 4px 12px var(--shadow);overflow:hidden;}
+      .hub-header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--shadow);}
+      .hub-header h2{font-size:1.5rem;color:var(--color-primary);}
+      .btn-primary{background:var(--color-primary);border:none;padding:0.5rem 1rem;border-radius:var(--radius);color:var(--text-light);cursor:pointer;transition:background var(--transition);}
+      .btn-primary:hover{background:var(--color-accent);}
+      .section{padding:1rem;}
+      .section h3{margin-bottom:0.5rem;color:var(--color-primary);}
+      .tickets-table{width:100%;border-collapse:collapse;margin-top:0.5rem;}
+      .tickets-table th{background:var(--color-primary);color:var(--text-light);padding:0.75rem;text-align:left;}
+      .tickets-table td{padding:0.75rem;border-bottom:1px solid var(--shadow);}
+      .action-btn{background:transparent;border:none;cursor:pointer;font-size:1.2rem;color:var(--color-primary);transition:color var(--transition);margin-right:0.5rem;}
+      .action-btn:hover{color:var(--color-accent);}
+      .status-badge{padding:0.25em 0.5em;border-radius:var(--radius);font-size:0.85rem;}
+      .status-open{background:#ffeeba;color:#856404;}
+      .status-inprog{background:#cce5ff;color:#004085;}
+      .status-resolved{background:#d1ecf1;color:#0c5460;}
+      .status-closed{background:#d4edda;color:#155724;}
+      a{text-decoration:none;}
+    </style>
+</head>
+<body>
+  <div class="support-hub">
+    <div class="hub-header">
+      <h2><span class="material-symbols-outlined">support_agent</span> Suporte VoxDocs</h2>
+      <button class="btn-primary" onclick="location.href='@Url.Action("Create","SuporteVoxDocsMvc")'">
+        Abrir Chamado
+      </button>
+    </div>
+
+    <!-- Chamados Abertos / Em Atendimento -->
+    <div class="section">
+      <h3>Chamados Abertos / Em Atendimento</h3>
+      <table class="tickets-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Assunto</th>
+            <th>Funcionário</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (chamadosAbertos != null && chamadosAbertos.Any())
+          {
+            foreach (var c in chamadosAbertos)
+            {
+              <tr>
+                <td>@c.Id</td>
+                <td>@c.Assunto</td>
+                <td>@(string.IsNullOrWhiteSpace(c.NomeSuporteResponsavel) ? "—" : c.NomeSuporteResponsavel)</td>
+                <td>@c.DataCriacao.ToString("dd/MM/yyyy")</td>
+                <td>
+                  @if (c.Status == StatusChamado.Aberto)
+                  {
+                    <span class="status-badge status-open">Aberto</span>
+                  }
+                  else
+                  {
+                    <span class="status-badge status-inprog">Em Atendimento</span>
+                  }
+                </td>
+                <td>
+                  <a asp-action="Details" asp-route-id="@c.Id" class="action-btn" title="Visualizar">
+                    <span class="material-symbols-outlined">visibility</span>
+                  </a>
+                </td>
+              </tr>
+            }
+          }
+          else
+          {
+            <tr>
+              <td colspan="6" style="text-align:center;color:#666;">Nenhum chamado em aberto.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Chamados Fechados / Resolvidos / Arquivados -->
+    <div class="section">
+      <h3>Chamados Fechados / Resolvidos</h3>
+      <table class="tickets-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Assunto</th>
+            <th>Quem Fechou</th>
+            <th>Data Fechamento</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (chamadosFechados != null && chamadosFechados.Any())
+          {
+            foreach (var c in chamadosFechados)
+            {
+              <tr>
+                <td>@c.Id</td>
+                <td>@c.Assunto</td>
+                <td>@c.NomeSuporteResponsavel</td>
+                <td>@(c.DataFinalizacao?.ToString("dd/MM/yyyy") ?? "-")</td>
+                <td>
+                  <span class="status-badge status-closed">Fechado</span>
+                </td>
+              </tr>
+            }
+          }
+          else
+          {
+            <tr>
+              <td colspan="5" style="text-align:center;color:#666;">Nenhum chamado fechado.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

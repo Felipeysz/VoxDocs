@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using VoxDocs.Models.Dto;
+using VoxDocs.DTO;
 using VoxDocs.Services;
 
 namespace VoxDocs.Controllers

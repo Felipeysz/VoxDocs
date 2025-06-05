@@ -50,17 +50,17 @@ namespace VoxDocs.Controllers
             }
 
             var pastasPrincipais = (await _pastaPrincipalService.GetByEmpresaAsync(empresaUsuario))
-                .Select(p => new VoxDocs.Models.Dto.DTOPastaPrincipal { NomePastaPrincipal = p.NomePastaPrincipal })
+                .Select(p => new DTOPastaPrincipal { NomePastaPrincipal = p.NomePastaPrincipal })
                 .DistinctBy(p => p.NomePastaPrincipal)
                 .ToList();
 
-            var subPastas = Enumerable.Empty<VoxDocs.Models.Dto.DTOSubPasta>();
+            var subPastas = Enumerable.Empty<DTOSubPasta>();
             var documentos = Enumerable.Empty<DTODocumentoCreate>();
 
             if (!string.IsNullOrEmpty(pastaPrincipalNome))
             {
                 subPastas = (await _subPastaService.GetSubChildrenAsync(pastaPrincipalNome))
-                    .Select(s => new VoxDocs.Models.Dto.DTOSubPasta { NomeSubPasta = s.NomeSubPasta })
+                    .Select(s => new DTOSubPasta { NomeSubPasta = s.NomeSubPasta })
                     .DistinctBy(s => s.NomeSubPasta)
                     .ToList();
 

@@ -1,7 +1,6 @@
 // Models/ViewModels/DocumentosViewModel.cs
 using System.Collections.Generic;
 using VoxDocs.DTO;
-using VoxDocs.Models.Dto;
 
 namespace VoxDocs.Models.ViewModels
 {

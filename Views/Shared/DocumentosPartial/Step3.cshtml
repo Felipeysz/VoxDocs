@@ -1,0 +1,75 @@
+@model VoxDocs.DTO.DTOCadastroEmpresa
+
+@{
+    int limiteAdmin = ViewBag.LimiteAdmin;
+    int adminCount = Model.Usuarios?.Count(u => u.PermissionAccount == "Admin") ?? 0;
+}
+
+<div class="step-content" data-step="3">
+  <div class="mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h3>Administradores</h3>
+      <div class="badge bg-primary">
+        <span id="adminCount">@adminCount</span> / <span id="adminLimit">@limiteAdmin</span>
+      </div>
+    </div>
+
+    <div id="adminsContainer" class="mb-3">
+      @if (Model.Usuarios != null)
+      {
+          var adminIndex = 0;
+          foreach (var usuario in Model.Usuarios.Where(u => u.PermissionAccount == "Admin"))
+          {
+              <div class="admin-card mb-3 p-3 border rounded">
+                <h5>Administrador @(adminIndex + 1)</h5>
+                <div class="mb-3">
+                  <label class="form-label">Usuário (login)</label>
+                  <input type="text" class="form-control"
+                         name="Admins[@adminIndex].Usuario"
+                         value="@usuario.Usuario" placeholder="admin01" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">E-mail do Administrador</label>
+                  <input type="email" class="form-control"
+                         name="Admins[@adminIndex].Email"
+                         value="@usuario.Email" placeholder="admin@empresa.com" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Senha</label>
+                  <div class="input-group">
+                    <input data-field="Senha" 
+                           type="text" 
+                           class="form-control senha-input"
+                           name="Admins[@adminIndex].Senha"
+                           placeholder="Digite Sua Senha" required>
+                  </div>
+                </div>
+                <input type="hidden" name="Admins[@adminIndex].PermissionAccount" value="Admin" />
+                @if (adminIndex > 0)
+                {
+                  <button type="button" class="btn btn-outline-danger btn-sm remover-admin">
+                    <span class="material-symbols-outlined">delete</span> Remover
+                  </button>
+                }
+              </div>
+              adminIndex++;
+          }
+      }
+    </div>
+
+    @if (limiteAdmin > 1)
+    {
+      <button type="button" class="btn btn-outline-primary mb-3" id="btnAdicionarAdmin">
+        <span class="material-symbols-outlined">add</span> Adicionar Administrador
+      </button>
+    }
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Limites do Plano:</strong>
+    <div>Administradores permitidos: <strong>@limiteAdmin</strong></div>
+  </div>
+
+  <div id="step3Error" class="text-danger mt-2 d-none"></div>
+  <div id="step3Success" class="text-success mt-2 d-none"></div>
+</div>

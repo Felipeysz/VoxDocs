@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using VoxDocs.DTO;
-using VoxDocs.Models.Dto;
 
 namespace VoxDocs.Models.ViewModels
 {
-    // ... existing code ...
     public class UploadDocumentoViewModel
     {
         [Required(ErrorMessage = "O arquivo é obrigatório")]

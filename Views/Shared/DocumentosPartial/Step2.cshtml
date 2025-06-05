@@ -1,0 +1,264 @@
+@model VoxDocs.DTO.DTOCadastroEmpresa
+
+<style>
+  :root {
+    --clr-primary: #5c3c8a;
+    --clr-accent:  #774C9E;
+    --clr-bg:      #fafafa;
+    --clr-card:    #ffffff;
+    --shadow-light: rgba(0, 0, 0, 0.05);
+  }
+
+  /* Fonte e background geral */
+  body {
+    background: var(--clr-bg);
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+  }
+
+  /* Container principal do wizard */
+  .step-content[data-step="2"] {
+    background: var(--clr-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px var(--shadow-light);
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Título "Gerenciamento de Pastas" */
+  .step-content h5 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--clr-primary);
+  }
+  .step-content h5 .fas {
+    font-size: 1.5rem;
+    color: var(--clr-accent);
+    animation: pop 0.6s ease-out infinite alternate;
+  }
+  @@keyframes pop {
+    to { transform: scale(1.1); }
+  }
+
+  /* Botão "Adicionar Pasta Principal" */
+  #btnAdicionarPastaPrincipal {
+    background: var(--clr-primary);
+    border-color: var(--clr-primary);
+    color: #fff;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.2s;
+  }
+  #btnAdicionarPastaPrincipal:hover {
+    background: var(--clr-accent);
+    border-color: var(--clr-accent);
+    transform: translateY(-2px);
+  }
+
+  /* ------------- Estilos para Pastas ------------- */
+
+  .pasta-principal {
+    margin-bottom: 1.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--clr-card);
+    box-shadow: 0 2px 8px var(--shadow-light);
+  }
+
+  .pasta-principal .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--clr-primary);
+    color: #fff;
+    padding: 0.75rem 1rem;
+  }
+  .pasta-principal .card-header .pasta-nome {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #fff;
+    width: 100%;
+    flex-grow: 1;
+    margin-right: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .pasta-principal .card-header .pasta-nome::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .pasta-principal .card-header .pasta-nome:focus {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 2px rgba(119, 76, 158, 0.2);
+    outline: none;
+  }
+  .pasta-principal .card-header .btn-remover-pasta {
+    background: transparent;
+    border: none;
+    color: #ffdddd;
+    font-size: 1rem;
+    transition: color 0.2s, transform 0.2s;
+  }
+  .pasta-principal .card-header .btn-remover-pasta:hover {
+    color: #ffbbbb;
+    transform: scale(1.1);
+  }
+
+  .pasta-principal .card-body {
+    padding: 1rem 1.25rem;
+  }
+  .pasta-principal .card-body h6 {
+    margin-bottom: 1rem;
+    font-weight: 500;
+    color: #555;
+  }
+
+  /* Container de subpastas dentro de cada pasta principal */
+  .subpastas-container {
+    margin-bottom: 1rem;
+  }
+
+  /* Botão “Adicionar Subpasta” */
+  .btn-adicionar-subpasta {
+    font-size: 0.9rem;
+    color: var(--clr-primary);
+    border: 1px solid var(--clr-primary);
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .btn-adicionar-subpasta:hover {
+    background: var(--clr-accent);
+    border-color: var(--clr-accent);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  /* ------------- Estilos para Subpastas ------------- */
+
+  .subpasta-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    position: relative;
+    padding-left: 2rem;
+  }
+  .subpasta-item::before {
+    content: "";
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rem;
+    height: 1px;
+    background-color: var(--clr-primary);
+  }
+  .subpasta-item .subpasta-nome {
+    flex-grow: 1;
+    margin-right: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .subpasta-item .subpasta-nome:focus {
+    border-color: var(--clr-accent);
+    box-shadow: 0 0 0 3px rgba(119, 76, 158, 0.2);
+    outline: none;
+  }
+  .subpasta-item .btn-remover-subpasta {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+    background: transparent;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+  }
+  .subpasta-item .btn-remover-subpasta:hover {
+    background: #e74c3c;
+    color: #fff;
+    transform: scale(1.05);
+  }
+
+  /* Validação de campos (erro individual) */
+  .is-invalid {
+    border-color: #dc3545;
+  }
+  .invalid-feedback {
+    display: block;
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+</style>
+
+<head>
+  <!-- Font Awesome para Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<div class="step-content" data-step="2">
+  <div class="mb-4">
+    <h5>
+      <i class="fas fa-folder-tree"></i>
+      Gerenciamento de Pastas
+    </h5>
+
+    <!-- Container de Pastas Principais -->
+    <div id="pastasPrincipaisContainer" class="mb-4">
+      <!-- Pastas serão injetadas dinamicamente via JS -->
+    </div>
+
+    <!-- Botão para adicionar nova pasta principal -->
+    <button type="button" id="btnAdicionarPastaPrincipal" class="btn mb-4">
+      <i class="fas fa-plus-circle me-2"></i>Adicionar Pasta Principal
+    </button>
+  </div>
+      <div id="step2Error" class="text-danger mt-2 d-none"></div>
+      <div id="step2Success" class="text-success mt-2 d-none"></div>
+</div>
+
+<template id="templatePastaPrincipal">
+  <div class="pasta-principal card mb-4">
+    <div class="card-header">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-folder me-2"></i>
+        <input 
+          type="text" 
+          class="pasta-nome" 
+          placeholder="Nome da Pasta Principal" 
+          required>
+      </div>
+      <button type="button" class="btn-remover-pasta">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+    <div class="card-body">
+      <h6>Subpastas:</h6>
+      <!-- Container de Subpastas -->
+      <div class="subpastas-container mb-3">
+        <!-- Subpastas serão adicionadas aqui -->
+      </div>
+      <!-- Botão para adicionar subpasta -->
+      <button type="button" class="btn-adicionar-subpasta">
+        <i class="fas fa-plus me-1"></i>Adicionar Subpasta
+      </button>
+    </div>
+  </div>
+</template>
+
+<template id="templateSubpasta">
+  <div class="subpasta-item">
+    <input 
+      type="text" 
+      class="subpasta-nome" 
+      placeholder="Nome da Subpasta" 
+      required>
+    <button type="button" class="btn-remover-subpasta">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+</template>

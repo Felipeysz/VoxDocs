@@ -31,11 +31,21 @@ namespace VoxDocs.Services
 
         public async Task<EmpresasContratanteModel> CreateAsync(DTOEmpresasContratante dto)
         {
+            // Verificar se empresa já existe
+            var existing = await _context.EmpresasContratantes
+                .FirstOrDefaultAsync(e => e.EmpresaContratante == dto.EmpresaContratante);
+            
+            if (existing != null)
+            {
+                throw new InvalidOperationException("Empresa já cadastrada");
+            }
+
             var empresa = new EmpresasContratanteModel
             {
                 EmpresaContratante = dto.EmpresaContratante,
                 Email = dto.Email
             };
+            
             _context.EmpresasContratantes.Add(empresa);
             await _context.SaveChangesAsync();
             return empresa;
