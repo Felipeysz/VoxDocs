@@ -26,6 +26,15 @@
 </head>
 <body>
 
+    <!-- Exibição de Mensagem de Erro -->
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show fixed-top m-3" role="alert">
+            @ViewBag.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <!-- VLibras -->
     <div vw class="enabled">
         <div vw-access-button class="active"></div>
@@ -60,35 +69,6 @@
             <a asp-controller="LoginMvc" asp-action="Login" class="btn btn-primary mt-3" data-aos="zoom-in" data-aos-delay="200">
                 Começar Agora
             </a>
-        </div>
-    </section>
-
-    <!-- Features -->
-    <section class="features py-5 bg-light" data-aos="fade-up">
-        <div class="container">
-            <div class="row gy-4 text-center">
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-box">
-                        <div class="feature-icon">📂</div>
-                        <h5>Organização Intuitiva</h5>
-                        <p>Classifique documentos por categoria, data e responsável com poucos cliques.</p>
-                    </div>
-                </div>
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-box">
-                        <div class="feature-icon">🔒</div>
-                        <h5>Segurança de Ponta</h5>
-                        <p>Criptografia avançada mantém seus arquivos sempre protegidos.</p>
-                    </div>
-                </div>
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-box">
-                        <div class="feature-icon">⚡</div>
-                        <h5>Busca Instantânea</h5>
-                        <p>Encontre qualquer documento em segundos com nosso mecanismo inteligente.</p>
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
 

@@ -32,6 +32,12 @@ namespace VoxDocs.Controllers
         // GET: /IndexMvc/Index
         public async Task<IActionResult> Index()
         {
+            // Verifica se há uma mensagem de erro armazenada em TempData
+            if (TempData.ContainsKey("ErrorMessage"))
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"].ToString();
+            }
+
             var basicos = await _planosService.GetPlansByCategoryAsync("Básico");
             var intermediarios = await _planosService.GetPlansByCategoryAsync("Intermediário");
             var avancados = await _planosService.GetPlansByCategoryAsync("Avançado");
@@ -47,7 +53,7 @@ namespace VoxDocs.Controllers
             };
 
             return View(vm);
-        }
+}
 
     }
 }

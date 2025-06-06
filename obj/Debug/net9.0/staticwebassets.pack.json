@@ -37,10 +37,6 @@
       "PackagePath": "staticwebassets\\css\\PagamentosStyles\\main.css"
     },
     {
-      "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\css\\PagamentosStyles\\payment.css",
-      "PackagePath": "staticwebassets\\css\\PagamentosStyles\\payment.css"
-    },
-    {
       "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\css\\UploadStyles\\UploadPageStyle.css",
       "PackagePath": "staticwebassets\\css\\UploadStyles\\UploadPageStyle.css"
     },
@@ -65,16 +61,8 @@
       "PackagePath": "staticwebassets\\js\\DocumentosScripts\\service-worker.js"
     },
     {
-      "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\js\\PagamentoScript\\creditCard.js",
-      "PackagePath": "staticwebassets\\js\\PagamentoScript\\creditCard.js"
-    },
-    {
       "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\js\\PagamentoScript\\main.js",
       "PackagePath": "staticwebassets\\js\\PagamentoScript\\main.js"
-    },
-    {
-      "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\js\\PagamentoScript\\pixPayment.js",
-      "PackagePath": "staticwebassets\\js\\PagamentoScript\\pixPayment.js"
     },
     {
       "Id": "C:\\Users\\Felip\\OneDrive\\Área de Trabalho\\VoxDocs\\wwwroot\\js\\PagamentoScript\\step1.js",

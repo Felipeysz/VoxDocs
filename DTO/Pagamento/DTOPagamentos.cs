@@ -8,6 +8,7 @@ namespace VoxDocs.DTO
         public string CvvCartao { get; set; } = string.Empty;
         public string TipoCartao { get; set; } = string.Empty;
         public string EmpresaContratante { get; set; } = string.Empty;
+        public string PlanoPago { get; set; }
     }
 
     public class PagamentoPixRequestDto

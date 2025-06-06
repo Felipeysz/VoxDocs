@@ -156,29 +156,11 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>guqht6386j</Fingerprint>
-      <Integrity>KOfUXn9qdjkk56ToeO5l7TH/XWxJ0B2N9Q+eiiHoP8s=</Integrity>
+      <Fingerprint>8e32tc4js1</Fingerprint>
+      <Integrity>UJUMBJrWJU3lB2TX5VfSYNQBY8qgryTlR6OALEedYz0=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\PagamentosStyles\main.css'))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\PagamentosStyles\payment.css'))">
-      <SourceType>Package</SourceType>
-      <SourceId>VoxDocs</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/VoxDocs</BasePath>
-      <RelativePath>css/PagamentosStyles/payment.css</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>ibazd8pzcq</Fingerprint>
-      <Integrity>AkRFUzD8ux6luTcBe40NoSwCkozW1mXcmUk4X55j5nU=</Integrity>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\PagamentosStyles\payment.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\styleIndex.css'))">
       <SourceType>Package</SourceType>
@@ -288,24 +270,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\DocumentosScripts\service-worker.js'))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\creditCard.js'))">
-      <SourceType>Package</SourceType>
-      <SourceId>VoxDocs</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/VoxDocs</BasePath>
-      <RelativePath>js/PagamentoScript/creditCard.js</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>xnqpevm1bw</Fingerprint>
-      <Integrity>w2IYbfMtndGUssDLbioCIUHs9KcH5hudAUI9r0IukOk=</Integrity>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\creditCard.js'))</OriginalItemSpec>
-    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\main.js'))">
       <SourceType>Package</SourceType>
       <SourceId>VoxDocs</SourceId>
@@ -318,29 +282,11 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>wq0u5okgak</Fingerprint>
-      <Integrity>SCTACvzWprNF65bChHsYYayfAbGzE3SfW8s8mrntUT8=</Integrity>
+      <Fingerprint>mg8cjlqfxx</Fingerprint>
+      <Integrity>1nyRhaGL0FoIbEo3P+qg+KLzZHFavTlRqAIpiufyrr0=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\main.js'))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\pixPayment.js'))">
-      <SourceType>Package</SourceType>
-      <SourceId>VoxDocs</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/VoxDocs</BasePath>
-      <RelativePath>js/PagamentoScript/pixPayment.js</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>ir73th24cz</Fingerprint>
-      <Integrity>8nRSZ9E/VfyClLJEYEuduDm5CbXaBFMFug22B0aA2m8=</Integrity>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\pixPayment.js'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\step1.js'))">
       <SourceType>Package</SourceType>
@@ -354,8 +300,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>5427s0qyaz</Fingerprint>
-      <Integrity>iz2bX7Dovp/6X4/Wf+0sOcrnZRXjEQvVERKzjO1YvqU=</Integrity>
+      <Fingerprint>sgenlrohfh</Fingerprint>
+      <Integrity>/OlIa0o5ItsMGm0gydyf78u8qC2MQP3MHr2knulFyNQ=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\step1.js'))</OriginalItemSpec>
@@ -372,8 +318,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>8c09ri4392</Fingerprint>
-      <Integrity>CBP+y4lOo3XTgmg2k7eHPPbzzdiM+xkujow2IBzskTI=</Integrity>
+      <Fingerprint>lzryfe5rix</Fingerprint>
+      <Integrity>z8YvPvRzB+qWWdA0knWA/NVy3m7OtIZuyGty36B7Ip8=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\step2.js'))</OriginalItemSpec>
@@ -390,8 +336,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>bnup75bejm</Fingerprint>
-      <Integrity>mc3Mq8xoK1iEOr30r+J8TX6yaE3QwU3HqWLXd2HrWnk=</Integrity>
+      <Fingerprint>lyjbpqdgma</Fingerprint>
+      <Integrity>zWrTRctty40HGohlMOjJOkX8ncdNVoOacAEJ0si9Xh8=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\step3.js'))</OriginalItemSpec>
@@ -408,8 +354,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>j7bi40paxq</Fingerprint>
-      <Integrity>wWIMXCv1duOaFYz0Je+nEHOxXpu8t+UU2iuzC47OZ4k=</Integrity>
+      <Fingerprint>vh6jmyb2s7</Fingerprint>
+      <Integrity>XYrqzZpTGmP/Osiq05lKILwsK/mcbIepBPVExQUEL4E=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\step4.js'))</OriginalItemSpec>
@@ -426,8 +372,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>yc8lrzunng</Fingerprint>
-      <Integrity>btu1NLuK1Dui81myocsGuGK+F99rNqBqJI1CeZ4CEsc=</Integrity>
+      <Fingerprint>pb909ogqw2</Fingerprint>
+      <Integrity>y0fercZbU3Ti2kgw1ynkwNnmvBPEW+DgPRpdBRjbZJ4=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\PagamentoScript\step5.js'))</OriginalItemSpec>

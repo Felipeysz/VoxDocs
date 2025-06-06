@@ -1,14 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using VoxDocs.Services;
 using VoxDocs.ViewModels;
 using VoxDocs.DTO;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using VoxDocs.Data;
-using System.Collections.Generic;
-using System;
-using System.Linq; // Adicionado para usar o Count() com lambda
+using System.Linq;
 
 namespace VoxDocs.Controllers
 {
@@ -23,9 +18,10 @@ namespace VoxDocs.Controllers
         private readonly ISubPastaService _subPastaService;
         private readonly IUserService _userService;
         private readonly VoxDocsContext _context;
+        private readonly IPagamentoConcluidoService _pagamentoConcluidoService;
 
         public PagamentosMvcController(
-            IPlanosVoxDocsService planosService, 
+            IPlanosVoxDocsService planosService,
             IPagamentoCartaoFalsoService pagamentoCartaoService,
             IPagamentoPixFalsoService pagamentoPixService,
             IConfiguration configuration,
@@ -33,7 +29,8 @@ namespace VoxDocs.Controllers
             IPastaPrincipalService pastaService,
             ISubPastaService subPastaService,
             IUserService userService,
-            VoxDocsContext context)
+            VoxDocsContext context,
+            IPagamentoConcluidoService pagamentoConcluidoService)
         {
             _planosService = planosService;
             _pagamentoCartaoService = pagamentoCartaoService;
@@ -44,115 +41,94 @@ namespace VoxDocs.Controllers
             _subPastaService = subPastaService;
             _userService = userService;
             _context = context;
+            _pagamentoConcluidoService = pagamentoConcluidoService;
+        }
+
+        [HttpGet]
+        public IActionResult ConfirmarPagamentoCartao(string token)
+        {
+            ViewData["Token"] = token;
+            return View("ConfirmarPagamentoCartao");
+        }
+
+        [HttpGet]
+        public IActionResult ConfirmarPagamentoPix()
+        {
+            return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> CheckEmailExists(string email)
         {
             var existingUser = await _userService.GetUserByEmailAsync(email);
-            return Json(existingUser != null); // Retorna `true` se o e-mail já existe
+            return Json(existingUser != null);
         }
 
         [HttpGet]
-        public IActionResult Step1(string planoNome)
+        public IActionResult GetCurrentPlan()
         {
-            var dto = new DTOCadastroEmpresa
-            {
-                PlanoPago = planoNome
-            };
-            return PartialView("Step1", dto);
-        }
-
-
-        [HttpGet]
-        public IActionResult Step2(string planoNome)
-        {
-            var dto = new DTOCadastroEmpresa
-            {
-                PlanoPago = planoNome
-            };
-            return PartialView("Step2", dto);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Step3(string planoNome)
-        {
-            // Obter limites do plano
-            var plano = await _planosService.GetPlanByNameAsync(planoNome);
-            int limiteAdmin = plano?.LimiteAdmin ?? 2;
-            
-            ViewBag.LimiteAdmin = limiteAdmin; // Passa para a ViewBag
-
-            var dto = new DTOCadastroEmpresa
-            {
-                PlanoPago = planoNome,
-                Usuarios = new List<UsuarioCadastro>() 
-            };
-            return PartialView("Step3", dto);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Step4(string planoNome)
-        {
-            // Obter limites do plano
-            var plano = await _planosService.GetPlanByNameAsync(planoNome);
-            int limiteUsuarios = plano?.LimiteUsuario ?? 5;
-            
-            ViewBag.LimiteUsuarios = limiteUsuarios; // Passa para a ViewBag
-
-            var dto = new DTOCadastroEmpresa
-            {
-                PlanoPago = planoNome,
-                Usuarios = new List<UsuarioCadastro>()
-            };
-            return PartialView("Step4", dto);
+            var planoNome = HttpContext.Session.GetString("PlanoSelecionado");
+            return Json(new { planoNome });
         }
         [HttpGet]
-        public IActionResult Step5(string planoNome)
+        public async Task<IActionResult> Step(int step)
         {
-            var dto = new DTOCadastroEmpresa
+            var planoNome = HttpContext.Session.GetString("PlanoSelecionado");
+            if (string.IsNullOrEmpty(planoNome))
+                return RedirectToAction("SelecionarPlano");
+
+            ViewBag.PlanoPago = planoNome;
+
+            switch (step)
             {
-                PlanoPago = planoNome
-            };
-            return PartialView("Step5", dto);
+                case 1:
+                    return PartialView("Step1", new DTOCadastroEmpresa { PlanoPago = planoNome });
+                case 2:
+                    return PartialView("Step2", new DTOCadastroEmpresa { PlanoPago = planoNome });
+                case 3:
+                    var plano3 = await _planosService.GetPlanByNameAsync(planoNome);
+                    if (plano3 == null)
+                        return RedirectToAction("SelecionarPlano");
+                    ViewBag.LimiteAdmin = plano3.LimiteAdmin;
+                    return PartialView("Step3", new DTOCadastroEmpresa { PlanoPago = planoNome });
+                case 4:
+                    var plano4 = await _planosService.GetPlanByNameAsync(planoNome);
+                    if (plano4 == null)
+                        return RedirectToAction("SelecionarPlano");
+                    ViewBag.LimiteUsuarios = plano4.LimiteUsuario;
+                    return PartialView("Step4", new DTOCadastroEmpresa { PlanoPago = planoNome });
+                case 5:
+                    return PartialView("Step5", new DTOCadastroEmpresa { PlanoPago = planoNome });
+                default:
+                    return BadRequest($"Step inválido: {step}");
+            }
         }
-        
-        // GET: /SelecionarPlano?planoNome={nome}
+
         public IActionResult SelecionarPlano(string planoNome)
         {
-            Console.WriteLine($"SelecionarPlano chamado: planoNome = {planoNome}");
-            return RedirectToAction("CadastroEmpresa", new { planoNome });
+            HttpContext.Session.SetString("PlanoSelecionado", planoNome);
+            return RedirectToAction("CadastroEmpresa");
         }
 
-        // GET: /CadastroEmpresa
-        public async Task<IActionResult> CadastroEmpresa(string planoNome)
+        public async Task<IActionResult> CadastroEmpresa()
         {
-            Console.WriteLine($"CadastroEmpresa GET chamado: planoNome = {planoNome}");
-            
-            var plano = await _planosService.GetPlanByNameAsync(planoNome);
+            var planoNome = HttpContext.Session.GetString("PlanoSelecionado");
+            if (string.IsNullOrEmpty(planoNome))
+            {
+                TempData["ErrorMessage"] = "Plano inválido ou não encontrado.";
+                return RedirectToAction("Index", "IndexMvc");
+            }
 
-            // Depuração: Verificar se o plano foi encontrado
+            var plano = await _planosService.GetPlanByNameAsync(planoNome);
             if (plano == null)
             {
-                Console.WriteLine($"Plano '{planoNome}' não encontrado. Buscando plano padrão...");
-                plano = await _planosService.GetPlanByNameAsync("Plano Básico Mensal");
-            }
-
-            // Depuração: Exibir valores do plano
-            if (plano != null)
-            {
-                Console.WriteLine($"Plano encontrado: {plano.Name}");
-                Console.WriteLine($"LimiteUsuarios: {plano.LimiteUsuario}");
-                Console.WriteLine($"LimiteAdmin: {plano.LimiteAdmin}");
-            }
-            else
-            {
-                Console.WriteLine("Nenhum plano encontrado, mesmo após busca padrão!");
+                TempData["ErrorMessage"] = "Plano inválido ou não encontrado.";
+                return RedirectToAction("Index", "IndexMvc");
             }
 
             ViewBag.PlanoNome = planoNome;
-            ViewBag.LimiteUsuarios = plano?.LimiteUsuario;
-            ViewBag.LimiteAdmin = plano?.LimiteAdmin;
+            ViewBag.LimiteUsuarios = plano.LimiteUsuario;
+            ViewBag.LimiteAdmin = plano.LimiteAdmin;
             ViewBag.PlanoSelecionado = planoNome;
 
             var dto = new DTOCadastroEmpresa
@@ -160,169 +136,21 @@ namespace VoxDocs.Controllers
                 Usuarios = new List<UsuarioCadastro>
                 {
                     new UsuarioCadastro { PermissionAccount = "Admin" }
-                }
+                },
+                PlanoPago = planoNome // Adicionado para garantir que o DTO tenha o plano
             };
 
             return View(dto);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> FinalizarCadastro(DTOCadastroEmpresa dto)
-        {
-            Console.WriteLine("FinalizarCadastro POST chamado");
-            Console.WriteLine($"Plano selecionado: {dto.PlanoPago}");
-            Console.WriteLine($"Empresa: {dto.EmpresaContratante}");
-            Console.WriteLine($"Total de usuários: {dto.Usuarios.Count}");
-
-            // Obter o plano selecionado
-            var plano = await _planosService.GetPlanByNameAsync(dto.PlanoPago);
-            
-            // Depuração: Verificar plano encontrado
-            if (plano == null)
-            {
-                Console.WriteLine($"Plano '{dto.PlanoPago}' não encontrado no serviço!");
-                ModelState.AddModelError("", "Plano selecionado não encontrado ou inválido.");
-            }
-
-            int limiteUsuarios = plano?.LimiteUsuario ?? 0;
-            int limiteAdmin = plano?.LimiteAdmin ?? 0;
-            
-            Console.WriteLine($"LimiteUsuarios do plano: {limiteUsuarios}");
-            Console.WriteLine($"LimiteAdmin do plano: {limiteAdmin}");
-
-            // Validar se o plano foi encontrado
-            if (limiteUsuarios <= 0)
-            {
-                Console.WriteLine("Limite de usuários inválido ou plano não encontrado");
-                ModelState.AddModelError("", "Plano selecionado não encontrado ou inválido.");
-            }
-
-            // Validar limite de usuários
-            if (dto.Usuarios.Count > limiteUsuarios)
-            {
-                Console.WriteLine($"Excedeu limite de usuários: {dto.Usuarios.Count} > {limiteUsuarios}");
-                ModelState.AddModelError("", $"O plano selecionado permite apenas {limiteUsuarios} usuários.");
-            }
-
-            // Validar limite de administradores
-            int adminCount = dto.Usuarios.Count(u => u.PermissionAccount == "Admin");
-            Console.WriteLine($"Total de administradores: {adminCount}");
-            
-            int maxAdmins = Math.Min(limiteUsuarios, limiteAdmin);
-            Console.WriteLine($"Máximo de administradores permitido: {maxAdmins}");
-            
-            if (adminCount > maxAdmins)
-            {
-                Console.WriteLine($"Excedeu limite de administradores: {adminCount} > {maxAdmins}");
-                ModelState.AddModelError("", $"O plano permite no máximo {maxAdmins} administradores.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                Console.WriteLine("ModelState inválido! Erros:");
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    Console.WriteLine($"- {error.ErrorMessage}");
-                }
-
-                ViewBag.PlanoNome = dto.PlanoPago;
-                ViewBag.LimiteUsuarios = limiteUsuarios;
-                ViewBag.LimiteAdmin = limiteAdmin; // Importante: Adicionado LimiteAdmin
-                ViewBag.PlanoSelecionado = dto.PlanoPago;
-                return View("CadastroEmpresa", dto);
-            }
-
-            try
-            {
-                Console.WriteLine("Iniciando criação da empresa...");
-                
-                // Criar empresa
-                var empresaDto = new DTOEmpresasContratante
-                {
-                    EmpresaContratante = dto.EmpresaContratante,
-                    Email = dto.EmailEmpresa
-                };
-                await _empresaService.CreateAsync(empresaDto);
-                Console.WriteLine("Empresa criada com sucesso!");
-
-                Console.WriteLine("Criando pasta principal...");
-                // Criar pasta principal
-                var pastaDto = new DTOPastaPrincipalCreate
-                {
-                    NomePastaPrincipal = dto.NomePastaPrincipal,
-                    EmpresaContratante = dto.EmpresaContratante
-                };
-                await _pastaService.CreateAsync(pastaDto);
-                Console.WriteLine("Pasta principal criada!");
-
-                Console.WriteLine("Criando subpasta...");
-                // Criar subpasta
-                var subPastaDto = new DTOSubPastaCreate
-                {
-                    NomeSubPasta = dto.NomeSubPasta,
-                    NomePastaPrincipal = dto.NomePastaPrincipal,
-                    EmpresaContratante = dto.EmpresaContratante
-                };
-                await _subPastaService.CreateAsync(subPastaDto);
-                Console.WriteLine("Subpasta criada!");
-
-                Console.WriteLine("Criando usuários...");
-                // Criar usuários
-                foreach (var usuarioDto in dto.Usuarios)
-                {
-                    Console.WriteLine($"Criando usuário: {usuarioDto.Usuario}");
-                    var userDto = new DTOUser
-                    {
-                        Usuario = usuarioDto.Usuario,
-                        Email = usuarioDto.Email,
-                        Senha = usuarioDto.Senha,
-                        PermissionAccount = usuarioDto.PermissionAccount,
-                        EmpresaContratante = dto.EmpresaContratante,
-                        PlanoPago = dto.PlanoPago
-                    };
-                    await _userService.RegisterUserAsync(userDto);
-                }
-                Console.WriteLine("Todos usuários criados!");
-
-                // Redirecionar para pagamento
-                Console.WriteLine("Redirecionando para Pagamentos...");
-                return RedirectToAction("Pagamentos", new { 
-                    empresa = dto.EmpresaContratante,
-                    planoSelecionado = dto.PlanoPago 
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"ERRO: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
-                
-                ModelState.AddModelError("", $"Erro ao finalizar cadastro: {ex.Message}");
-                ViewBag.PlanoNome = dto.PlanoPago;
-                ViewBag.LimiteUsuarios = plano?.LimiteUsuario ?? 5;
-                ViewBag.LimiteAdmin = plano?.LimiteAdmin ?? 3; // Adicionado LimiteAdmin
-                ViewBag.PlanoSelecionado = dto.PlanoPago;
-                return View("CadastroEmpresa", dto);
-            }
-        }
-
-        // GET: /Pagamentos?empresa={nome}&planoSelecionado={nomePlano}
         public async Task<IActionResult> Pagamentos(string empresa, string planoSelecionado)
         {
-            Console.WriteLine($"Pagamentos GET: empresa={empresa}, planoSelecionado={planoSelecionado}");
-            
             if (string.IsNullOrEmpty(planoSelecionado))
-            {
-                Console.WriteLine("Plano não informado!");
                 return BadRequest("Plano não informado.");
-            }
 
             var planos = await _planosService.GetPlansByCategoryAsync(planoSelecionado);
-
-            if (planos == null || planos.Count == 0)
-            {
-                Console.WriteLine($"Nenhum plano encontrado para categoria: {planoSelecionado}");
+            if (planos == null || !planos.Any())
                 return View("NenhumPlano", planoSelecionado);
-            }
 
             var baseUrl = _configuration["ApiSettings:BaseUrl"];
             ViewData["BaseUrl"] = baseUrl;
@@ -338,53 +166,132 @@ namespace VoxDocs.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessarPagamento(string empresa, string tipoPlano, string metodoPagamento)
+        public async Task<IActionResult> FinalizarCadastro(DTOCadastroEmpresa dto)
         {
-            Console.WriteLine($"ProcessarPagamento: empresa={empresa}, tipoPlano={tipoPlano}, metodo={metodoPagamento}");
-            
+            var plano = await _planosService.GetPlanByNameAsync(dto.PlanoPago);
+            if (plano == null)
+                return RedirectToAction("SelecionarPlano");
+
+            // ✅ Tratamento de valores nulos com operador ??
+            int limiteUsuarios = plano.LimiteUsuario ?? 0;
+            int limiteAdmin = plano.LimiteAdmin ?? 0;
+
+            // ✅ Validação de limite de usuários
+            if (dto.Usuarios.Count > limiteUsuarios)
+                ModelState.AddModelError("", $"O plano permite apenas {limiteUsuarios} usuários.");
+
+            // ✅ Validação de limite de administradores
+            int adminCount = dto.Usuarios.Count(u => u.PermissionAccount == "Admin");
+            int maxAdmins = Math.Min(limiteUsuarios, limiteAdmin);
+            if (adminCount > maxAdmins)
+                ModelState.AddModelError("", $"O plano permite no máximo {maxAdmins} administradores.");
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.PlanoNome = dto.PlanoPago;
+                ViewBag.LimiteUsuarios = limiteUsuarios;
+                ViewBag.LimiteAdmin = limiteAdmin;
+                return View("CadastroEmpresa", dto);
+            }
+
             try
             {
-                if (metodoPagamento == "Cartão")
+                // ✅ Criação da empresa
+                await _empresaService.CreateAsync(new DTOEmpresasContratante
                 {
-                    Console.WriteLine("Processando pagamento com cartão...");
-                    var cartaoDto = new PagamentoCartaoRequestDto
+                    EmpresaContratante = dto.EmpresaContratante,
+                    Email = dto.EmailEmpresa
+                });
+
+                // ✅ Criação da pasta principal
+                await _pastaService.CreateAsync(new DTOPastaPrincipalCreate
+                {
+                    NomePastaPrincipal = dto.NomePastaPrincipal,
+                    EmpresaContratante = dto.EmpresaContratante
+                });
+
+                // ✅ Criação da subpasta
+                await _subPastaService.CreateAsync(new DTOSubPastaCreate
+                {
+                    NomeSubPasta = dto.NomeSubPasta,
+                    NomePastaPrincipal = dto.NomePastaPrincipal,
+                    EmpresaContratante = dto.EmpresaContratante
+                });
+
+                // ✅ Criação dos usuários
+                foreach (var usuario in dto.Usuarios)
+                {
+                    await _userService.RegisterUserAsync(new DTOUser
                     {
-                        TipoPlano = tipoPlano,
-                        EmpresaContratante = empresa
-                    };
-                    await _pagamentoCartaoService.ProcessarPagamentoCartaoFalsoAsync(cartaoDto);
-                }
-                else if (metodoPagamento == "Pix")
-                {
-                    Console.WriteLine("Processando pagamento com PIX...");
-                    var pixDto = new PagamentoPixRequestDto
-                    {
-                        TipoPlano = tipoPlano,
-                        EmpresaContratante = empresa
-                    };
-                    await _pagamentoPixService.GerarPixAsync(pixDto);
-                }
-                else
-                {
-                    Console.WriteLine($"Método de pagamento inválido: {metodoPagamento}");
-                    return BadRequest("Método de pagamento inválido");
+                        Usuario = usuario.Usuario,
+                        Email = usuario.Email,
+                        Senha = usuario.Senha,
+                        PermissionAccount = usuario.PermissionAccount,
+                        EmpresaContratante = dto.EmpresaContratante,
+                        PlanoPago = dto.PlanoPago
+                    });
                 }
 
-                Console.WriteLine("Pagamento processado com sucesso!");
-                return RedirectToAction("CadastroSucesso");
+                // ✅ Redireciona sem passar planoSelecionado na URL
+                return RedirectToAction("Pagamentos", new { empresa = dto.EmpresaContratante });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERRO no pagamento: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
-                return StatusCode(500, $"Erro ao processar pagamento: {ex.Message}");
+                ModelState.AddModelError("", $"Erro ao finalizar cadastro: {ex.Message}");
+                ViewBag.PlanoNome = dto.PlanoPago;
+                ViewBag.LimiteUsuarios = limiteUsuarios;
+                ViewBag.LimiteAdmin = limiteAdmin;
+                return View("CadastroEmpresa", dto);
             }
         }
 
-        public IActionResult CadastroSucesso()
+        [HttpPost]
+        public async Task<IActionResult> ProcessarPagamento([FromBody] PagamentoCartaoRequestDto dto)
         {
-            Console.WriteLine("Exibindo tela de cadastro sucesso!");
-            return View();
+            if (dto == null || string.IsNullOrEmpty(dto.PlanoPago))
+                return BadRequest("Dados de pagamento ou plano ausentes.");
+
+            var plano = await _planosService.GetPlanByNameAsync(dto.PlanoPago);
+            if (plano == null)
+                return BadRequest("Plano não encontrado.");
+
+            await _pagamentoCartaoService.ProcessarPagamentoCartaoFalsoAsync(dto);
+
+            var pagamentoConcluido = new PagamentoConcluidoCreateDto
+            {
+                EmpresaContratante = dto.EmpresaContratante,
+                MetodoPagamento = "Cartão",
+                DataPagamento = DateTime.UtcNow,
+                DataExpiracao = DateTime.UtcNow.AddYears(1)
+            };
+            var criado = await _pagamentoConcluidoService.CriarPagamentoConcluidoAsync(pagamentoConcluido);
+
+            return Ok(new { pagamentoConcluidoId = criado.Id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProcessarPagamentoPix([FromBody] PagamentoPixRequestDto dto)
+        {
+            if (dto == null)
+                return BadRequest("Dados de pagamento Pix ausentes.");
+
+            var pixResponse = await _pagamentoPixService.GerarPixAsync(dto);
+
+            var pagamentoConcluido = new PagamentoConcluidoCreateDto
+            {
+                EmpresaContratante = dto.EmpresaContratante,
+                MetodoPagamento = "Pix",
+                DataPagamento = DateTime.UtcNow,
+                DataExpiracao = DateTime.UtcNow.AddMinutes(10)
+            };
+            var criado = await _pagamentoConcluidoService.CriarPagamentoConcluidoAsync(pagamentoConcluido);
+
+            return Ok(new
+            {
+                pagamentoConcluidoId = criado.Id,
+                qrCode = pixResponse.qrCodeUrl,
+                pagamentoPixId = pixResponse.pagamentoPixId
+            });
         }
     }
 }

@@ -1,3 +1,15 @@
+// Função auxiliar para limpar mensagens de validação
+function resetMessages(emailError, emailSuccess) {
+  if (emailError) {
+    emailError.classList.add('d-none');
+    emailError.textContent = '';
+  }
+  if (emailSuccess) {
+    emailSuccess.classList.add('d-none');
+    emailSuccess.textContent = '';
+  }
+}
+
 export function initStep1(stepData) {
   const empresaInput = document.querySelector('input[name="EmpresaContratante"]');
   const emailInput = document.querySelector('input[name="EmailEmpresa"]');
@@ -6,54 +18,45 @@ export function initStep1(stepData) {
 
   if (!empresaInput || !emailInput || !emailError || !emailSuccess) return;
 
-  // Preencher campos visíveis
-  if (empresaInput && stepData.EmpresaContratante) empresaInput.value = stepData.EmpresaContratante;
-  if (emailInput && stepData.EmailEmpresa) emailInput.value = stepData.EmailEmpresa;
+  // Preencher campos visíveis com dados do stepData
+  if (empresaInput && stepData.EmpresaContratante) {
+    empresaInput.value = stepData.EmpresaContratante;
+  }
+  if (emailInput && stepData.EmailEmpresa) {
+    emailInput.value = stepData.EmailEmpresa;
+  }
 
-  // Criar ou atualizar campos ocultos
+  // Função auxiliar para criar campos ocultos
+  function createHiddenField(form, name, value) {
+    let hiddenField = form.querySelector(`input[name="${name}"][type="hidden"]`);
+    if (!hiddenField) {
+      hiddenField = document.createElement('input');
+      hiddenField.type = 'hidden';
+      hiddenField.name = name;
+      form.appendChild(hiddenField);
+    }
+    hiddenField.value = value;
+    return hiddenField;
+  }
+
   const form = document.getElementById('formWizard');
+  createHiddenField(form, 'EmpresaContratante', empresaInput.value);
+  createHiddenField(form, 'EmailEmpresa', emailInput.value);
 
-  let hiddenEmpresa = form.querySelector('input[name="EmpresaContratante"][type="hidden"]');
-  if (!hiddenEmpresa) {
-    hiddenEmpresa = document.createElement('input');
-    hiddenEmpresa.type = 'hidden';
-    hiddenEmpresa.name = 'EmpresaContratante';
-    form.appendChild(hiddenEmpresa);
-  }
-  hiddenEmpresa.value = empresaInput.value;
+  // Limpar mensagens de validação
+  resetMessages(emailError, emailSuccess);
 
-  let hiddenEmail = form.querySelector('input[name="EmailEmpresa"][type="hidden"]');
-  if (!hiddenEmail) {
-    hiddenEmail = document.createElement('input');
-    hiddenEmail.type = 'hidden';
-    hiddenEmail.name = 'EmailEmpresa';
-    form.appendChild(hiddenEmail);
-  }
-  hiddenEmail.value = emailInput.value;
+  // Evento para limpar mensagens ao digitar
+  emailInput.addEventListener('input', () => resetMessages(emailError, emailSuccess));
 
-  // Limpar mensagens
-  emailError.classList.add('d-none');
-  emailError.textContent = '';
-  emailSuccess.classList.add('d-none');
-  emailSuccess.textContent = '';
-
-  // Eventos de input e blur
-  emailInput.addEventListener('input', () => {
-    emailError.classList.add('d-none');
-    emailError.textContent = '';
-    emailSuccess.classList.add('d-none');
-    emailSuccess.textContent = '';
-  });
-
+  // Evento para validar e-mail ao sair do campo
   emailInput.addEventListener('blur', () => {
     const email = emailInput.value.trim();
     if (!email) return;
 
-    // Validação de formato de e-mail
     if (!isValidEmail(email)) {
       emailError.textContent = 'Por favor, insira um e-mail válido.';
       emailError.classList.remove('d-none');
-      emailSuccess.classList.add('d-none');
       return;
     }
 
@@ -67,11 +70,9 @@ export function initStep1(stepData) {
         if (exists) {
           emailError.textContent = 'Este e-mail já está cadastrado.';
           emailError.classList.remove('d-none');
-          emailSuccess.classList.add('d-none');
         } else {
           emailSuccess.textContent = 'Email Disponível';
           emailSuccess.classList.remove('d-none');
-          emailError.classList.add('d-none');
         }
       })
       .catch(() => {
@@ -88,8 +89,8 @@ export async function validateStep1() {
 
   if (!emailError) return false;
 
-  emailError.classList.add('d-none');
-  emailError.textContent = '';
+  // Limpar mensagens antes da validação
+  resetMessages(emailError, document.getElementById('emailSuccess'));
 
   // Validação de campos obrigatórios
   if (!empresa || !email) {
@@ -114,9 +115,9 @@ export async function validateStep1() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
     });
-    
+
     if (!response.ok) throw new Error('Erro na requisição');
-    
+
     const exists = await response.json();
     if (exists) {
       emailError.textContent = 'Este e-mail já está cadastrado. Por favor, use outro.';
@@ -131,7 +132,6 @@ export async function validateStep1() {
   }
 }
 
-// Função auxiliar para validar formato de e-mail
 function isValidEmail(email) {
   const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return regex.test(email);

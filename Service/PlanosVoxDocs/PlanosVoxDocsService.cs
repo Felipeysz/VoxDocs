@@ -100,9 +100,11 @@ namespace VoxDocs.Services
         
         public async Task<PlanosVoxDocsModel> GetPlanByNameAsync(string name)
         {
-            // Busca case-insensitive e ignora espaços em branco
+            if (string.IsNullOrEmpty(name))
+                return null;
+
             return await _context.PlanosVoxDocs
-                .FirstOrDefaultAsync(p => p.Name.Trim().ToLower() == name.Trim().ToLower());
+                .FirstOrDefaultAsync(p => p.Name == name);
         }
     }
 }
