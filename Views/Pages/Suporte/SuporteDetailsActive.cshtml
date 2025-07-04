@@ -1,0 +1,558 @@
+﻿@model VoxDocs.Models.SuporteDetailsViewModel
+@{
+    ViewData["Title"] = "Chamado em Atendimento - VoxDocs";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #774C9E;
+            --color-accent: #6CD3DC;
+            --color-secondary: #f8f9fa;
+            --text-muted: #666;
+            --card-radius: 0.75rem;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: rgba(0,0,0,0.05);
+            --status-inprog: #cce5ff;
+            --status-inprog-text: #004085;
+            --creator-bg: rgba(119, 76, 158, 0.1);
+            --creator-text: #774C9E;
+            --responsible-bg: rgba(108, 211, 220, 0.1);
+            --responsible-text: #0c5460;
+            --awaiting-bg: rgba(108, 117, 125, 0.1);
+            --awaiting-text: #495057;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            margin: 0;
+            color: #333;
+            animation: pageEntrance 0.8s ease-out;
+            overflow-x: hidden;
+        }
+
+        @@keyframes pageEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            animation: cardEntrance 0.8s ease-out 0.2s both;
+            transition: transform 0.6s ease, opacity 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+
+        @@keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border-radius: var(--card-radius) var(--card-radius) 0 0;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .user-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .creator-indicator {
+            background-color: var(--creator-bg);
+            color: var(--creator-text);
+            border: 1px solid var(--creator-text);
+        }
+
+        .responsible-indicator {
+            background-color: var(--responsible-bg);
+            color: var(--responsible-text);
+            border: 1px solid var(--responsible-text);
+        }
+
+        .ticket-info {
+            padding: 1rem 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            background: var(--color-secondary);
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+        }
+
+            .ticket-info span {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background-color: var(--status-inprog);
+            color: var(--status-inprog-text);
+        }
+
+        .conversation {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: var(--color-secondary);
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+            .message.support {
+                justify-content: flex-start;
+            }
+
+            .message.user {
+                justify-content: flex-end;
+            }
+
+        .message-content {
+            max-width: 70%;
+        }
+
+        .meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bubble {
+            padding: 0.85rem 1.25rem;
+            border-radius: var(--card-radius);
+            box-shadow: 0 2px 6px var(--shadow);
+            line-height: 1.5;
+        }
+
+        .message.support .bubble {
+            background: white;
+            color: #333;
+            border-radius: 0 var(--card-radius) var(--card-radius) var(--card-radius);
+        }
+
+        .message.user .bubble {
+            background: linear-gradient(135deg, var(--color-primary), #8E54E9);
+            color: white;
+            border-radius: var(--card-radius) 0 var(--card-radius) var(--card-radius);
+        }
+
+        .input-box {
+            display: flex;
+            padding: 1.25rem;
+            border-top: 1px solid #eee;
+            background: white;
+            border-radius: 0 0 var(--card-radius) var(--card-radius);
+        }
+
+            .input-box input {
+                flex: 1;
+                padding: 0.85rem 1.25rem;
+                border: 1px solid #ddd;
+                border-radius: 0.5rem;
+                font-family: 'Poppins', sans-serif;
+                transition: var(--transition);
+                font-size: 0.95rem;
+            }
+
+                .input-box input:focus {
+                    outline: none;
+                    border-color: var(--color-primary);
+                    box-shadow: 0 0 0 3px rgba(119, 76, 158, 0.15);
+                }
+
+            .input-box button {
+                background: linear-gradient(135deg, var(--color-primary), #8E54E9);
+                color: white;
+                border: none;
+                padding: 0 1.5rem;
+                border-radius: 0.5rem;
+                font-family: 'Poppins', sans-serif;
+                font-weight: 600;
+                cursor: pointer;
+                transition: var(--transition);
+                margin-left: 0.75rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 6px rgba(119, 76, 158, 0.15);
+            }
+
+                .input-box button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 12px rgba(119, 76, 158, 0.2);
+                }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+            .action-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background: var(--color-primary);
+                opacity: 0;
+                transform: scale(0.8);
+                transition: var(--transition);
+                z-index: 0;
+            }
+
+            .action-btn span {
+                position: relative;
+                z-index: 1;
+                color: var(--color-primary);
+                transition: var(--transition);
+                font-size: 1.25rem;
+            }
+
+            .action-btn:hover {
+                transform: translateY(-3px);
+            }
+
+                .action-btn:hover::before {
+                    opacity: 0.1;
+                    transform: scale(1);
+                }
+
+                .action-btn:hover span {
+                    transform: scale(1.1);
+                    color: var(--color-accent);
+                }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        @@media (max-width: 768px) {
+            .card {
+                height: 90vh;
+            }
+
+            .card-header {
+                padding: 1rem;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+            }
+
+            .ticket-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .card-title {
+                font-size: 1.1rem;
+            }
+
+            .input-box {
+                padding: 1rem;
+            }
+
+                .input-box button {
+                    padding: 0 1rem;
+                }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <a asp-action="SuporteList" class="action-btn" title="Voltar">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </a>
+                    <h1 class="card-title">
+                        Chamado @Model.Id: @Model.Assunto
+                    </h1>
+                </div>
+                <div class="card-actions">
+                    <button class="action-btn" title="Fechar Chamado" id="btnFecharChamado">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                    <button class="action-btn" title="Aumentar Prioridade" id="btnAumentarPrioridade">
+                        <span class="material-symbols-outlined">priority_high</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="ticket-info">
+                <span><strong>Status:</strong> <span class="status-badge">@Model.Status</span></span>
+                <span><strong>Criado em:</strong> @Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")</span>
+                <span>
+                    <strong>Criado por:</strong>
+                    <span class="user-indicator creator-indicator">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">person</span>
+                        @Model.CriadoPor
+                    </span>
+                </span>
+                <span>
+                    <strong>Responsável:</strong>
+                    @if (!string.IsNullOrEmpty(Model.Responsavel))
+                    {
+                        <span class="user-indicator responsible-indicator">
+                            <span class="material-symbols-outlined" style="font-size: 1rem;">engineering</span>
+                            @Model.Responsavel
+                        </span>
+                    }
+                </span>
+            </div>
+
+            <div class="conversation" id="conversation">
+                @foreach (var mensagem in Model.Mensagens)
+                {
+                    <div class="message @(mensagem.Origem == "Suporte" ? "support" : "user")">
+                        <div class="message-content">
+                            <div class="meta">
+                                <span>@mensagem.Remetente</span>
+                                <span>•</span>
+                                <span>@mensagem.DataEnvio.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                            <div class="bubble">@mensagem.Conteudo</div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="input-box">
+                <input type="text" id="novaMensagem" placeholder="Digite sua mensagem..." />
+                <button id="btnEnviarMensagem">
+                    <span class="material-symbols-outlined">send</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações do chamado
+        const chamadoId = @Model.Id;
+        const usuario = "@User.Identity?.Name";
+
+        // Função para adicionar mensagem à conversa
+        function adicionarMensagem(mensagem) {
+            const conversation = document.getElementById('conversation');
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${mensagem.Origem === 'Suporte' ? 'support' : 'user'}`;
+
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="meta">
+                        <span>${mensagem.Remetente}</span>
+                        <span>•</span>
+                        <span>${new Date(mensagem.DataEnvio).toLocaleString('pt-BR')}</span>
+                    </div>
+                    <div class="bubble">${mensagem.Conteudo}</div>
+                </div>
+            `;
+
+            conversation.appendChild(messageDiv);
+            conversation.scrollTop = conversation.scrollHeight;
+        }
+
+        // Função para enviar mensagem
+        async function enviarMensagem() {
+            const input = document.getElementById('novaMensagem');
+            const conteudo = input.value.trim();
+
+            if (!conteudo) return;
+
+            try {
+                const response = await fetch('/Suporte/AdicionarMensagem', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({
+                        ChamadoId: chamadoId,
+                        Conteudo: conteudo,
+                        Origem: "Suporte",
+                        Remetente: usuario
+                    })
+                });
+
+                if (response.ok) {
+                    const novaMensagem = await response.json();
+                    adicionarMensagem(novaMensagem);
+                    input.value = '';
+                } else {
+                    alert('Erro ao enviar mensagem');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao enviar mensagem');
+            }
+        }
+
+        // Função para verificar atualizações
+        async function verificarAtualizacoes() {
+            try {
+                const response = await fetch(`/Suporte/VerificarAtualizacao/${chamadoId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.atualizado) {
+                        location.reload();
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao verificar atualizações:', error);
+            }
+        }
+
+        // Fechar chamado
+        document.getElementById('btnFecharChamado').addEventListener('click', async () => {
+            if (confirm('Tem certeza que deseja fechar este chamado?')) {
+                try {
+                    const response = await fetch(`/Suporte/FecharChamado?id=${chamadoId}`, {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        location.href = '/Suporte/SuporteDetailsResolved/' + chamadoId;
+                    } else {
+                        alert('Erro ao fechar chamado');
+                    }
+                } catch (error) {
+                    console.error('Erro:', error);
+                    alert('Erro ao fechar chamado');
+                }
+            }
+        });
+
+        // Aumentar prioridade
+        document.getElementById('btnAumentarPrioridade').addEventListener('click', async () => {
+            if (confirm('Deseja aumentar a prioridade deste chamado?')) {
+                try {
+                    const response = await fetch(`/Suporte/AumentarPrioridade?id=${chamadoId}`, {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Prioridade aumentada com sucesso!');
+                    } else {
+                        alert('Erro ao aumentar prioridade');
+                    }
+                } catch (error) {
+                    console.error('Erro:', error);
+                    alert('Erro ao aumentar prioridade');
+                }
+            }
+        });
+
+        // Enviar mensagem ao clicar no botão ou pressionar Enter
+        document.getElementById('btnEnviarMensagem').addEventListener('click', enviarMensagem);
+        document.getElementById('novaMensagem').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') enviarMensagem();
+        });
+
+        // Rolagem automática para o final da conversa
+        window.addEventListener('load', () => {
+            const conversation = document.getElementById('conversation');
+            conversation.scrollTop = conversation.scrollHeight;
+        });
+
+        // Verificar atualizações periodicamente (a cada 5 segundos)
+        setInterval(verificarAtualizacoes, 5000);
+    </script>
+</body>
+</html>

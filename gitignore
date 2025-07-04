@@ -1,0 +1,48 @@
+# Visual Studio cache e arquivos temporários
+.vs/                      # essa pasta causou o erro no seu push
+*.dbmdl
+*.psess
+*.vsp
+*.vspx
+*.sdf
+*.cache
+*.pdb                    # arquivos de debug symbols
+
+# Arquivos de backup do Visual Studio
+*.bak
+
+# Arquivos de teste e cobertura
+TestResults/
+*.coverage
+*.coveragexml
+*.trx
+
+# Arquivos de pacote NuGet gerados
+*.nupkg
+packages/
+*.snupkg
+
+# Arquivos de publicação do Web Deploy
+*.publishsettings
+
+# Arquivos locais de configurações específicas de máquinas
+*.local.json
+
+# Arquivos do Windows que devem ser ignorados
+Thumbs.db
+Desktop.ini
+
+# Diretórios temporários globais
+_ReSharper*/             # se você usa o plugin ReSharper
+*.DotSettings.user       # configurações específicas de usuário
+
+# Arquivos de build do MSBuild
+*.tlog
+*.log
+*.ilk
+*.meta
+
+# Arquivos do Rider (complemento)
+.idea/
+*.sln.iml
+*.sln.DotSettings

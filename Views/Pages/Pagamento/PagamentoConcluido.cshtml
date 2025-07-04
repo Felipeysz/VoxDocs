@@ -1,0 +1,70 @@
+@{
+    Layout = null;
+    Context.Response.StatusCode = 200;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pagamento Confirmado • VoxDocs</title>
+
+    <!-- Fontes e ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <!-- CSS -->
+    <link href="~/css/PagamentosStyles/page/pagamento-Confirmado.css" rel="stylesheet" />
+</head>
+
+<body class="pagamento-confirmado-container">
+    <div class="container">
+        <!-- Card de Confirmação -->
+        <div class="confirmation-card" id="formCard">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-credit-card"></i>
+                    Processamento de Pagamento
+                </h2>
+                <p class="card-subtitle">Confirmação do seu pagamento</p>
+            </div>
+
+            <div class="card-body">
+                <div class="text-center">
+                    <span class="material-symbols-outlined confirmation-icon">check_circle</span>
+
+                    <h3 class="confirmation-message">Pagamento Confirmado!</h3>
+
+                    <p class="confirmation-details">
+                        Seu pagamento foi processado com sucesso.<br>
+                        Um e-mail de confirmação foi enviado para você.
+                    </p>
+
+                    <div class="progress-bar-container">
+                        <div class="progress-bar"></div>
+                    </div>
+
+                    <div class="countdown">
+                        Redirecionando em <span id="timer">5</span> segundos...
+                    </div>
+                </div>
+
+                <!-- Botões de ação -->
+                <div class="form-actions">
+                    <button class="btn btn-outline" id="voltarBtn">
+                        <i class="fas fa-arrow-left me-2"></i>Voltar ao Painel
+                    </button>
+                    <button class="btn btn-primary" id="avancarBtn">
+                        Ir para Documentos <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="~/js/Pagamento/pagamentoConfirmado.js"></script>
+</body>
+</html>

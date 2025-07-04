@@ -1,0 +1,135 @@
+@model VoxDocs.PagamentoViewModel.PastasViewModel
+@{
+    ViewData["Title"] = "Cadastro de Pastas Principais";
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - VoxDocs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="~/css/PagamentosStyles/page/cadastro-PastaPrincipal.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <!-- Stepper Simplificado -->
+        <div class="stepper">
+            <div class="step completed">
+                <div class="step-number"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="step active">
+                <div class="step-number">2</div>
+                <div class="sub-steps">
+                    <span class="sub-step active">2.1</span>
+                    <span class="sub-step">2.2</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="card" id="formCard">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-folder-open"></i>
+                    Pastas Principais
+                </h2>
+                <p class="card-subtitle">Cadastre as pastas principais da sua empresa</p>
+            </div>
+
+            @Html.AntiForgeryToken()
+
+            <!-- Mensagens de feedback -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form asp-action="CadastroPastaPrincipal" method="post" id="pastasPrincipaisForm">
+                <div id="pastas-principais-container">
+                    @if (Model.PastasPrincipais != null && Model.PastasPrincipais.Any())
+                    {
+                        @for (int i = 0; i < Model.PastasPrincipais.Count; i++)
+                        {
+                            <div class="form-group pasta-principal-item">
+                                <label class="form-label">Nome da Pasta Principal <span class="text-danger">*</span></label>
+                                <input type="hidden" asp-for="PastasPrincipais[i].Id" />
+                                <input asp-for="PastasPrincipais[i].Nome"
+                                       class="form-control"
+                                       placeholder="Digite o nome da pasta principal"
+                                       maxlength="100" />
+                                <i class="fas fa-folder input-icon"></i>
+                                <span asp-validation-for="PastasPrincipais[i].Nome" class="invalid-feedback"></span>
+                                @if (i > 0)
+                                {
+                                    <button type="button" class="btn btn-outline btn-sm mt-2 remove-pasta" onclick="removePastaPrincipal(this)">
+                                        <i class="fas fa-trash"></i> Remover
+                                    </button>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="form-group pasta-principal-item">
+                            <label class="form-label">Nome da Pasta Principal <span class="text-danger">*</span></label>
+                            <input type="text" name="PastasPrincipais[0].Nome"
+                                   class="form-control"
+                                   placeholder="Digite o nome da pasta principal"
+                                   maxlength="100"
+                                   required />
+                            <i class="fas fa-folder input-icon"></i>
+                            <div class="invalid-feedback">O nome da pasta principal é obrigatório</div>
+                        </div>
+                    }
+                </div>
+
+                <button type="button" onclick="addPastaPrincipal()" class="btn btn-outline mb-3">
+                    <i class="fas fa-plus"></i> Adicionar Pasta
+                </button>
+
+                <div class="form-actions">
+                    <a asp-action="CadastroEmpresa" class="btn btn-outline">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="submit-text">
+                            <i class="fas fa-arrow-right"></i> Avançar
+                        </span>
+                        <span class="loading-spinner" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Processando...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/Pagamento/cadastroPastaPrincipal.js"></script>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>
+</html>

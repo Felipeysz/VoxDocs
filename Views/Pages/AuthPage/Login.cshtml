@@ -1,0 +1,64 @@
+@model VoxDocs.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login • VoxDocs";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/Auth/Login.css" />
+    <link rel="stylesheet" href="~/css/Config/Ocultarcssnativonavegador.css" />
+</head>
+<body>
+    <div class="login-card" data-aos="fade-up" data-aos-duration="1000">
+        <div class="text-center">
+            <img src="~/img/VoxDox sem fundo.png" alt="Logo" class="logo">
+            <div class="title">Bem-vindo de volta</div>
+            <div class="subtitle">Acesse sua conta para continuar</div>
+        </div>
+
+        <form asp-action="Login" asp-controller="AuthMvc" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            
+            <div class="form-group" data-aos="fade-up" data-aos-delay="100">
+                <input asp-for="Username" class="form-control" placeholder="Usuário" required />
+                <span class="material-symbols-outlined">person</span>
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group" data-aos="fade-up" data-aos-delay="200">
+                <input asp-for="Password" type="password" class="form-control" placeholder="Senha" required />
+                <span class="material-symbols-outlined">lock</span>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            
+            <div class="form-check" data-aos="fade-up" data-aos-delay="300">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label">Lembrar-me</label>
+            </div>
+            
+            <div class="d-grid" data-aos="zoom-in" data-aos-delay="400">
+                <button type="submit" class="btn btn-accent btn-lg rounded-pill">Entrar</button>
+            </div>
+        </form>
+
+        <div class="options" data-aos="fade-up" data-aos-delay="500">
+            <a asp-action="ForgotPassword" asp-controller="AuthMvc">Esqueceu a senha?</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+</body>
+</html>

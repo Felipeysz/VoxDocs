@@ -1,0 +1,93 @@
+@model VoxDocs.PagamentoViewModel.CadastroEmpresaViewModel
+
+<head>
+    <title>Cadastro Empresa - VoxDocs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/PagamentosStyles/page/cadastro-empresa.css" />
+</head>
+
+<div class="container">
+    <!-- Stepper Simplificado -->
+    <div class="stepper">
+        <div class="step active">
+            <div class="step-number">1</div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card" id="formCard">
+        <div class="card-header">
+            <h2 class="card-title">Cadastro da Empresa</h2>
+            <p class="card-subtitle">Preencha os dados básicos da sua empresa</p>
+        </div>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors alert alert-danger"></div>
+
+        <form asp-action="CadastroEmpresa" method="post" id="empresaForm">
+            <input type="hidden" asp-for="PlanoId" />
+            <input type="hidden" asp-for="NomePlano" />
+
+            <div class="form-group">
+                <label asp-for="EmpresaNome" class="form-label">
+                    Nome da Empresa <span class="text-danger">*</span>
+                </label>
+                <input asp-for="EmpresaNome" class="form-control"
+                       placeholder="Digite o nome da empresa"
+                       data-val="true"
+                       data-val-required="O nome da empresa é obrigatório."
+                       data-val-maxlength="O nome não pode exceder 100 caracteres."
+                       data-val-maxlength-max="100" />
+                <i class="fas fa-building input-icon"></i>
+                <span asp-validation-for="EmpresaNome" class="invalid-feedback"></span>
+                <div class="text-danger small" id="nomeExistenteError" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i> Já existe uma empresa com este nome.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EmailEmpresa" class="form-label">
+                    E-mail Corporativo
+                </label>
+                <input asp-for="EmailEmpresa" class="form-control"
+                       placeholder="Digite o e-mail corporativo"
+                       data-val="true"
+                       data-val-email="Email em formato inválido."
+                       data-val-maxlength="O email não pode exceder 100 caracteres."
+                       data-val-maxlength-max="100" />
+                <i class="fas fa-envelope input-icon"></i>
+                <span asp-validation-for="EmailEmpresa" class="invalid-feedback"></span>
+                <div class="text-danger small" id="emailExistenteError" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i> Já existe uma empresa com este email.
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="submitButton">
+                Avançar para a próxima Etapa <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/Pagamento/cadastroEmpresa.js"></script>
+}

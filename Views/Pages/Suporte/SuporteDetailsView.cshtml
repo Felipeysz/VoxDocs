@@ -1,0 +1,567 @@
+﻿@model VoxDocs.Models.SuporteDetailsViewModel
+@{
+    ViewData["Title"] = "Visualização de Chamado - VoxDocs";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #774C9E;
+            --color-accent: #6CD3DC;
+            --color-secondary: #f8f9fa;
+            --text-muted: #666;
+            --card-radius: 0.75rem;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: rgba(0,0,0,0.05);
+            --status-open: #ffeeba;
+            --status-inprog: #cce5ff;
+            --status-resolved: #d1ecf1;
+            --status-closed: #d4edda;
+            --status-open-text: #856404;
+            --status-inprog-text: #004085;
+            --status-resolved-text: #0c5460;
+            --status-closed-text: #155724;
+            --disabled-bg: #f5f5f5;
+            --disabled-text: #999;
+            --creator-bg: rgba(119, 76, 158, 0.1);
+            --creator-text: #774C9E;
+            --responsible-bg: rgba(108, 211, 220, 0.1);
+            --responsible-text: #0c5460;
+            --awaiting-bg: rgba(108, 117, 125, 0.1);
+            --awaiting-text: #495057;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            margin: 0;
+            color: #333;
+            animation: pageEntrance 0.8s ease-out;
+            overflow-x: hidden;
+        }
+
+        @@keyframes pageEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            animation: cardEntrance 0.8s ease-out 0.2s both;
+            transition: transform 0.6s ease, opacity 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+
+        @@keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: transparent;
+            border-radius: var(--card-radius) var(--card-radius) 0 0;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .user-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .creator-indicator {
+            background-color: var(--creator-bg);
+            color: var(--creator-text);
+            border: 1px solid var(--creator-text);
+        }
+
+        .responsible-indicator {
+            background-color: var(--responsible-bg);
+            color: var(--responsible-text);
+            border: 1px solid var(--responsible-text);
+        }
+
+        .awaiting-indicator {
+            background-color: var(--awaiting-bg);
+            color: var(--awaiting-text);
+            border: 1px solid var(--awaiting-text);
+        }
+
+        .ticket-info {
+            padding: 1rem 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            background: var(--color-secondary);
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+        }
+
+            .ticket-info span {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-open {
+            background-color: var(--status-open);
+            color: var(--status-open-text);
+        }
+
+        .status-inprog {
+            background-color: var(--status-inprog);
+            color: var(--status-inprog-text);
+        }
+
+        .status-resolved {
+            background-color: var(--status-resolved);
+            color: var(--status-resolved-text);
+        }
+
+        .status-closed {
+            background-color: var(--status-closed);
+            color: var(--status-closed-text);
+        }
+
+        .conversation {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: var(--color-secondary);
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.support {
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+        }
+
+        .meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bubble {
+            padding: 0.85rem 1.25rem;
+            border-radius: var(--card-radius);
+            box-shadow: 0 2px 6px var(--shadow);
+            line-height: 1.5;
+        }
+
+        .message.support .bubble {
+            background: white;
+            color: #333;
+            border-radius: 0 var(--card-radius) var(--card-radius) var(--card-radius);
+        }
+
+        .message.user .bubble {
+            background: linear-gradient(135deg, var(--color-primary), #8E54E9);
+            color: white;
+            border-radius: var(--card-radius) 0 var(--card-radius) var(--card-radius);
+        }
+
+        .input-box {
+            display: flex;
+            padding: 1.25rem;
+            border-top: 1px solid #eee;
+            background: white;
+            border-radius: 0 0 var(--card-radius) var(--card-radius);
+        }
+
+            .input-box input {
+                flex: 1;
+                padding: 0.85rem 1.25rem;
+                border: 1px solid #ddd;
+                border-radius: 0.5rem;
+                font-family: 'Poppins', sans-serif;
+                font-size: 0.95rem;
+                background: var(--disabled-bg);
+                color: var(--disabled-text);
+                cursor: not-allowed;
+            }
+
+            .input-box button {
+                background: var(--disabled-bg);
+                color: var(--disabled-text);
+                border: none;
+                padding: 0 1.5rem;
+                border-radius: 0.5rem;
+                font-family: 'Poppins', sans-serif;
+                cursor: not-allowed;
+                margin-left: 0.75rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+            .action-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background: var(--color-primary);
+                opacity: 0;
+                transform: scale(0.8);
+                transition: var(--transition);
+                z-index: 0;
+            }
+
+            .action-btn span {
+                position: relative;
+                z-index: 1;
+                color: var(--color-primary);
+                transition: var(--transition);
+                font-size: 1.25rem;
+            }
+
+            .action-btn:hover {
+                transform: translateY(-3px);
+            }
+
+                .action-btn:hover::before {
+                    opacity: 0.1;
+                    transform: scale(1);
+                }
+
+                .action-btn:hover span {
+                    transform: scale(1.1);
+                    color: var(--color-accent);
+                }
+
+        .disabled-message {
+            text-align: center;
+            color: var(--disabled-text);
+            font-size: 0.85rem;
+            padding: 0.5rem 1.25rem;
+            background-color: var(--disabled-bg);
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem auto;
+        }
+
+        @@media (max-width: 768px) {
+            .card {
+                height: 90vh;
+            }
+
+            .card-header {
+                padding: 1rem;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+            }
+
+            .ticket-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .card-title {
+                font-size: 1.1rem;
+            }
+
+            .input-box {
+                padding: 1rem;
+            }
+
+                .input-box button {
+                    padding: 0 1rem;
+                }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <a asp-action="SuporteList" class="action-btn" title="Voltar">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </a>
+                    <h1 class="card-title">
+                        Chamado @Model.Id: @Model.Assunto
+                    </h1>
+                </div>
+            </div>
+
+            <div class="ticket-info">
+                <span><strong>Status:</strong> <span class="status-badge @GetStatusClass(Model.Status)">@Model.Status</span></span>
+                <span><strong>Criado em:</strong> @Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")</span>
+                <span>
+                    <strong>Criado por:</strong>
+                    <span class="user-indicator creator-indicator">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">person</span>
+                        @Model.CriadoPor
+                    </span>
+                </span>
+                <span>
+                    <strong>Responsável:</strong>
+                    @if (!string.IsNullOrEmpty(Model.Responsavel))
+                    {
+                        <span class="user-indicator responsible-indicator">
+                            <span class="material-symbols-outlined" style="font-size: 1rem;">engineering</span>
+                            @Model.Responsavel
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="user-indicator awaiting-indicator">
+                            <span class="material-symbols-outlined" style="font-size: 1rem;">hourglass_empty</span>
+                            Em Aberto
+                        </span>
+                    }
+                </span>
+                @if (Model.DataResolucao.HasValue)
+                {
+                    <span><strong>Resolvido em:</strong> @Model.DataResolucao.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                }
+            </div>
+
+            <div class="conversation" id="conversation">
+                @foreach (var mensagem in Model.Mensagens)
+                {
+                    <div class="message @(mensagem.Origem == "Suporte" ? "support" : "user")">
+                        <div class="message-content">
+                            <div class="meta">
+                                <span>@mensagem.Remetente</span>
+                                <span>•</span>
+                                <span>@mensagem.DataEnvio.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                            <div class="bubble">@mensagem.Conteudo</div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (Model.Status == "Aberto")
+            {
+                <div class="input-box">
+                    <input type="text" placeholder="Envio desabilitado - aguardando atendimento" disabled />
+                    <button disabled>
+                        <span class="material-symbols-outlined">send</span>
+                    </button>
+                </div>
+                <div class="disabled-message">
+                    <span class="material-symbols-outlined">hourglass_top</span>
+                    Este chamado ainda não foi atribuído a um atendente. Aguarde para interagir.
+                </div>
+            }
+            else if (Model.Status == "Em Atendimento")
+            {
+                <div class="input-box">
+                    <input type="text" id="novaMensagem" placeholder="Digite sua mensagem..." />
+                    <button id="btnEnviarMensagem">
+                        <span class="material-symbols-outlined">send</span>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <script>
+        // Adiciona efeito de hover no botão de voltar
+        document.querySelector('.action-btn').addEventListener('mouseenter', function() {
+            this.querySelector('span').style.transform = 'translateX(-3px)';
+        });
+
+        document.querySelector('.action-btn').addEventListener('mouseleave', function() {
+            this.querySelector('span').style.transform = '';
+        });
+
+        // Rolagem automática para o final da conversa
+        function scrollToBottom() {
+            const conversation = document.getElementById('conversation');
+            conversation.scrollTop = conversation.scrollHeight;
+        }
+
+        window.addEventListener('load', scrollToBottom);
+        document.addEventListener('DOMContentLoaded', scrollToBottom);
+
+        // Verifica atualizações periodicamente
+        setInterval(() => {
+            fetch(`/Suporte/VerificarAtualizacao/${@Model.Id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.atualizado) {
+                        location.reload();
+                    }
+                });
+        }, 5000);
+
+        // Configuração para envio de mensagens (se o chamado estiver em atendimento)
+        @if (Model.Status == "Em Atendimento")
+        {
+            <text>
+                    const chamadoId = @Model.Id;
+                    const usuario = "@User.Identity?.Name";
+
+                    document.getElementById('btnEnviarMensagem').addEventListener('click', enviarMensagem);
+                    document.getElementById('novaMensagem').addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') enviarMensagem();
+                    });
+
+                    function enviarMensagem() {
+                        const input = document.getElementById('novaMensagem');
+                        const conteudo = input.value.trim();
+
+                        if (conteudo) {
+                            fetch(`/Suporte/AdicionarMensagem`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                                },
+                                body: JSON.stringify({
+                                    ChamadoId: chamadoId,
+                                    Conteudo: conteudo,
+                                    Remetente: usuario,
+                                    Origem: "Cliente"
+                                })
+                            }).then(response => {
+                                if (response.ok) {
+                                    input.value = '';
+                                    location.reload();
+                                } else {
+                                    alert('Erro ao enviar mensagem');
+                                }
+                            });
+                        }
+                    }
+            </text>
+        }
+    </script>
+</body>
+</html>
+
+@functions {
+    string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Aberto" => "status-open",
+            "Em Atendimento" => "status-inprog",
+            "Resolvido" => "status-resolved",
+            "Fechado" => "status-closed",
+            _ => ""
+        };
+    }
+}

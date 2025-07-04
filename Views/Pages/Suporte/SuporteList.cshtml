@@ -1,0 +1,541 @@
+﻿@model VoxDocs.Models.SuporteListViewModel
+@{
+    ViewData["Title"] = "Suporte VoxDocs";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+
+    <!-- Fontes e ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #774C9E;
+            --color-accent: #6CD3DC;
+            --color-primary-light: rgba(119, 76, 158, 0.1);
+            --text-muted: #666;
+            --card-radius: 0.75rem;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: rgba(0,0,0,0.05);
+            --status-open: #ffeeba;
+            --status-inprog: #cce5ff;
+            --status-resolved: #d1ecf1;
+            --status-closed: #d4edda;
+            --status-open-text: #856404;
+            --status-inprog-text: #004085;
+            --status-resolved-text: #0c5460;
+            --status-closed-text: #155724;
+            --user-ticket-bg: rgba(108, 211, 220, 0.1);
+            --user-ticket-border: #6CD3DC;
+            --creator-bg: rgba(119, 76, 158, 0.1);
+            --creator-text: #774C9E;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            margin: 0;
+            color: #333;
+            animation: pageEntrance 0.8s ease-out;
+            overflow-x: hidden;
+        }
+
+        @@keyframes pageEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Card Principal */
+        .card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 2.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            animation: cardEntrance 0.8s ease-out 0.2s both;
+            transition: transform 0.6s ease, opacity 0.4s ease;
+        }
+
+        @@keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+            .card-header::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 3px;
+                background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+                border-radius: 3px;
+                animation: expandLine 0.8s ease-out 0.4s both;
+            }
+
+        @@keyframes expandLine {
+            from {
+                width: 0;
+                opacity: 0;
+            }
+
+            to {
+                width: 80px;
+                opacity: 1;
+            }
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .card-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        /* Tabela de Chamados */
+        .tickets-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tickets-table th {
+            background: var(--color-primary);
+            color: white;
+            padding: 0.85rem 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .tickets-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .tickets-table tr:hover td {
+            background-color: rgba(119, 76, 158, 0.05);
+        }
+
+        /* Badges de Status */
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-open {
+            background-color: var(--status-open);
+            color: var(--status-open-text);
+        }
+
+        .status-inprog {
+            background-color: var(--status-inprog);
+            color: var(--status-inprog-text);
+        }
+
+        .status-resolved {
+            background-color: var(--status-resolved);
+            color: var(--status-resolved-text);
+        }
+
+        .status-closed {
+            background-color: var(--status-closed);
+            color: var(--status-closed-text);
+        }
+
+        /* Indicadores de Usuário */
+        .user-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+
+        .creator-indicator {
+            background-color: var(--creator-bg);
+            color: var(--creator-text);
+            border: 1px solid var(--creator-text);
+        }
+
+        .responsible-indicator {
+            background-color: rgba(108, 211, 220, 0.1);
+            color: #0c5460;
+            border: 1px solid #6CD3DC;
+        }
+
+        .awaiting-indicator {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #495057;
+            border: 1px solid #6c757d;
+        }
+
+        /* Botões de Ação */
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+            .action-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background: var(--color-primary);
+                opacity: 0;
+                transform: scale(0.8);
+                transition: var(--transition);
+                z-index: 0;
+            }
+
+            .action-btn span {
+                position: relative;
+                z-index: 1;
+                color: var(--color-primary);
+                transition: var(--transition);
+                font-size: 1.1rem;
+            }
+
+            .action-btn:hover {
+                transform: translateY(-3px);
+            }
+
+                .action-btn:hover::before {
+                    opacity: 0.1;
+                    transform: scale(1);
+                }
+
+                .action-btn:hover span {
+                    transform: scale(1.1);
+                }
+
+        /* Seções */
+        .section {
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .section-title {
+            color: var(--color-primary);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Responsivo */
+        @@media (max-width: 768px) {
+            .card {
+                padding: 1.5rem;
+            }
+
+            .tickets-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .action-btns {
+                justify-content: center;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .card-title {
+                font-size: 1.3rem;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Card Principal -->
+        <div class="card">
+            <!-- Header -->
+            <div class="card-header">
+                <h1 class="card-title">
+                    <span class="material-symbols-outlined">support_agent</span>
+                    Suporte VoxDocs
+                </h1>
+                <p class="card-subtitle">Gerencie os chamados de suporte da plataforma</p>
+            </div>
+
+            <!-- Chamados Abertos -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="material-symbols-outlined">pending_actions</span>
+                    Chamados Abertos
+                </h2>
+                <table class="tickets-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Assunto</th>
+                            <th>Criado por / Responsável</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var chamado in Model.ChamadosAbertos)
+                        {
+                            <tr>
+                                <td>@chamado.Id.ToString("D3")</td>
+                                <td>@chamado.Assunto</td>
+                                <td>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 0.3rem;">
+                                        <span class="user-indicator creator-indicator" title="Criador do chamado">
+                                            <span class="material-symbols-outlined" style="font-size: 1rem;">person</span>
+                                            @chamado.CriadoPor
+                                        </span>
+                                        @if (!string.IsNullOrEmpty(chamado.Responsavel))
+                                        {
+                                            <span class="user-indicator responsible-indicator" title="Responsável pelo chamado">
+                                                <span class="material-symbols-outlined" style="font-size: 1rem;">engineering</span>
+                                                @chamado.Responsavel
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="user-indicator awaiting-indicator" title="Aguardando atendimento">
+                                                <span class="material-symbols-outlined" style="font-size: 1rem;">hourglass_empty</span>
+                                                Em Aberto
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>@chamado.DataCriacao.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <span class="status-badge @GetStatusClass(chamado.Status)">@chamado.Status</span>
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        @if (chamado.Status == "Aberto")
+                                        {
+                                            <a asp-action="SuporteDetailsView" asp-route-id="@chamado.Id" class="action-btn" title="Visualizar">
+                                                <span class="material-symbols-outlined">visibility</span>
+                                            </a>
+                                            <button class="action-btn" title="Atender" onclick="atenderChamado(@chamado.Id)">
+                                                <span class="material-symbols-outlined">play_circle</span>
+                                            </button>
+                                        }
+                                        else if (chamado.Status == "Em Atendimento")
+                                        {
+                                            <a asp-action="SuporteDetailsActive" asp-route-id="@chamado.Id" class="action-btn" title="Ver Detalhes">
+                                                <span class="material-symbols-outlined">visibility</span>
+                                            </a>
+                                            <button class="action-btn" title="Fechar Chamado" onclick="fecharChamado(@chamado.Id)">
+                                                <span class="material-symbols-outlined">close</span>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Chamados Fechados -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="material-symbols-outlined">task_alt</span>
+                    Chamados Fechados
+                </h2>
+                <table class="tickets-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Assunto</th>
+                            <th>Criado por / Responsável</th>
+                            <th>Data Fechamento</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var chamado in Model.ChamadosFechados)
+                        {
+                            <tr>
+                                <td>@chamado.Id.ToString("D3")</td>
+                                <td>@chamado.Assunto</td>
+                                <td>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 0.3rem;">
+                                        <span class="user-indicator creator-indicator" title="Criador do chamado">
+                                            <span class="material-symbols-outlined" style="font-size: 1rem;">person</span>
+                                            @chamado.CriadoPor
+                                        </span>
+                                        @if (!string.IsNullOrEmpty(chamado.Responsavel))
+                                        {
+                                            <span class="user-indicator responsible-indicator" title="Responsável pelo chamado">
+                                                <span class="material-symbols-outlined" style="font-size: 1rem;">engineering</span>
+                                                @chamado.Responsavel
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="user-indicator awaiting-indicator" title="Aguardando atendimento">
+                                                <span class="material-symbols-outlined" style="font-size: 1rem;">hourglass_empty</span>
+                                                Em Aberto
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>@(chamado.DataResolucao?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                <td>
+                                    <span class="status-badge @GetStatusClass(chamado.Status)">@chamado.Status</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funções para ações dos botões
+        function atenderChamado(id) {
+            if (confirm('Deseja assumir este chamado?')) {
+                fetch(`/Suporte/AtenderChamado?id=${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Erro ao atender chamado');
+                    }
+                });
+            }
+        }
+
+        function fecharChamado(id) {
+            if (confirm('Tem certeza que deseja fechar este chamado?')) {
+                fetch(`/Suporte/FecharChamado?id=${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Erro ao fechar chamado');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
+
+@functions {
+    string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Aberto" => "status-open",
+            "Em Atendimento" => "status-inprog",
+            "Resolvido" => "status-resolved",
+            "Fechado" => "status-closed",
+            _ => ""
+        };
+    }
+}

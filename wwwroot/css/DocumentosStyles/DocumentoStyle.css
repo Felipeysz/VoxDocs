@@ -1,0 +1,147 @@
+﻿:root {
+    --color-primary: #774C9E;
+    --color-accent: #6CD3DC;
+    --color-primary-light: rgba(119, 76, 158, 0.1);
+    --text-muted: #666;
+    --card-radius: 0.75rem;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f8f9fa;
+    color: #333;
+    animation: pageEntrance 0.8s ease-out;
+}
+
+@@keyframes pageEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.doc-card {
+    background: white;
+    border-radius: var(--card-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    animation: cardEntrance 0.8s ease-out 0.2s both;
+}
+
+@@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.doc-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+}
+
+.list-group-item {
+    padding: 1rem 1.5rem;
+    border-color: rgba(119, 76, 158, 0.1) !important;
+    transition: var(--transition);
+}
+
+.list-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #555;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+    .list-btn:hover {
+        color: var(--color-primary);
+        transform: translateX(5px);
+    }
+
+.table thead th {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(119, 76, 158, 0.03);
+}
+
+.action-btn {
+    cursor: pointer;
+    color: #666;
+    text-decoration: none;
+    margin-right: 12px;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+    .action-btn:hover {
+        color: var(--color-primary);
+        transform: scale(1.1);
+    }
+
+.btn-secondary {
+    background-color: white;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    transition: var(--transition);
+}
+
+    .btn-secondary:hover {
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+.alert {
+    border-radius: var(--card-radius);
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+.modal {
+    z-index: 1060;
+}
+
+.token-field {
+    position: relative;
+}
+
+
+@@media (max-width: 768px) {
+    .doc-header {
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .list-group-item {
+        padding: 0.75rem 1rem;
+    }
+}

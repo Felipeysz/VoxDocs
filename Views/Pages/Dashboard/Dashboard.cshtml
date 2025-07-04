@@ -1,0 +1,1117 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Avançado - VoxDocs</title>
+    
+    <!-- Fontes e ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-primary: #774C9E;
+            --color-accent: #6CD3DC;
+            --color-secondary: #f8f9fa;
+            --text-muted: #666;
+            --card-radius: 0.75rem;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: rgba(0,0,0,0.05);
+            --status-active: #d4edda;
+            --status-active-text: #155724;
+            --status-warning: #fff3cd;
+            --status-warning-text: #856404;
+            --status-danger: #f8d7da;
+            --status-danger-text: #721c24;
+            --sidebar-width: 280px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+            animation: pageEntrance 0.8s ease-out;
+        }
+
+        @@keyframes pageEntrance {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .sidebar-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin: 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--card-radius);
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .menu-link:hover, .menu-link.active {
+            background: rgba(119, 76, 158, 0.1);
+            color: var(--color-primary);
+        }
+
+        .menu-link span {
+            font-size: 1.25rem;
+        }
+
+        .menu-text {
+            font-size: 0.95rem;
+        }
+
+        /* Conteúdo Principal */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+
+        /* Card Principal */
+        .card {
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            animation: cardEntrance 0.8s ease-out 0.2s both;
+            transition: transform 0.6s ease, opacity 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 80vh;
+        }
+
+        @@keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cabeçalho */
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border-radius: var(--card-radius) var(--card-radius) 0 0;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Botões de Ação */
+        .action-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--color-primary);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: var(--transition);
+            z-index: 0;
+        }
+
+        .action-btn span {
+            position: relative;
+            z-index: 1;
+            color: var(--color-primary);
+            transition: var(--transition);
+            font-size: 1.25rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .action-btn:hover::before {
+            opacity: 0.1;
+            transform: scale(1);
+        }
+
+        .action-btn:hover span {
+            transform: scale(1.1);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: var(--status-active);
+            color: var(--status-active-text);
+        }
+
+        .status-warning {
+            background-color: var(--status-warning);
+            color: var(--status-warning-text);
+        }
+
+        .status-danger {
+            background-color: var(--status-danger);
+            color: var(--status-danger-text);
+        }
+
+        /* Conteúdo do Dashboard */
+        .dashboard-content {
+            padding: 1.5rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .info-section {
+            margin-bottom: 2rem;
+        }
+
+        .info-section h2 {
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: var(--transition);
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .info-card h3 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card p {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .progress-container {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            height: 10px;
+            border-radius: 5px;
+            background: #e9ecef;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--color-primary), #8E54E9);
+            border-radius: 5px;
+            transition: width 0.6s ease;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            text-align: right;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--color-primary);
+        }
+
+        /* Novos elementos para API Key e Transferência */
+        .api-key-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .api-key-value {
+            flex: 1;
+            font-family: monospace;
+            padding: 0.75rem;
+            background: #f5f5f5;
+            border-radius: 0.5rem;
+            border: 1px dashed #ccc;
+            word-break: break-all;
+        }
+
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary), #8E54E9);
+            color: white;
+            box-shadow: 0 4px 6px rgba(119, 76, 158, 0.15);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(119, 76, 158, 0.2);
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .transfer-form {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-control {
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(119, 76, 158, 0.15);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+        }
+
+        .tab.active {
+            border-bottom-color: var(--color-primary);
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Tabela de API Keys */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .table th, .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table th {
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .key-type {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .key-type-transfer {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .key-type-receive {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .key-type-merge {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .key-type-backup {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Datepicker */
+        .datepicker {
+            position: relative;
+        }
+
+        .datepicker-input {
+            padding-right: 2.5rem;
+        }
+
+        .datepicker-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 1.5rem;
+            max-width: 500px;
+            width: 90%;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            color: var(--color-primary);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Alertas */
+        .alert {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-warning {
+            background-color: var(--status-warning);
+            color: var(--status-warning-text);
+        }
+
+        .alert-danger {
+            background-color: var(--status-danger);
+            color: var(--status-danger-text);
+        }
+
+        /* Responsivo */
+        @@media (max-width: 992px) {
+            .sidebar {
+                width: 240px;
+            }
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: var(--transition);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .main-content {
+                padding: 1rem;
+            }
+            .api-key-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    @await Html.PartialAsync("_VoiceAssistantModal")
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">V</div>
+            <h2 class="sidebar-title">VoxDocs</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="#" class="menu-link active">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="material-symbols-outlined">description</span>
+                    <span class="menu-text">Documentos</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="material-symbols-outlined">key</span>
+                    <span class="menu-text">API Keys</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="material-symbols-outlined">swap_horiz</span>
+                    <span class="menu-text">Transferências</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="material-symbols-outlined">backup</span>
+                    <span class="menu-text">Backups</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="menu-text">Configurações</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="/" class="menu-link">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="menu-text">Sair</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <!-- Card Principal -->
+        <div class="card">
+            <!-- Cabeçalho -->
+            <div class="card-header">
+                <h1 class="card-title">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Dashboard Avançado
+                </h1>
+                <div class="card-actions">
+                    <button class="action-btn" title="Atualizar">
+                        <span class="material-symbols-outlined">refresh</span>
+                    </button>
+                    <small class="text-muted">@Model.UltimaAtualizacao</small>
+                </div>
+            </div>
+
+            <!-- Conteúdo do Dashboard -->
+            <div class="dashboard-content">
+                <!-- Informações do Usuário -->
+                <div class="info-section">
+                    <h2><span class="material-symbols-outlined">person</span> Informações do Usuário</h2>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3>Nome</h3>
+                            <p>@Model.Usuario</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Email</h3>
+                            <p>@Model.Email</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Empresa</h3>
+                            <p>@Model.EmpresaContratante</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Permissão</h3>
+                            <p>@Model.PermissaoConta</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informações do Plano -->
+                <div class="info-section">
+                    <h2><span class="material-symbols-outlined">assignment</span> Plano Contratado</h2>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3>Plano Atual</h3>
+                            <p>@Model.Plano</p>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: @Model.PercentualUsoArmazenamento%"></div>
+                                </div>
+                                <div class="progress-text">
+                                    @Model.ArmazenamentoUsado / @Model.ArmazenamentoTotal (@Model.PercentualUsoArmazenamento%)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <h3>Status do Pagamento</h3>
+                            <p><span class="status-badge @(Model.StatusPagamento == "Ativo" ? "status-active" : "status-warning")">@Model.StatusPagamento</span></p>
+                            <h3 style="margin-top: 1rem;">Próximo Pagamento</h3>
+                            <p>@Model.DataProximoPagamento</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de API Keys -->
+                <div class="info-section">
+                    <h2><span class="material-symbols-outlined">key</span> Gerenciamento de API Keys</h2>
+                    
+                    <div class="tabs">
+                        <div class="tab active" data-tab="general">Geral</div>
+                        <div class="tab" data-tab="transfer">Transferir Dados</div>
+                        <div class="tab" data-tab="receive">Receber Dados</div>
+                        <div class="tab" data-tab="merge">Mesclar Dados</div>
+                        <div class="tab" data-tab="backup">Backup/Restore</div>
+                    </div>
+                    
+                    <!-- Tab Geral -->
+                    <div class="tab-content active" id="general-tab">
+                        <div class="info-card">
+                            <h3>Sua chave de API Principal</h3>
+                            <p>Use esta chave para autenticação geral nas APIs da VoxDocs</p>
+                            <div class="api-key-container">
+                                <div class="api-key-value" id="apiKeyValue">••••••••••••••••••••••••••••••••</div>
+                                <button class="btn btn-primary" id="generateApiKey">Gerar Nova Key</button>
+                                <button class="btn btn-secondary" id="copyApiKey">Copiar</button>
+                            </div>
+                            <small class="text-muted">Esta chave é sensível - mantenha-a em segredo</small>
+                        </div>
+                        
+                        <div class="info-card" style="margin-top: 1.5rem;">
+                            <h3>Histórico de API Keys</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Key</th>
+                                        <th>Tipo</th>
+                                        <th>Criada em</th>
+                                        <th>Último Uso</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>vox_7H9j2K4mN6pQ8rS</td>
+                                        <td><span class="key-type key-type-transfer">Transferência</span></td>
+                                        <td>15/06/2023</td>
+                                        <td>Ontem</td>
+                                        <td>
+                                            <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Revogar</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>vox_1A3b5C7d9EfG</td>
+                                        <td><span class="key-type key-type-receive">Recebimento</span></td>
+                                        <td>10/06/2023</td>
+                                        <td>Hoje</td>
+                                        <td>
+                                            <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Revogar</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>vox_X2y4Z6w8V0u1</td>
+                                        <td><span class="key-type key-type-merge">Mesclagem</span></td>
+                                        <td>05/06/2023</td>
+                                        <td>Nunca</td>
+                                        <td>
+                                            <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Revogar</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Transferir Dados -->
+                    <div class="tab-content" id="transfer-tab">
+                        <div class="info-card">
+                            <h3>API Key para Transferência de Dados</h3>
+                            <p>Crie uma chave específica para transferir dados para fora da VoxDocs</p>
+                            
+                            <div class="alert alert-warning">
+                                <strong>Atenção:</strong> Esta chave permitirá que dados sejam exportados para sistemas externos.
+                            </div>
+                            
+                            <div class="api-key-container">
+                                <div class="api-key-value" id="transferApiKeyValue">••••••••••••••••••••••••••••••••</div>
+                                <button class="btn btn-primary" id="generateTransferApiKey">Gerar Key</button>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label for="transferPermissions">Permissões:</label>
+                                <select class="form-control" id="transferPermissions" multiple>
+                                    <option value="read">Apenas Leitura</option>
+                                    <option value="export">Exportar Documentos</option>
+                                    <option value="metadata">Exportar Metadados</option>
+                                </select>
+                            </div>
+                            
+                            <button class="btn btn-primary" style="margin-top: 1rem;">Salvar Configurações</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Receber Dados -->
+                    <div class="tab-content" id="receive-tab">
+                        <div class="info-card">
+                            <h3>API Key para Recebimento de Dados</h3>
+                            <p>Crie uma chave específica para receber dados de sistemas externos</p>
+                            
+                            <div class="api-key-container">
+                                <div class="api-key-value" id="receiveApiKeyValue">••••••••••••••••••••••••••••••••</div>
+                                <button class="btn btn-primary" id="generateReceiveApiKey">Gerar Key</button>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label for="receivePermissions">Permissões:</label>
+                                <select class="form-control" id="receivePermissions" multiple>
+                                    <option value="write">Escrever Documentos</option>
+                                    <option value="update">Atualizar Documentos</option>
+                                    <option value="metadata">Atualizar Metadados</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="receiveSource">Fonte Permitida (URL):</label>
+                                <input type="text" class="form-control" id="receiveSource" placeholder="https://sistema-externo.com">
+                            </div>
+                            
+                            <button class="btn btn-primary" style="margin-top: 1rem;">Salvar Configurações</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Mesclar Dados -->
+                    <div class="tab-content" id="merge-tab">
+                        <div class="info-card">
+                            <h3>API Key para Mesclagem de Dados</h3>
+                            <p>Crie uma chave específica para mesclar dados de diferentes fontes</p>
+                            
+                            <div class="alert alert-warning">
+                                <strong>Atenção:</strong> Esta operação pode alterar dados existentes.
+                            </div>
+                            
+                            <div class="api-key-container">
+                                <div class="api-key-value" id="mergeApiKeyValue">••••••••••••••••••••••••••••••••</div>
+                                <button class="btn btn-primary" id="generateMergeApiKey">Gerar Key</button>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label for="mergeStrategy">Estratégia de Mesclagem:</label>
+                                <select class="form-control" id="mergeStrategy">
+                                    <option value="overwrite">Sobrescrever existentes</option>
+                                    <option value="keep">Manter existentes</option>
+                                    <option value="merge">Mesclar campos</option>
+                                </select>
+                            </div>
+                            
+                            <button class="btn btn-primary" style="margin-top: 1rem;">Salvar Configurações</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Backup/Restore -->
+                    <div class="tab-content" id="backup-tab">
+                        <div class="info-card">
+                            <h3>API Key para Backup/Restauração</h3>
+                            <p>Crie uma chave específica para operações de backup e restauração</p>
+                            
+                            <div class="alert alert-danger">
+                                <strong>Alerta Crítico:</strong> Esta chave permite restaurar versões antigas, o que pode resultar em perda de dados recentes.
+                            </div>
+                            
+                            <div class="api-key-container">
+                                <div class="api-key-value" id="backupApiKeyValue">••••••••••••••••••••••••••••••••</div>
+                                <button class="btn btn-primary" id="generateBackupApiKey">Gerar Key</button>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label for="backupDate">Restaurar para data específica:</label>
+                                <div class="datepicker">
+                                    <input type="text" class="form-control datepicker-input" id="backupDate" placeholder="Selecione uma data">
+                                    <span class="material-symbols-outlined datepicker-icon">calendar_today</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="backupScope">Escopo do Backup:</label>
+                                <select class="form-control" id="backupScope">
+                                    <option value="all">Todos os documentos</option>
+                                    <option value="folder">Pasta específica</option>
+                                    <option value="type">Tipo de documento</option>
+                                </select>
+                            </div>
+                            
+                            <button class="btn btn-danger" id="restoreBackup" style="margin-top: 1rem;">Restaurar Backup</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estatísticas -->
+                <div class="info-section">
+                    <h2><span class="material-symbols-outlined">analytics</span> Estatísticas</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Documentos Enviados</h3>
+                            <p>@Model.DocumentosEnviados</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Transferências</h3>
+                            <p>24</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Backups</h3>
+                            <p>5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Restauração -->
+    <div class="modal" id="restoreModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmar Restauração</h3>
+                <button class="modal-close" id="restoreModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <strong>Atenção!</strong> Você está prestes a restaurar o sistema para um estado anterior. 
+                    Todos os dados criados ou modificados após a data selecionada serão perdidos.
+                </div>
+                <p>Tem certeza que deseja restaurar para <strong id="restoreDateDisplay">01/06/2023</strong>?</p>
+                <p>Esta ação não pode ser desfeita.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelRestore">Cancelar</button>
+                <button class="btn btn-danger" id="confirmRestore">Confirmar Restauração</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Botão de atualizar
+        document.querySelector('.action-btn[title="Atualizar"]').addEventListener('click', function() {
+            location.reload();
+        });
+
+        // Animação dos cards ao carregar
+        document.querySelectorAll('.info-card, .stat-card').forEach((card, index) => {
+            card.style.animation = `fadeIn 0.3s ease-out ${index * 0.1}s both`;
+        });
+
+        // Tabs
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+
+        // Gerar API Key
+        function generateApiKey(prefix = 'vox_') {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = prefix;
+            for (let i = 0; i < 16; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        document.getElementById('generateApiKey').addEventListener('click', function() {
+            document.getElementById('apiKeyValue').textContent = generateApiKey();
+            alert('Nova API Key gerada com sucesso!');
+        });
+
+        document.getElementById('generateTransferApiKey').addEventListener('click', function() {
+            document.getElementById('transferApiKeyValue').textContent = generateApiKey('trf_');
+            alert('Nova API Key de Transferência gerada com sucesso!');
+        });
+
+        document.getElementById('generateReceiveApiKey').addEventListener('click', function() {
+            document.getElementById('receiveApiKeyValue').textContent = generateApiKey('rcv_');
+            alert('Nova API Key de Recebimento gerada com sucesso!');
+        });
+
+        document.getElementById('generateMergeApiKey').addEventListener('click', function() {
+            document.getElementById('mergeApiKeyValue').textContent = generateApiKey('mrg_');
+            alert('Nova API Key de Mesclagem gerada com sucesso!');
+        });
+
+        document.getElementById('generateBackupApiKey').addEventListener('click', function() {
+            document.getElementById('backupApiKeyValue').textContent = generateApiKey('bkp_');
+            alert('Nova API Key de Backup gerada com sucesso!');
+        });
+
+        // Copiar API Key
+        document.getElementById('copyApiKey').addEventListener('click', function() {
+            const apiKey = document.getElementById('apiKeyValue').textContent;
+            if (apiKey === '••••••••••••••••••••••••••••••••') {
+                alert('Por favor, gere uma API Key primeiro');
+                return;
+            }
+            
+            navigator.clipboard.writeText(apiKey).then(() => {
+                alert('API Key copiada para a área de transferência!');
+            });
+        });
+
+        // Restaurar Backup
+        document.getElementById('restoreBackup').addEventListener('click', function() {
+            const date = document.getElementById('backupDate').value || '01/06/2023';
+            document.getElementById('restoreDateDisplay').textContent = date;
+            document.getElementById('restoreModal').classList.add('active');
+        });
+
+        // Fechar modal de restauração
+        document.getElementById('restoreModalClose').addEventListener('click', function() {
+            document.getElementById('restoreModal').classList.remove('active');
+        });
+
+        document.getElementById('cancelRestore').addEventListener('click', function() {
+            document.getElementById('restoreModal').classList.remove('active');
+        });
+
+        document.getElementById('confirmRestore').addEventListener('click', function() {
+            alert('Restauração iniciada! O sistema será reiniciado após a conclusão.');
+            document.getElementById('restoreModal').classList.remove('active');
+        });
+
+        // Simular datepicker
+        document.getElementById('backupDate').addEventListener('focus', function() {
+            // Simular abertura de datepicker
+            this.value = '01/06/2023';
+        });
+    </script>
+</body>
+</html>

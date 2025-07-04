@@ -1,0 +1,203 @@
+@model VoxDocs.PagamentoViewModel.FinalizarPagamentoViewModel
+
+@{
+    ViewData["Title"] = "Finalizar Pagamento - VoxDocs";
+}
+
+<head>
+    <!-- Fontes e ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="~/css/PagamentosStyles/page/finalizar-Pagamento.css" rel="stylesheet" />
+</head>
+<style>
+    /* Estilos para validação - ATUALIZADO */
+    .form-control.valid {
+        border-color: #28a745;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    .form-control.invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    /* Estilo geral para mensagens de validação */
+    .validation-message {
+        display: none;
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+        text-align: left;
+        padding-left: 12px; /* Alinhar com o texto do input */
+        width: 100%;
+    }
+
+
+    /* Estilo específico para a mensagem do número do cartão */
+    .card-number-group .validation-message {
+        display: block;
+        position: relative;
+        padding-left: 0;
+        text-indent: 0;
+        margin-left: 0;
+        clear: both;
+    }
+
+    button[disabled] {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+
+    /* Animação para o step ativo */
+    @@keyframes slowPulse {
+        0%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    /* Ajuste específico para o grupo do número do cartão */
+    .card-number-group {
+        position: relative;
+    }
+
+        .card-number-group .card-brand {
+            position: absolute;
+            right: 10px;
+            top: 35px;
+            height: 24px;
+            width: auto;
+        }
+
+    .input-with-icon {
+        position: relative;
+    }
+</style>
+
+<div class="container-wrapper">
+    <div class="container">
+        <!-- Stepper Simplificado -->
+        <div class="stepper">
+            <div class="step completed">
+                <div class="step-number"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="step completed">
+                <div class="step-number"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="step completed">
+                <div class="step-number"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="step active">
+                <div class="step-number">4</div>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="card" id="formCard">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-credit-card"></i>
+                    Finalizar Pagamento
+                </h2>
+                <p class="card-subtitle">Informe os dados do seu cartão de crédito</p>
+            </div>
+
+            <div class="card-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                }
+
+                <form id="pagamentoForm" asp-action="FinalizarPagamento" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" asp-for="PlanoId" />
+                    <input type="hidden" asp-for="NomePlano" />
+                    <input type="hidden" asp-for="EmpresaNome" />
+                    <input type="hidden" asp-for="EmailEmpresa" />
+                    <input type="hidden" asp-for="ValorPago" />
+
+                    <!-- Grupo do método de pagamento (fixo como Cartão de Crédito) -->
+                    <div class="payment-method-group">
+                        <label class="form-label">Método de Pagamento</label>
+                        <div class="form-control payment-method-disabled">
+                            <i class="fas fa-credit-card"></i> Cartão de Crédito
+                        </div>
+                        <input type="hidden" asp-for="MetodoPagamento" value="Cartão de Crédito" />
+                    </div>
+
+                    <!-- Formulário de Cartão (sempre visível) -->
+                    <div class="card-form">
+                        <div class="card-icons">
+                            <div class="card-icon">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa">
+                            </div>
+                            <div class="card-icon">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard">
+                            </div>
+                            <div class="card-icon">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/1200px-American_Express_logo_%282018%29.svg.png" alt="American Express">
+                            </div>
+                        </div>
+
+                        <div class="form-group card-number-group">
+                            <label class="form-label">Número do Cartão</label>
+                            <div class="input-with-icon">
+                                <input type="text" class="form-control" id="numeroCartao" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                                <img src="" alt="" class="card-brand" id="cardBrand">
+                            </div>
+                            <span class="validation-message" id="cartaoError">Informe um número de cartão válido</span>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Validade (MM/AA)</label>
+                                    <input type="text" class="form-control" id="validadeCartao" placeholder="MM/AA" maxlength="5" required>
+                                    <span class="validation-message" id="validadeError">Informe uma data válida</span>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group" style="width: 90%;">
+                                    <label class="form-label">Código de Segurança</label>
+                                    <input type="text" class="form-control" id="cvvCartao" placeholder="CVV" maxlength="4" required>
+                                    <span class="validation-message" id="cvvError">Informe um CVV válido</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Nome no Cartão</label>
+                            <input type="text" class="form-control" id="nomeCartao" placeholder="Como no cartão" required>
+                            <span class="validation-message" id="nomeError">Informe o nome como no cartão</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-lock me-2"></i> Finalizar Pagamento
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/Pagamento/finalizarPagamento.js"></script>

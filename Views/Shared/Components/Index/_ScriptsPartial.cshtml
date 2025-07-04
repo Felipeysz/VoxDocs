@@ -1,0 +1,172 @@
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+        once: true,
+        duration: 800
+    });
+    
+    // Destaque automático para cards ao rolar
+    document.addEventListener('DOMContentLoaded', function() {
+        const planCards = document.querySelectorAll('.plan-card');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.boxShadow = '0 20px 40px rgba(106, 48, 147, 0.15)';
+                } else {
+                    entry.target.style.boxShadow = '';
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        planCards.forEach(card => {
+            observer.observe(card);
+        });
+        
+        // Suavizar rolagem para âncoras
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    });
+
+    async function iniciarProcessoPagamento(nomePlano) {
+        try {
+            // Armazena o plano selecionado no sessionStorage
+            sessionStorage.setItem('planoSelecionado', nomePlano);
+            
+            // Mostra loading
+            const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            loadingModal.show();
+
+            // Obter a duração do plano selecionado
+            const duracaoMeses = obterDuracaoPlano(nomePlano);
+            
+            // 1. Gerar token - chamando a rota da sua API
+            const response = await fetch('/api/Pagamentos/GerarToken', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ 
+                    PlanoSelecionado: nomePlano,
+                    DuracaoMeses: duracaoMeses
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Erro ao gerar token');
+            }
+
+            const data = await response.json();
+            
+            // Armazena também o token no sessionStorage para redundância
+            sessionStorage.setItem('tokenPagamento', data.token);
+            
+            // 2. Redirecionar para o formulário de pagamento com o token
+            window.location.href = `/api/Pagamentos/FormularioPagamento?token=${encodeURIComponent(data.token)}`;
+
+        } catch (error) {
+            console.error('Erro:', error);
+            // Esconde o loading
+            const loadingModal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+            if (loadingModal) loadingModal.hide();
+            
+            // Mostra mensagem de erro amigável
+            mostrarMensagemErro(`Erro ao processar sua solicitação: ${error.message}`);
+            
+            // Limpa o sessionStorage em caso de erro
+            sessionStorage.removeItem('planoSelecionado');
+            sessionStorage.removeItem('tokenPagamento');
+        }
+    }
+
+    async function ativarPlanoGratis(nomePlano) {
+        try {
+            // Armazena o plano selecionado no sessionStorage
+            sessionStorage.setItem('planoSelecionado', nomePlano);
+            
+            // Mostra loading
+            const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            loadingModal.show();
+
+            // Obter a duração do plano selecionado
+            const duracaoMeses = obterDuracaoPlano(nomePlano);
+            
+            // 1. Gerar token para plano gratuito
+            const tokenResponse = await fetch('/api/Pagamentos/GerarToken', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ 
+                    PlanoSelecionado: nomePlano,
+                    DuracaoMeses: duracaoMeses
+                })
+            });
+
+            if (!tokenResponse.ok) {
+                const errorData = await tokenResponse.json();
+                throw new Error(errorData.message || 'Erro ao gerar token');
+            }
+
+            const tokenData = await tokenResponse.json();
+            
+            // Armazena também o token no sessionStorage para redundância
+            sessionStorage.setItem('tokenPagamento', tokenData.token);
+            
+            // 2. Redirecionar para o formulário de pagamento com o token
+            window.location.href = `/api/Pagamentos/FormularioPagamento?token=${encodeURIComponent(tokenData.token)}`;
+
+        } catch (error) {
+            console.error('Erro:', error);
+            // Esconde o loading
+            const loadingModal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+            if (loadingModal) loadingModal.hide();
+            
+            // Mostra mensagem de erro amigável
+            mostrarMensagemErro(`Erro ao ativar o plano gratuito: ${error.message}`);
+            
+            // Limpa o sessionStorage em caso de erro
+            sessionStorage.removeItem('planoSelecionado');
+            sessionStorage.removeItem('tokenPagamento');
+        }
+    }
+
+    // Função auxiliar para obter a duração do plano
+    function obterDuracaoPlano(nomePlano) {
+        // Mapeia os nomes dos planos para suas durações
+        const planos = {
+            "Básico Mensal": 1,
+            "Básico Anual": 12,
+            "Premium Mensal": 1,
+            "Premium Anual": 12,
+            "Enterprise": 12
+        };
+        
+        return planos[nomePlano] || 1; // Retorna 1 mês como padrão se não encontrar
+    }
+
+    // Função para mostrar mensagens de erro de forma mais elegante
+    function mostrarMensagemErro(mensagem) {
+        // Você pode implementar um toast ou modal de erro aqui
+        // Exemplo simples com alert (pode ser substituído por algo mais elegante)
+        const toastEl = document.getElementById('errorToast');
+        if (toastEl) {
+            const toast = new bootstrap.Toast(toastEl);
+            document.getElementById('toastMessage').textContent = mensagem;
+            toast.show();
+        } else {
+            alert(mensagem); // Fallback caso não exista o elemento toast
+        }
+    }
+</script>

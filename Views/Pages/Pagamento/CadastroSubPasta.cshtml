@@ -1,0 +1,211 @@
+@model VoxDocs.PagamentoViewModel.PastasViewModel
+@{
+    ViewData["Title"] = "Cadastro de Subpastas";
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - VoxDocs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="~/css/PagamentosStyles/page/cadastro-Subpasta.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Stepper Simplificado -->
+        <div class="stepper">
+            <div class="step completed">
+                <div class="step-number"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="step active">
+                <div class="step-number">2</div>
+                <div class="sub-steps">
+                    <span class="sub-step">2.1</span>
+                    <span class="sub-step active">2.2</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+            </div>
+        </div>
+
+        <div class="card" id="formCard">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-folder-open"></i>
+                    Subpastas
+                </h2>
+                <p class="card-subtitle">Cadastre as subpastas para organização</p>
+            </div>
+
+            @Html.AntiForgeryToken()
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show duplicate-error">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            }
+
+            <form id="subpastasForm" method="post" asp-action="CadastroSubpasta">
+                <input type="hidden" asp-for="PastaPrincipalId" id="hiddenPastaPrincipalId" />
+
+                <!-- Seletor de pasta principal -->
+                <div class="form-group">
+                    <label class="form-label">Pasta Principal <span class="text-danger">*</span></label>
+                    <select class="form-control" id="pastaPrincipalSelect" required>
+                        <option value="">Selecione uma pasta principal</option>
+                        @if (Model.PastasPrincipais != null)
+                        {
+                            foreach (var pasta in Model.PastasPrincipais)
+                            {
+                                <option value="@pasta.Id" selected="@(pasta.Id == Model.PastaPrincipalId)">@pasta.Nome</option>
+                            }
+                        }
+                    </select>
+                    <div class="invalid-feedback">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Selecione uma pasta principal</span>
+                    </div>
+                </div>
+
+                <!-- Lista de subpastas -->
+                <div id="subpastas-container">
+                    @if (Model.PastaPrincipalId.HasValue)
+                    {
+                        if (Model.SubPastas != null && Model.SubPastas.Any())
+                        {
+                            for (int i = 0; i < Model.SubPastas.Count; i++)
+                            {
+                                var isSaved = Model.SubPastas[i].Id != Guid.Empty;
+                                <div class="form-group subpasta-item mt-3 @(isSaved ? "saved" : "")">
+                                    <input type="hidden" asp-for="SubPastas[i].Id" />
+                                    <input type="hidden" asp-for="SubPastas[i].PastaPrincipalId" />
+                                    <input type="hidden" asp-for="SubPastas[i].PastaPrincipalNome" />
+                                    <label class="form-label">Nome da Subpasta <span class="text-danger">*</span></label>
+                                    <input asp-for="SubPastas[i].Nome"
+                                           class="form-control"
+                                           placeholder="Digite o nome da subpasta"
+                                           maxlength="100"
+                                           required />
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <span>O nome da subpasta é obrigatório</span>
+                                    </div>
+                                    <div class="subpasta-actions">
+                                        <button type="button" class="btn btn-outline btn-sm mt-2 @(isSaved ? "btn-success" : "btn-primary")"
+                                                onclick="salvarSubpastaIndividual(this, @i)">
+                                            <i class="fas fa-save" style="@(isSaved ? "display:none" : "")"></i>
+                                            <i class="fas fa-check" style="@(!isSaved ? "display:none" : "")"></i> Salvar
+                                        </button>
+                                        <button type="button" class="btn btn-outline btn-sm mt-2 btn-danger"
+                                                onclick="removerSubpasta(this)">
+                                            <i class="fas fa-trash"></i> Remover
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="form-group subpasta-item mt-3">
+                                <input type="hidden" name="SubPastas[0].Id" value="00000000-0000-0000-0000-000000000000" />
+                                <input type="hidden" name="SubPastas[0].PastaPrincipalId" value="@Model.PastaPrincipalId" />
+                                <input type="hidden" name="SubPastas[0].PastaPrincipalNome" value="" />
+                                <label class="form-label">Nome da Subpasta <span class="text-danger">*</span></label>
+                                <input type="text" name="SubPastas[0].Nome"
+                                       class="form-control"
+                                       placeholder="Digite o nome da subpasta"
+                                       maxlength="100"
+                                       required />
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span>O nome da subpasta é obrigatório</span>
+                                </div>
+                                <div class="subpasta-actions">
+                                    <button type="button" class="btn btn-outline btn-sm mt-2 btn-primary"
+                                            onclick="salvarSubpastaIndividual(this, 0)">
+                                        <i class="fas fa-save"></i> Salvar
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-sm mt-2 btn-danger"
+                                            onclick="removerSubpasta(this)">
+                                        <i class="fas fa-trash"></i> Remover
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Selecione uma pasta principal para adicionar subpastas.
+                        </div>
+                    }
+                </div>
+
+                <button type="button" onclick="addSubPasta()" class="btn btn-outline mb-3" id="addSubPastaBtn" @(Model.PastaPrincipalId.HasValue ? "" : "disabled")>
+                    <i class="fas fa-plus"></i> Adicionar Subpasta
+                </button>
+
+                <!-- Ações do formulário -->
+                <div class="form-actions">
+                    <a asp-action="CadastroPastaPrincipal" class="btn btn-outline" id="voltarBtn">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+
+                    <button type="submit" class="btn btn-primary" id="mainSubmitButton">
+                        <span class="submit-text">
+                            <i class="fas fa-save"></i> Salvar e Continuar
+                        </span>
+                        <span class="loading-spinner" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Salvando...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Modal de confirmação -->
+        <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmação</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="confirmMessage"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="confirmAction">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/Pagamento/cadastroSubPasta.js"></script>
+</body>
+</html>

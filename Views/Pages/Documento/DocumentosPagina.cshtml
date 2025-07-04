@@ -1,0 +1,814 @@
+﻿@model VoxDocs.Models.ViewModels.DocumentosViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Documentos • VoxDocs";
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Carregamento de recursos -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="~/css/DocumentosStyles/DocumentoStyle.css" rel="stylesheet" />
+    <style>
+        /* Estilos específicos para os inputs de senha nos modais */
+        .modal .input-group-password {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+            .modal .input-group-password input {
+                padding-right: 40px;
+                flex-grow: 1;
+            }
+
+            .modal .input-group-password .toggle-password {
+                position: absolute;
+                right: 10px;
+                background: transparent;
+                border: none;
+                color: #6c757d;
+                cursor: pointer;
+                padding: 0 8px;
+                height: 100%;
+                display: flex;
+                align-items: center;
+            }
+
+                .modal .input-group-password .toggle-password:hover {
+                    color: var(--color-primary);
+                }
+
+                .modal .input-group-password .toggle-password i {
+                    transition: all 0.3s ease;
+                }
+
+            /* Foco no input */
+            .modal .input-group-password input:focus {
+                z-index: 3;
+            }
+    </style>
+</head>
+<body data-user-is-admin="@Model.IsAdmin.ToString().ToLower()">
+    @Html.AntiForgeryToken()
+    @await Html.PartialAsync("_NavbarPartial")
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        @await Html.PartialAsync("_VoiceAssistantModal")
+    }
+
+    <div class="container py-4">
+        <!-- Mensagens de Sucesso/Erro -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- Controle das etapas -->
+        @if (!Model.PastaPrincipalSelecionada.HasValue)
+        {
+            <!-- Etapa 1: Seleção da Pasta Principal -->
+            <div class="doc-card">
+                <div class="doc-header">
+                    <span class="material-symbols-outlined">folder_open</span>
+                    Selecione a Pasta Principal
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var pasta in Model.PastasPrincipais)
+                    {
+                        <li class="list-group-item">
+                            <a href="@Url.Action("DocumentosPagina", "Documentos", new { pastaPrincipalId = pasta.Id })"
+                               class="list-btn">
+                                <span class="material-symbols-outlined">folder</span>
+                                @pasta.NomePastaPrincipal
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        else if (!Model.SubPastaSelecionada.HasValue)
+        {
+            <!-- Etapa 2: Seleção da Subpasta -->
+            <div class="doc-card">
+                <div class="doc-header">
+                    <span class="material-symbols-outlined">folder_open</span>
+                    Selecione a Subpasta
+                </div>
+                <ul class="list-group list-group-flush">
+                    @if (!Model.SubPastas.Any())
+                    {
+                        <li class="list-group-item">
+                            <div class="alert alert-warning mb-0">
+                                Nenhuma subpasta encontrada para esta Pasta Principal.
+                            </div>
+                        </li>
+                    }
+                    else
+                    {
+                        foreach (var subPasta in Model.SubPastas)
+                        {
+                            <li class="list-group-item">
+                                <a href="@Url.Action("DocumentosPagina", "Documentos", new {
+                                    pastaPrincipalId = Model.PastaPrincipalSelecionada,
+                                    subPastaId = subPasta.Id
+                                })" class="list-btn">
+                                    <span class="material-symbols-outlined">folder</span>
+                                    @subPasta.NomeSubPasta
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+                <div class="p-3">
+                    <a class="btn btn-secondary" href="@Url.Action("DocumentosPagina", "Documentos")">
+                        <i class="fas fa-arrow-left me-2"></i>Voltar ao início
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Etapa 3: Listagem de Documentos -->
+            <div class="doc-card">
+                <div class="doc-header">
+                    <span class="material-symbols-outlined">description</span>
+                    Documentos Encontrados
+                </div>
+                @if (!Model.Documentos.Any())
+                {
+                    <div class="alert alert-info m-3">Pasta Sem Documentos. Por favor, faça upload.</div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Arquivo</th>
+                                    <th>Data</th>
+                                    <th>Segurança</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var doc in Model.Documentos)
+                                {
+                                    <tr>
+                                        <td>@doc.NomeArquivo</td>
+                                        <td>@doc.DataCriacao.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @switch (doc.NivelPrioridade)
+                                            {
+                                                case 1:
+                                                    <span class="badge bg-success">📢 Público</span>
+                                                    break;
+                                                case 2:
+                                                    <span class="badge bg-warning text-dark">🔒 Restrito</span>
+                                                    break;
+                                                case 3:
+                                                    <span class="badge bg-danger">🛡️ Confidencial</span>
+                                                    break;
+                                                case 4:
+                                                    <span class="badge bg-primary">⚠️ Prioritário</span>
+                                                    break;
+                                                case 5:
+                                                    <span class="badge bg-dark">🚨 Urgente</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td class="action-cell">
+                                            <a href="@Url.Action("Download", "Documentos", new { id = doc.Id })"
+                                               class="action-btn" title="Download">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <a href="#" class="action-btn" title="Editar" onclick="abrirModalEdicao('@doc.Id')">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            @if (Model.IsAdmin)
+                                            {
+                                                <a href="#" class="action-btn text-danger" title="Excluir"
+                                                   onclick="confirmarExclusao('@doc.Id', @doc.NivelPrioridade)">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                <div class="p-3 d-flex justify-content-between">
+                    <a class="btn btn-secondary" href="@Url.Action("DocumentosPagina", "Documentos", new {
+                        pastaPrincipalId = Model.PastaPrincipalSelecionada
+                    })">
+                        <i class="fas fa-arrow-left me-2"></i>Voltar para Subpastas
+                    </a>
+                    <a class="btn btn-secondary" href="@Url.Action("DocumentosPagina", "Documentos")">
+                        <i class="fas fa-home me-2"></i>Voltar ao início
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir este documento?</p>
+                    <form id="deleteForm">
+                        <div id="tokenContainer">
+                            <div class="mb-3">
+                                <label class="form-label">Token de Segurança</label>
+                                <div class="input-group input-group-password">
+                                    <input type="password" class="form-control" id="deleteToken"
+                                           required minlength="10" maxlength="50" autocomplete="current-password" />
+                                    <button class="toggle-password" type="button" data-target="deleteToken">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="deleteMessage" class="alert" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div class="modal fade" id="editDocumentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Documento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editDocumentForm" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="hidden" id="editDocumentId" name="Id" />
+                        <input type="hidden" id="editDocumentPriority" name="NivelPrioridade" />
+
+                        <div class="mb-3">
+                            <label for="editDocumentName" class="form-label">Nome do Documento</label>
+                            <input type="text" class="form-control" id="editDocumentName" name="NomeArquivo" readonly />
+                            <small class="text-muted">O nome do documento não pode ser alterado</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editDocumentDescription" class="form-label">Descrição do Documento</label>
+                            <textarea class="form-control" id="editDocumentDescription" name="DescricaoArquivo" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editDocumentPrioritySelect" class="form-label fw-medium">Nível de Segurança</label>
+                            <select class="form-select" id="editDocumentPrioritySelect" name="NivelPrioridade" required>
+                                <option value="1">📢 Público (Nível 1)</option>
+                                <option value="2">🔒 Restrito (Nível 2)</option>
+                                @if (Model.IsAdmin)
+                                {
+                                    <option value="3">🛡️ Confidencial (Nível 3)</option>
+                                    <option value="4">⚠️ Prioritário (Nível 4)</option>
+                                    <option value="5">🚨 Urgente (Nível 5)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Container para tokens -->
+                        <div id="tokenEditContainer">
+                            <!-- Campos para Todos os Níveis -->
+                            <div id="tokenCurrentFields">
+                                <div class="mb-3">
+                                    <label for="editCurrentToken" class="form-label">Token Atual</label>
+                                    <div class="input-group input-group-password">
+                                        <input type="password" class="form-control" id="editCurrentToken"
+                                               name="TokenAtual" minlength="10" maxlength="50"
+                                               placeholder="Digite o token atual" required autocomplete="current-password" />
+                                        <button class="toggle-password" type="button" data-target="editCurrentToken">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Campos para Níveis 3+ -->
+                            <div id="tokenHighLevelFields" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="editNewToken" class="form-label">Novo Token</label>
+                                    <div class="input-group input-group-password">
+                                        <input type="password" class="form-control" id="editNewToken"
+                                               name="NovoToken" minlength="10" maxlength="50"
+                                               placeholder="Digite o novo token" required autocomplete="new-password" />
+                                        <button class="toggle-password" type="button" data-target="editNewToken">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editConfirmToken" class="form-label">Confirmar Novo Token</label>
+                                    <div class="input-group input-group-password">
+                                        <input type="password" class="form-control" id="editConfirmToken"
+                                               name="ConfirmarToken" minlength="10" maxlength="50"
+                                               placeholder="Confirme o novo token" required autocomplete="new-password" />
+                                        <button class="toggle-password" type="button" data-target="editConfirmToken">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editDocumentFile" class="form-label">Substituir Arquivo (Opcional)</label>
+                            <input class="form-control" type="file" id="editDocumentFile" name="Arquivo" />
+                        </div>
+
+                        <div id="editMessage" class="alert" style="display:none;"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Variáveis globais para controle da exclusão
+        let currentDocumentId = null;
+        let currentDocumentPriority = 1;
+
+        // Função para alternar visibilidade da senha - Versão definitiva para modais
+                // Função para alternar visibilidade da senha - Versão definitiva para modais
+                // Função para alternar visibilidade da senha - Versão corrigida
+        function setupTogglePassword() {
+            // Função para alternar um input específico
+            const toggleInputType = (input, icon) => {
+                if (!input) return;
+
+                // Salvar estado atual
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const wasFocused = document.activeElement === input;
+                const currentType = input.getAttribute('type');
+
+                // Determinar novo tipo
+                const newType = currentType === 'password' ? 'text' : 'password';
+
+                // Aplicar mudança
+                input.setAttribute('type', newType);
+
+                // Restaurar posição do cursor
+                if (wasFocused) {
+                    input.focus();
+                    setTimeout(() => {
+                        input.setSelectionRange(start, end);
+                    }, 10);
+                }
+
+                // Alternar ícone
+                if (icon) {
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
+                }
+
+                console.log('Tipo alterado de', currentType, 'para', newType);
+            };
+
+            // Configurar todos os botões de alternância
+            document.querySelectorAll('.toggle-password').forEach(button => {
+                // Remover event listeners antigos para evitar duplicação
+                button.removeEventListener('click', button.togglePasswordHandler);
+
+                // Adicionar novo handler
+                button.togglePasswordHandler = function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+                    toggleInputType(input, icon);
+                };
+
+                button.addEventListener('click', button.togglePasswordHandler);
+            });
+
+            // Observar mudanças no DOM para novos elementos
+            const observer = new MutationObserver(mutations => {
+                mutations.forEach(mutation => {
+                    mutation.addedNodes.forEach(node => {
+                        if (node.nodeType === 1) {
+                            const buttons = node.querySelectorAll('.toggle-password');
+                            buttons.forEach(button => {
+                                // Configurar apenas novos botões
+                                if (!button.togglePasswordHandler) {
+                                    button.togglePasswordHandler = function(e) {
+                                        e.preventDefault();
+                                        const targetId = this.getAttribute('data-target');
+                                        const input = document.getElementById(targetId);
+                                        const icon = this.querySelector('i');
+                                        toggleInputType(input, icon);
+                                    };
+                                    button.addEventListener('click', button.togglePasswordHandler);
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            // Configurar inputs inicialmente
+            document.querySelectorAll('.input-group-password input[type="password"]').forEach(input => {
+                const group = input.closest('.input-group-password');
+                if (group) {
+                    const icon = group.querySelector('.toggle-password i');
+                    if (icon) {
+                        icon.classList.add('fa-eye');
+                        icon.classList.remove('fa-eye-slash');
+                    }
+                }
+            });
+        }
+
+        // Função para confirmar exclusão
+        function confirmarExclusao(documentId, priorityLevel) {
+            console.log("Documento para exclusão:", documentId);
+
+            if (!documentId || documentId === '00000000-0000-0000-0000-000000000000') {
+                console.error("ID do documento inválido:", documentId);
+                alert("ID do documento inválido!");
+                return;
+            }
+
+            currentDocumentId = documentId;
+            currentDocumentPriority = priorityLevel;
+
+            // Token sempre visível agora
+            document.getElementById('tokenContainer').style.display = 'block';
+
+            // Limpar mensagens e campos anteriores
+            document.getElementById('deleteMessage').style.display = 'none';
+            document.getElementById('deleteToken').value = '';
+            document.getElementById('deleteToken').classList.remove('is-invalid');
+
+            const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            deleteModal.show();
+        }
+
+        // Configurar botão de confirmação de exclusão
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            console.log("ID atual antes da exclusão:", currentDocumentId);
+
+            if (!currentDocumentId || currentDocumentId === '00000000-0000-0000-0000-000000000000') {
+                const messageContainer = document.getElementById('deleteMessage');
+                messageContainer.textContent = "ID do documento inválido!";
+                messageContainer.className = "alert alert-danger";
+                messageContainer.style.display = "block";
+                return;
+            }
+
+            const tokenInput = document.getElementById('deleteToken');
+            const messageContainer = document.getElementById('deleteMessage');
+
+            // Validar token (obrigatório para todos os níveis)
+            const token = tokenInput.value;
+            if (!token || token.length < 10 || token.length > 50) {
+                messageContainer.textContent = "Token deve ter entre 10 e 50 caracteres";
+                messageContainer.className = "alert alert-danger";
+                messageContainer.style.display = "block";
+                tokenInput.classList.add('is-invalid');
+                return;
+            }
+
+            // Configurar os dados para enviar
+            const data = {
+                Id: currentDocumentId,
+                TokenAcesso: tokenInput.value
+            };
+
+            console.log("Dados sendo enviados:", data);
+
+            // Obter o token CSRF
+            const csrfToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            // Fazer a requisição AJAX
+            fetch('@Url.Action("Excluir", "Documentos")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Erro na requisição');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.invalidId) {
+                    messageContainer.textContent = "ID do documento inválido!";
+                    messageContainer.className = "alert alert-danger";
+                    messageContainer.style.display = "block";
+                    return;
+                }
+
+                if (data.notFound) {
+                    messageContainer.textContent = "Documento não encontrado no sistema!";
+                    messageContainer.className = "alert alert-warning";
+                    messageContainer.style.display = "block";
+                    return;
+                }
+
+                if (data.success) {
+                    const deleteModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+                    deleteModal.hide();
+
+                    // Mostrar mensagem de sucesso
+                    const successAlert = document.createElement('div');
+                    successAlert.className = 'alert alert-success alert-dismissible fade show';
+                    successAlert.role = 'alert';
+                    successAlert.innerHTML = `
+                        ${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+
+                    const container = document.querySelector('.container');
+                    container.prepend(successAlert);
+
+                    // Recarregar após 1 segundo
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    throw new Error(data.message || 'Falha ao excluir documento');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+
+                // Tratamento específico para erro de token inválido
+                if (error.message.toLowerCase().includes("token") ||
+                    error.message.toLowerCase().includes("inválido")) {
+                    messageContainer.textContent = "Token de segurança inválido. Por favor, verifique o token e tente novamente.";
+                    tokenInput.classList.add('is-invalid');
+                    tokenInput.focus();
+                } else {
+                    messageContainer.textContent = error.message;
+                }
+
+                messageContainer.className = "alert alert-danger";
+                messageContainer.style.display = "block";
+            });
+        });
+
+        // Função para abrir modal de edição
+        function abrirModalEdicao(documentId) {
+            fetch(`/Documentos/ObterParaEdicao?id=${documentId}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao carregar documento');
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success) throw new Error(data.message);
+
+                // Preencher o modal
+                const nomeInput = document.getElementById('editDocumentName');
+                nomeInput.value = data.data.nomeArquivo;
+                nomeInput.readOnly = true;
+
+                document.getElementById('editDocumentDescription').value = data.data.descricaoArquivo || '';
+                document.getElementById('editDocumentId').value = data.data.id;
+
+                // Definir o nível de prioridade
+                const prioritySelect = document.getElementById('editDocumentPrioritySelect');
+                prioritySelect.value = data.data.nivelPrioridade;
+                document.getElementById('editDocumentPriority').value = data.data.nivelPrioridade;
+
+                // Mostrar/ocultar campos de token conforme necessário
+                const highLevelFields = document.getElementById('tokenHighLevelFields');
+
+                if (data.data.nivelPrioridade >= 3) {
+                    highLevelFields.style.display = 'block';
+                } else {
+                    highLevelFields.style.display = 'none';
+                }
+
+                // Limpar mensagens anteriores
+                document.getElementById('editMessage').style.display = 'none';
+
+                // Configurar toggle de senha
+                setupTogglePassword();
+
+                // Mostrar modal
+                const editModal = new bootstrap.Modal(document.getElementById('editDocumentModal'));
+                editModal.show();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+
+                // Mostrar erro no modal se estiver aberto, senão em alerta
+                const messageContainer = document.getElementById('editMessage');
+                if (messageContainer) {
+                    messageContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>Erro ao carregar documento:</strong> ${error.message}
+                        </div>
+                    `;
+                    messageContainer.style.display = 'block';
+                } else {
+                    alert(`Erro ao carregar documento: ${error.message}`);
+                }
+            });
+        }
+
+        // Manipular mudança no nível de prioridade
+        document.getElementById('editDocumentPrioritySelect').addEventListener('change', function() {
+            const priority = parseInt(this.value);
+            document.getElementById('editDocumentPriority').value = priority;
+
+            const highLevelFields = document.getElementById('tokenHighLevelFields');
+
+            if (priority >= 3) {
+                highLevelFields.style.display = 'block';
+            } else {
+                highLevelFields.style.display = 'none';
+            }
+        });
+
+        // Função para parsear a resposta tratando erros HTTP
+        async function parseResponse(response) {
+            const contentType = response.headers.get('content-type');
+
+            if (!response.ok) {
+                if (contentType && contentType.includes('application/json')) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `Erro HTTP ${response.status}`);
+                } else {
+                    const text = await response.text();
+                    throw new Error(text || `Erro HTTP ${response.status}`);
+                }
+            }
+
+            if (contentType && contentType.includes('application/json')) {
+                return await response.json();
+            }
+
+            return await response.text();
+        }
+
+        // Enviar formulário de edição
+        document.getElementById('editDocumentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const priority = parseInt(formData.get('NivelPrioridade'));
+            const messageContainer = document.getElementById('editMessage');
+            messageContainer.innerHTML = '';
+            messageContainer.style.display = 'none';
+
+            // Validações básicas
+            const documentName = formData.get('NomeArquivo');
+            if (!documentName || documentName.toString().trim() === '') {
+                showError(messageContainer, "O nome do documento é obrigatório");
+                return;
+            }
+
+            // Validação do token atual para TODOS os níveis
+            const currentToken = formData.get('TokenAtual');
+            if (!currentToken || currentToken.length < 10 || currentToken.length > 50) {
+                showError(messageContainer, "Token atual é obrigatório e deve ter entre 10 e 50 caracteres");
+                return;
+            }
+
+            // Validação adicional para níveis 3+
+            if (priority >= 3) {
+                const newToken = formData.get('NovoToken');
+                const confirmToken = formData.get('ConfirmarToken');
+
+                if (!newToken || newToken.length < 10 || newToken.length > 50) {
+                    showError(messageContainer, "Novo token é obrigatório e deve ter entre 10 e 50 caracteres");
+                    return;
+                }
+
+                if (newToken !== confirmToken) {
+                    showError(messageContainer, "O novo token e a confirmação não coincidem");
+                    return;
+                }
+            }
+
+            try {
+                const csrfToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                const response = await fetch('/Documentos/Editar', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': csrfToken
+                    },
+                    body: formData
+                });
+
+                const data = await parseResponse(response);
+
+                if (data.success) {
+                    const editModal = bootstrap.Modal.getInstance(document.getElementById('editDocumentModal'));
+                    editModal.hide();
+
+                    // Mostrar mensagem de sucesso
+                    const successAlert = document.createElement('div');
+                    successAlert.className = 'alert alert-success alert-dismissible fade show';
+                    successAlert.role = 'alert';
+                    successAlert.innerHTML = `
+                        Documento atualizado com sucesso!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+
+                    const container = document.querySelector('.container');
+                    container.prepend(successAlert);
+
+                    // Recarregar após 1 segundo
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showError(messageContainer, data.message || 'Erro ao editar documento');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showError(messageContainer, error.message || 'Erro ao processar a requisição');
+            }
+        });
+
+        // Função auxiliar para mostrar erros formatados
+        function showError(container, message) {
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>Erro:</strong> ${message}
+                </div>
+            `;
+            container.style.display = 'block';
+
+            // Rolagem suave para o erro
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Fechar modal ao pressionar ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const deleteModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+                if (deleteModal) deleteModal.hide();
+
+                const editModal = bootstrap.Modal.getInstance(document.getElementById('editDocumentModal'));
+                if (editModal) editModal.hide();
+            }
+        });
+
+        // Configurar toggle de senha quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            setupTogglePassword();
+        });
+    </script>
+</body>
+</html>

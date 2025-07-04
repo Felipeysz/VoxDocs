@@ -1,0 +1,124 @@
+:root {
+    --color-primary: #774C9E;
+    --color-accent: #6CD3DC;
+    --color-bg: #f4f6f9;
+    --card-radius: 1.75rem;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #5c3c8a, #774C9E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+
+  .login-card {
+    background-color: white;
+    border-radius: var(--card-radius);
+    padding: 3rem 2rem 2.5rem;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+  }
+
+  .login-card .libras-icon {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 1.8rem;
+    color: var(--color-primary);
+  }
+
+  .login-card .logo {
+    max-width: 120px;
+    margin-bottom: 1rem;
+  }
+
+  .login-card .title {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .login-card .subtitle {
+    font-size: 0.95rem;
+    color: #777;
+    margin-bottom: 2rem;
+  }
+
+  .form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group .material-symbols-outlined {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: #888;
+    transition: color 0.3s;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    border-radius: 2rem;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .form-group input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.15rem rgba(119, 76, 158, 0.25);
+    outline: none;
+  }
+
+  .form-group input:focus + .material-symbols-outlined {
+    color: var(--color-primary);
+  }
+
+  .btn-accent {
+    background-color: var(--color-accent);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    transition: background 0.3s ease;
+  }
+
+  .btn-accent:hover {
+    background-color: #57bfc9;
+  }
+
+  .footer-note {
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .illustration {
+    max-width: 100px;
+    margin: 0 auto 1.5rem;
+    display: block;
+  }
+
+  .back-link {
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .back-link a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .back-link a:hover {
+    text-decoration: underline;
+  }

@@ -1,0 +1,288 @@
+﻿@model VoxDocs.DTO.UserInfoDTO
+@{
+    Layout = null;
+    ViewData["Title"] = "Meu Perfil • VoxDocs";
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+
+    <!-- Fontes e ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #774C9E;
+            --color-accent: #6CD3DC;
+            --color-primary-light: rgba(119, 76, 158, 0.1);
+            --text-muted: #666;
+            --card-radius: 0.75rem;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            margin: 0;
+            color: #333;
+            animation: pageEntrance 0.8s ease-out;
+            overflow-x: hidden;
+        }
+
+        @@keyframes pageEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        /* Card do Formulário */
+        .card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 2.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            animation: cardEntrance 0.8s ease-out 0.2s both;
+            transition: transform 0.6s ease, opacity 0.4s ease;
+            margin-bottom: 2rem;
+        }
+
+        @@keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+            .card-header::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 3px;
+                background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+                border-radius: 3px;
+                animation: expandLine 0.8s ease-out 0.4s both;
+            }
+
+        @@keyframes expandLine {
+            from {
+                width: 0;
+                opacity: 0;
+            }
+
+            to {
+                width: 80px;
+                opacity: 1;
+            }
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .card-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        /* Campos do Formulário */
+        .form-group {
+            margin-bottom: 1.75rem;
+            position: relative;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+            .form-control:focus {
+                border-color: var(--color-primary);
+                box-shadow: 0 0 0 3px rgba(119, 76, 158, 0.15);
+                outline: none;
+            }
+
+        .readonly-lock {
+            background-color: #f9f9f9;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        /* Botão Voltar */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+
+            .btn-back:hover {
+                background-color: #663d8f;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-back i {
+                margin-right: 0.5rem;
+            }
+
+        /* Mensagem de atualização futura */
+        .future-updates {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            background-color: var(--color-primary-light);
+            border-radius: var(--card-radius);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border: 1px dashed var(--color-primary);
+        }
+
+            .future-updates i {
+                color: var(--color-primary);
+                margin-bottom: 0.5rem;
+                font-size: 1.5rem;
+            }
+
+        /* Responsivo */
+        @@media (max-width: 768px) {
+            .card {
+                padding: 1.5rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .card-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- VLibras -->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script> new window.VLibras.Widget('https://vlibras.gov.br/app'); </script>
+
+    <div class="container">
+        <!-- Dados da Conta -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-user-circle"></i>
+                    Meu Perfil
+                </h2>
+                <p class="card-subtitle">Informações da sua conta e permissões</p>
+            </div>
+
+            <div class="card-body">
+                @if (TempData["ProfileError"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["ProfileError"]</div>
+                }
+
+                <h5 class="card-title" style="color: var(--color-primary); margin-bottom: 1.5rem;">
+                    <i class="fas fa-id-card"></i> Dados da Conta
+                </h5>
+
+                <form>
+                    <div class="form-group">
+                        <label for="profileName" class="form-label">Nome de Usuário</label>
+                        <input type="text" id="profileName" class="form-control readonly-lock" value="@Model.Usuario" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileEmail" class="form-label">E-mail</label>
+                        <input type="email" id="profileEmail" class="form-control readonly-lock" value="@Model.Email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="profilePermission" class="form-label">Nível de Permissão</label>
+                        <input type="text" id="profilePermission" class="form-control readonly-lock" value="@Model.NivelPermissao" readonly>
+                    </div>
+                </form>
+
+                <div style="text-align: center;">
+                    <a href="/" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Voltar para a página inicial
+                    </a>
+                </div>
+
+                <div class="future-updates">
+                    <i class="fas fa-rocket"></i>
+                    <p>Mais funcionalidades estarão disponíveis em futuras atualizações!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

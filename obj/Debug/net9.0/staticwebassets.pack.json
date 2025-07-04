@@ -1,0 +1,365 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\Auth\\Login.css",
+      "PackagePath": "staticwebassets\\css\\Auth\\Login.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\Auth\\Perfil\\MeuPerfil.css",
+      "PackagePath": "staticwebassets\\css\\Auth\\Perfil\\MeuPerfil.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\Auth\\RecuperarSenha.css",
+      "PackagePath": "staticwebassets\\css\\Auth\\RecuperarSenha.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\Config\\Ocultarcssnativonavegador.css",
+      "PackagePath": "staticwebassets\\css\\Config\\Ocultarcssnativonavegador.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\DocumentosStyles\\DocumentoStyle.css",
+      "PackagePath": "staticwebassets\\css\\DocumentosStyles\\DocumentoStyle.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\Index\\Index.css",
+      "PackagePath": "staticwebassets\\css\\Index\\Index.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\PagamentosStyles\\page\\cadastro-PastaPrincipal.css",
+      "PackagePath": "staticwebassets\\css\\PagamentosStyles\\page\\cadastro-PastaPrincipal.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\PagamentosStyles\\page\\cadastro-Subpasta.css",
+      "PackagePath": "staticwebassets\\css\\PagamentosStyles\\page\\cadastro-Subpasta.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\PagamentosStyles\\page\\cadastro-Usuarios.css",
+      "PackagePath": "staticwebassets\\css\\PagamentosStyles\\page\\cadastro-Usuarios.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\PagamentosStyles\\page\\cadastro-empresa.css",
+      "PackagePath": "staticwebassets\\css\\PagamentosStyles\\page\\cadastro-empresa.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\PagamentosStyles\\page\\finalizar-Pagamento.css",
+      "PackagePath": "staticwebassets\\css\\PagamentosStyles\\page\\finalizar-Pagamento.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\PagamentosStyles\\page\\pagamento-Confirmado.css",
+      "PackagePath": "staticwebassets\\css\\PagamentosStyles\\page\\pagamento-Confirmado.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\SuporteModalStyles\\SuporteOpenUser.css",
+      "PackagePath": "staticwebassets\\css\\SuporteModalStyles\\SuporteOpenUser.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\SuporteModalStyles\\VoiceAssistantModalStyle.css",
+      "PackagePath": "staticwebassets\\css\\SuporteModalStyles\\VoiceAssistantModalStyle.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\css\\UploadStyles\\UploadPageStyle.css",
+      "PackagePath": "staticwebassets\\css\\UploadStyles\\UploadPageStyle.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\img\\VoxDox sem fundo.png",
+      "PackagePath": "staticwebassets\\img\\VoxDox sem fundo.png"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\js\\Dashboard\\scriptSideBar.js",
+      "PackagePath": "staticwebassets\\js\\Dashboard\\scriptSideBar.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\js\\Pagamento\\cadastroEmpresa.js",
+      "PackagePath": "staticwebassets\\js\\Pagamento\\cadastroEmpresa.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\js\\Pagamento\\cadastroPastaPrincipal.js",
+      "PackagePath": "staticwebassets\\js\\Pagamento\\cadastroPastaPrincipal.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\js\\Pagamento\\cadastroSubPasta.js",
+      "PackagePath": "staticwebassets\\js\\Pagamento\\cadastroSubPasta.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\js\\Pagamento\\cadastroUsuarios.js",
+      "PackagePath": "staticwebassets\\js\\Pagamento\\cadastroUsuarios.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\js\\Pagamento\\finalizarPagamento.js",
+      "PackagePath": "staticwebassets\\js\\Pagamento\\finalizarPagamento.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\js\\Pagamento\\pagamentoConfirmado.js",
+      "PackagePath": "staticwebassets\\js\\Pagamento\\pagamentoConfirmado.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\js\\SuporteIA\\IAvoxdocs.js",
+      "PackagePath": "staticwebassets\\js\\SuporteIA\\IAvoxdocs.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\LICENSE",
+      "PackagePath": "staticwebassets\\lib\\bootstrap"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery-validation-unobtrusive\\dist\\jquery.validate.unobtrusive.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\dist\\jquery.validate.unobtrusive.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery-validation-unobtrusive\\dist\\jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\dist\\jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\LICENSE.md"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.min.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.min.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery\\LICENSE.txt"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery\\dist\\jquery.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery\\dist\\jquery.slim.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery\\dist\\jquery.slim.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.min.js"
+    },
+    {
+      "Id": "D:\\Projetos\\VoxDocs\\MVC\\wwwroot\\lib\\jquery\\dist\\jquery.slim.min.map",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.min.map"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.VoxDocs.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.VoxDocs.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.build.VoxDocs.props",
+      "PackagePath": "build\\VoxDocs.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildMultiTargeting.VoxDocs.props",
+      "PackagePath": "buildMultiTargeting\\VoxDocs.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildTransitive.VoxDocs.props",
+      "PackagePath": "buildTransitive\\VoxDocs.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

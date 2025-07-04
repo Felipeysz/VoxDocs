@@ -1,0 +1,294 @@
+@using VoxDocs.DTO
+@{
+    ViewData["Title"] = "Cadastro de Usuários";
+
+    var usuarios = ViewBag.Usuarios as List<PagamentoUsuarioDTO> ?? new List<PagamentoUsuarioDTO>();
+    var limiteAdmin = ViewBag.LimiteAdmin ?? 0;
+    var limiteUsuario = ViewBag.LimiteUsuario ?? 0;
+
+    var adminCadastrados = usuarios.Count(u => u.PermissaoConta == TipoPermissao.Admin);
+    var usuariosCadastrados = usuarios.Count(u => u.PermissaoConta == TipoPermissao.User);
+
+    var adminRestantes = Math.Max(0, limiteAdmin - adminCadastrados);
+    var usuariosRestantes = Math.Max(0, limiteUsuario - usuariosCadastrados);
+
+    var porcentagemAdmin = limiteAdmin == 0 ? 0 : (adminCadastrados * 100) / limiteAdmin;
+    var porcentagemUsuario = limiteUsuario == 0 ? 0 : (usuariosCadastrados * 100) / limiteUsuario;
+
+    var errorMessage = TempData["ErrorMessage"] as string;
+    var successMessage = TempData["SuccessMessage"] as string;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - VoxDocs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="~/css/PagamentosStyles/page/cadastro-Usuarios.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="usuario-cadastro-container">
+        <div class="container">
+            <!-- Stepper -->
+            <div class="stepper">
+                <div class="step completed">
+                    <div class="step-number"><i class="fas fa-check"></i></div>
+                </div>
+                <div class="step completed">
+                    <div class="step-number"><i class="fas fa-check"></i></div>
+                </div>
+                <div class="step active">
+                    <div class="step-number">3</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    @errorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    @successMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Form Card -->
+            <div class="usuario-card" id="formCard">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-users"></i>
+                        Cadastro de Usuários
+                    </h2>
+                    <p class="card-subtitle">Complete o cadastro dos usuários para sua empresa</p>
+                </div>
+
+                <div class="card-body">
+                    <!-- Card de Limites do Plano -->
+                    <div class="limits-card">
+                        <h5 class="limits-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Limites do Plano
+                        </h5>
+
+                        <div class="limit-item">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Administradores</span>
+                                <span class="badge bg-primary">@adminRestantes restantes</span>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: @porcentagemAdmin%"></div>
+                            </div>
+                            <small class="text-muted">@adminCadastrados de @limiteAdmin cadastrados</small>
+                        </div>
+
+                        <div class="limit-item">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Usuários Comuns</span>
+                                <span class="badge bg-primary">@usuariosRestantes restantes</span>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-info" style="width: @porcentagemUsuario%"></div>
+                            </div>
+                            <small class="text-muted">@usuariosCadastrados de @limiteUsuario cadastrados</small>
+                        </div>
+                    </div>
+
+                    <!-- Divisão das seções -->
+                    <div class="two-sections">
+                        <!-- Seção 1: Formulário de cadastro -->
+                        <div class="section">
+                            <h5 class="section-title">
+                                <i class="fas fa-user-plus"></i>
+                                Adicionar Novo Usuário
+                            </h5>
+
+                            <form id="usuarioForm" asp-action="AdicionarUsuario" method="post">
+                                @Html.AntiForgeryToken()
+
+                                <div class="form-group">
+                                    <label class="form-label">Nome de Usuário <span class="text-danger">*</span></label>
+                                    <input type="text" name="Usuario" class="form-control" placeholder="Digite o nome do usuário" required>
+                                    <i class="fas fa-user input-icon"></i>
+                                    @if (ViewData.ModelState["Usuario"]?.Errors?.Count > 0)
+                                    {
+                                        <div class="validation-message text-danger">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <span>@ViewData.ModelState["Usuario"].Errors.First().ErrorMessage</span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">E-mail <span class="text-danger">*</span></label>
+                                    <input type="email" name="Email" class="form-control" placeholder="Digite o e-mail" required>
+                                    <i class="fas fa-envelope input-icon"></i>
+                                    @if (ViewData.ModelState["Email"]?.Errors?.Count > 0)
+                                    {
+                                        <div class="validation-message text-danger">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <span>@ViewData.ModelState["Email"].Errors.First().ErrorMessage</span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Senha <span class="text-danger">*</span></label>
+                                    <input type="password" name="Senha" class="form-control" placeholder="Digite a senha" required>
+                                    <i class="fas fa-lock input-icon"></i>
+                                    @if (ViewData.ModelState["Senha"]?.Errors?.Count > 0)
+                                    {
+                                        <div class="validation-message text-danger">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <span>@ViewData.ModelState["Senha"].Errors.First().ErrorMessage</span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Tipo de Usuário <span class="text-danger">*</span></label>
+                                    <select name="PermissaoConta" class="form-control" required>
+                                        <option value="">Selecione o tipo...</option>
+                                        <option value="Admin" disabled="@(adminRestantes <= 0)">Administrador</option>
+                                        <option value="User" disabled="@(usuariosRestantes <= 0)">Usuário</option>
+                                    </select>
+                                    <i class="fas fa-user-tag input-icon"></i>
+                                    @if (ViewData.ModelState["PermissaoConta"]?.Errors?.Count > 0)
+                                    {
+                                        <div class="validation-message text-danger">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <span>@ViewData.ModelState["PermissaoConta"].Errors.First().ErrorMessage</span>
+                                        </div>
+                                    }
+                                    @if (adminRestantes <= 0)
+                                    {
+                                        <div class="validation-message text-danger mt-2">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <span>Limite de administradores atingido</span>
+                                        </div>
+                                    }
+                                    @if (usuariosRestantes <= 0)
+                                    {
+                                        <div class="validation-message text-danger mt-2">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <span>Limite de usuários comuns atingido</span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 mt-2">
+                                    <i class="fas fa-plus me-2"></i>Adicionar Usuário
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Divisor visual -->
+                        <div class="section-divider"></div>
+
+                        <!-- Seção 2: Lista de usuários -->
+                        <div class="section">
+                            <h5 class="section-title">
+                                <i class="fas fa-users"></i>
+                                Usuários Cadastrados
+                            </h5>
+
+                            @if (!usuarios.Any())
+                            {
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Nenhum usuário cadastrado ainda.
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="table-responsive">
+                                    <table class="usuario-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Tipo</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var usuario in usuarios)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <div class="user-info">
+                                                            <span>@usuario.Usuario</span>
+                                                            <div class="user-icon @(usuario.PermissaoConta == TipoPermissao.Admin ? "admin" : "user")">
+                                                                <i class="@(usuario.PermissaoConta == TipoPermissao.Admin ? "fas fa-user-shield" : "fas fa-user")"></i>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge @(usuario.PermissaoConta == TipoPermissao.Admin ? "badge-admin" : "badge-user")">
+                                                            @(usuario.PermissaoConta == TipoPermissao.Admin ? "Admin" : "Usuário")
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <form asp-action="RemoverUsuario" method="post" class="d-inline">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="email" value="@usuario.Email" />
+                                                            <button type="submit" class="btn btn-sm btn-trash">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Botões de ação -->
+                    <div class="form-actions">
+                        <a asp-action="CadastroPastas" class="btn btn-outline">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                        </a>
+                        <form asp-action="FinalizarCadastroUsuarios" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-primary" disabled="@(adminCadastrados == 0)">
+                                <span>Avançar para Confirmação</span>
+                                <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/Pagamento/cadastroUsuarios.js"></script>
+
+    <script>
+        // Fechar alertas automaticamente após 5 segundos
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

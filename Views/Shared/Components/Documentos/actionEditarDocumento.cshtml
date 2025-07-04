@@ -1,0 +1,85 @@
+﻿@model VoxDocs.DTO.DocumentoUpdateDTO
+
+<div class="modal fade" id="deleteModal-@Model.Id" tabindex="-1" aria-labelledby="deleteModalLabel-@Model.Id" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel-@Model.Id">Excluir Documento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir permanentemente o documento <strong>@Model.NomeArquivo</strong>?</p>
+
+                @if (Model.NivelPrioridade > 1) // Documentos Restritos ou Confidenciais
+                {
+                    <div class="mb-3">
+                        <label for="token-@Model.Id" class="form-label">Token de Segurança</label>
+                        <input type="password" id="token-@Model.Id" class="form-control" required
+                               minlength="10" maxlength="50" />
+                        <small class="text-muted">Obrigatório para documentos restritos ou confidenciais (10-50 caracteres)</small>
+                    </div>
+                }
+
+                <div id="deleteMessage-@Model.Id" class="alert" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="confirmarExclusao('@Model.Id', @Model.NivelPrioridade)">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmarExclusao(documentoId, nivelPrioridade) {
+        const tokenInput = document.getElementById(`token-${documentoId}`);
+        const messageContainer = document.getElementById(`deleteMessage-${documentoId}`);
+
+        // Validação do token conforme DTO
+        if (nivelPrioridade > 1) {
+            const token = tokenInput.value;
+            if (!token || token.length < 10 || token.length > 50) {
+                messageContainer.textContent = "Token deve ter entre 10 e 50 caracteres";
+                messageContainer.className = "alert alert-danger";
+                messageContainer.style.display = "block";
+                return;
+            }
+        }
+
+        const token = nivelPrioridade > 1 ? tokenInput.value : null;
+
+        fetch(`/Documentos/Remover/${documentoId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({
+                id: documentoId,
+                tokenAcesso: token,
+                nivelPrioridade: nivelPrioridade
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Erro na requisição');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Fecha o modal e recarrega a lista
+                $(`#deleteModal-${documentoId}`).modal('hide');
+                location.reload(); // Ou atualize apenas a lista de documentos
+            } else {
+                messageContainer.textContent = data.message || "Erro ao excluir documento";
+                messageContainer.className = "alert alert-danger";
+                messageContainer.style.display = "block";
+            }
+        })
+        .catch(error => {
+            messageContainer.textContent = "Erro ao conectar com o servidor";
+            messageContainer.className = "alert alert-danger";
+            messageContainer.style.display = "block";
+            console.error('Error:', error);
+        });
+    }
+</script>

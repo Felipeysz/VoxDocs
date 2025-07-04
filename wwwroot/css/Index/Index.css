@@ -1,0 +1,316 @@
+:root {
+    --color-primary: #774C9E;
+    --color-accent: #6CD3DC;
+    --color-bg-light: #f4f6f9;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --text-dark: #333;
+    --roxo-principal: #6a3093;
+    --roxo-escuro: #4a1d66;
+    --azul-escuro: #2c3e50;
+    --cinza-claro: #f8f9fa;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--color-bg-light);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 0;
+}
+
+/* Hero com gradiente */
+.hero {
+    position: relative;
+    overflow: hidden;
+    padding: 6rem 1rem;
+    text-align: center;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: #fff;
+}
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient( 45deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05) 25%, transparent 50%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.15) );
+        background-size: 200% 200%;
+        animation: slideGradient 8s ease infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+@keyframes slideGradient {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(-60%, -60%) rotate(10deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+}
+
+.hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+.hero h1 {
+    font-size: 2.75rem;
+    font-weight: 600;
+}
+
+.hero p {
+    font-size: 1.1rem;
+    margin: 1rem 0 2rem;
+}
+
+.btn-primary {
+    background-color: #fff;
+    color: var(--color-primary);
+    border-radius: 2rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.3s;
+}
+
+    .btn-primary:hover {
+        background-color: #f1f1f1;
+        transform: translateY(-2px);
+    }
+
+/* Features */
+.features {
+    padding: 4rem 1rem;
+    background: #fff;
+}
+
+.feature-box {
+    background: var(--color-bg-light);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 12px var(--shadow);
+    text-align: center;
+    transition: transform 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+    .feature-box::before {
+        content: '';
+        position: absolute;
+        top: -40%;
+        left: -40%;
+        width: 180%;
+        height: 180%;
+        background: radial-gradient(circle at center, rgba(255,255,255,0.1), transparent 70%);
+        animation: slideGradient 10s linear infinite reverse;
+    }
+
+    .feature-box > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .feature-box:hover {
+        transform: translateY(-5px);
+    }
+
+.feature-icon {
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+#navbar-container,
+#footer-container {
+    position: relative;
+    z-index: 1;
+}
+
+.plans {
+    padding: 4rem 1rem;
+    background: #fff;
+}
+
+    .plans h2 {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--color-primary);
+        margin-bottom: 2rem;
+    }
+
+.plan-card {
+    background: var(--color-bg-light);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 12px var(--shadow);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+    .plan-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+
+.plan-card-content {
+    flex: 1;
+    padding: 2rem;
+}
+
+.btn-subscribe-container {
+    margin-top: auto;
+    padding: 0 2rem 2rem;
+}
+
+.plan-card .plan-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--cinza-claro);
+}
+
+.plan-card .plan-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+}
+
+.plan-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    text-align: left;
+}
+
+    .plan-card ul li {
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--cinza-claro);
+    }
+
+        .plan-card ul li .material-symbols-outlined {
+            font-size: 1.2rem;
+            color: var(--color-accent);
+        }
+
+.plan-card .btn-subscribe {
+    margin-top: 1rem;
+    background-color: var(--color-accent);
+    color: #fff;
+    border-radius: 2rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+    .plan-card .btn-subscribe:hover {
+        background-color: var(--color-primary);
+        transform: translateY(-2px);
+    }
+
+.highlight-card {
+    border: 3px solid var(--roxo-principal);
+    position: relative;
+    overflow: hidden;
+    transform: scale(1.02);
+}
+
+.highlight-badge {
+    position: absolute;
+    top: 20px;
+    right: -35px;
+    background: var(--roxo-principal);
+    color: white;
+    padding: 0.25rem 3rem;
+    transform: rotate(45deg);
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.comparison-table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+    .comparison-table th {
+        background: var(--cinza-claro);
+        font-weight: 600;
+        padding: 1.25rem;
+    }
+
+    .comparison-table td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+.feature-check {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.feature-x {
+    color: #e74c3c;
+}
+
+.faq-section {
+    background-color: var(--cinza-claro);
+    border-radius: 10px;
+    padding: 2rem;
+}
+
+.accordion-button {
+    font-weight: 600;
+    padding: 1.25rem;
+}
+
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(106, 48, 147, 0.1);
+        color: var(--roxo-principal);
+    }
+
+.cta-section {
+    background: linear-gradient(135deg, var(--roxo-principal), var(--azul-escuro));
+    padding: 4rem 0;
+    border-radius: 10px;
+    margin: 3rem 0;
+}
+
+.benefit-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--roxo-principal);
+}
+
+@media (max-width: 768px) {
+    .plan-card {
+        margin-bottom: 2rem;
+    }
+
+    .highlight-card {
+        transform: scale(1);
+    }
+}

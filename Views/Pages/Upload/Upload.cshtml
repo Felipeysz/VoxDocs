@@ -1,0 +1,656 @@
+﻿@model VoxDocs.Models.ViewModels.UploadDocumentoViewModel
+@{
+    var isAdmin = ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin;
+    System.Diagnostics.Debug.WriteLine($"View isAdmin: {isAdmin}");
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload de Documentos - VoxDocs</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Fontes e ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+    <style>
+        :root {
+            --color-primary: #774C9E;
+            --color-accent: #6CD3DC;
+            --color-primary-light: rgba(119, 76, 158, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .card-upload {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .card-header-upload {
+            border-bottom: none;
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+            .card-header-upload::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 3px;
+                background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+                border-radius: 3px;
+            }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--color-primary), #8E54E9);
+            border: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 0.25rem rgba(119, 76, 158, 0.25);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23774C9E' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px 12px;
+            padding-right: 2.5rem;
+        }
+
+        .token-strength {
+            font-size: 0.8rem;
+        }
+
+        .strength-weak {
+            color: #dc3545;
+        }
+
+        .strength-good {
+            color: #fd7e14;
+        }
+
+        .strength-strong {
+            color: #28a745;
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilos específicos para os níveis de segurança */
+        option[value="Confidencial"],
+        option[value="Prioritario"],
+        option[value="Urgente"] {
+            font-weight: 600;
+            background-color: rgba(119, 76, 158, 0.1);
+        }
+
+        option[value="Urgente"] {
+            color: #dc3545;
+        }
+
+        /* Adicionado para melhorar feedback */
+        .upload-feedback {
+            transition: all 0.3s ease;
+        }
+
+        /* Estilo para mensagem de erro de arquivo */
+        .file-error {
+            color: #dc3545;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- VLibras -->
+        @await Html.PartialAsync("_VlibrasPartial")
+        <!-- Navbar -->
+        @await Html.PartialAsync("_NavbarPartial")
+        @await Html.PartialAsync("_VoiceAssistantModal")
+    </header>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card card-upload mb-4">
+                    <div class="card-header text-center card-header-upload">
+                        <h2 class="card-title mb-1">
+                            <span class="material-symbols-outlined align-middle">upload</span>
+                            Upload de Documentos
+                        </h2>
+                        <p class="text-muted mb-0">Envie seus documentos para armazenamento seguro</p>
+                    </div>
+
+                    <div class="card-body">
+                        <form id="frmUpload" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+
+                            <!-- Informações do usuário (hidden) -->
+                            <input type="hidden" id="userEmpresa" value="@ViewBag.Empresa" />
+                            <input type="hidden" id="isAdmin" value="@isAdmin.ToString().ToLower()" />
+
+                            <!-- Arquivo -->
+                            <div class="mb-3">
+                                <label asp-for="Arquivo" class="form-label fw-medium"></label>
+                                <input asp-for="Arquivo" type="file" class="form-control" id="arquivoInput" required
+                                       accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt" />
+                                <small class="text-muted">Formatos suportados: PDF, DOC/DOCX, XLS/XLSX, PPT/PPTX, JPG/JPEG, PNG, TXT</small>
+                                <div id="fileError" class="file-error"></div>
+                                <span asp-validation-for="Arquivo" class="invalid-feedback"></span>
+                            </div>
+
+                            <!-- Pasta Principal -->
+                            <div class="mb-3">
+                                <label asp-for="SelectedPastaPrincipalId" class="form-label fw-medium"></label>
+                                <select asp-for="SelectedPastaPrincipalId"
+                                        asp-items="@(new SelectList(Model.PastaPrincipais, "Id","NomePastaPrincipal"))"
+                                        class="form-control" id="PastaPrincipalSelect" required>
+                                    <option value="">Escolha a Categoria Principal</option>
+                                </select>
+                                <span asp-validation-for="SelectedPastaPrincipalId" class="invalid-feedback"></span>
+                            </div>
+
+                            <!-- Subpasta (inicialmente oculta) -->
+                            <div class="mb-3" id="subpasta-group" style="display:none;">
+                                <label asp-for="SelectedSubPastaId" class="form-label fw-medium"></label>
+                                <select asp-for="SelectedSubPastaId" class="form-control" id="SubPastaSelect" required>
+                                    <option value="">Escolha a Sub Categoria</option>
+                                </select>
+                                <span asp-validation-for="SelectedSubPastaId" class="invalid-feedback"></span>
+                            </div>
+
+                            <!-- Nível de Segurança -->
+                            <div class="mb-3">
+                                <label asp-for="NivelSeguranca" class="form-label fw-medium"></label>
+                                <select asp-for="NivelSeguranca" class="form-control" id="NivelSeguranca" required>
+                                    <option value="Publico">📢 Público (Nível 1)</option>
+                                    <option value="Restrito">🔒 Restrito (Nível 2)</option>
+                                    @if (isAdmin)
+                                    {
+                                        <option value="Confidencial">🛡️ Confidencial (Nível 3)</option>
+                                        <option value="Prioritario">⚠️ Prioritário (Nível 4)</option>
+                                        <option value="Urgente">🚨 Urgente (Nível 5)</option>
+                                    }
+                                </select>
+                                <small class="text-muted" id="nivelSegurancaHelp"></small>
+                                <span asp-validation-for="NivelSeguranca" class="invalid-feedback"></span>
+                            </div>
+
+                            <!-- Token (só aparece a partir do nível 3 - Confidencial) -->
+                            <div class="mb-3" id="token-group" style="display:none;">
+                                <label asp-for="TokenSeguranca" class="form-label fw-medium">Token de Acesso</label>
+                                <div class="input-group">
+                                    <input asp-for="TokenSeguranca" type="password" class="form-control" id="tokenInput"
+                                           minlength="10" maxlength="50"
+                                           pattern="^(?=.*[a-zA-Z])(?=.*[0-9]).{10,}$"
+                                           title="O token deve ter no mínimo 10 caracteres, incluindo letras e números" />
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleToken">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div id="tokenStrength" class="token-strength mt-1"></div>
+                                <small class="text-muted">Obrigatório para documentos confidenciais (mínimo 10 caracteres alfanuméricos)</small>
+                                <span asp-validation-for="TokenSeguranca" class="invalid-feedback"></span>
+                            </div>
+
+                            <!-- Descrição -->
+                            <div class="mb-4">
+                                <label asp-for="Descricao" class="form-label fw-medium"></label>
+                                <textarea asp-for="Descricao" class="form-control" id="descricaoInput" rows="3" required maxlength="500"></textarea>
+                                <small class="text-muted">Descreva o conteúdo do documento (máx. 500 caracteres)</small>
+                                <span asp-validation-for="Descricao" class="invalid-feedback"></span>
+                            </div>
+
+                            <!-- Botão -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary-custom text-white fw-semibold py-2" id="btnSubmit">
+                                    <span class="material-symbols-outlined align-middle">upload</span> Enviar Documento
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Feedback AJAX -->
+                        <div id="messageContainer" class="alert mt-3 upload-feedback" role="alert" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery Validation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Elementos principais
+            const nivelSeguranca = $("#NivelSeguranca");
+            const tokenGroup = $("#token-group");
+            const tokenInput = $("#tokenInput");
+            const tokenStrength = $("#tokenStrength");
+            const form = $('#frmUpload');
+            const pastaPrincipalSelect = $("#PastaPrincipalSelect");
+            const subPastaGroup = $("#subpasta-group");
+            const subPastaSelect = $("#SubPastaSelect");
+            const messageContainer = $("#messageContainer");
+            const btnSubmit = $("#btnSubmit");
+            const nivelSegurancaHelp = $("#nivelSegurancaHelp");
+            const toggleToken = $("#toggleToken");
+            const isAdmin = $("#isAdmin").val() === 'true';
+            const arquivoInput = $("#arquivoInput");
+            const fileError = $("#fileError");
+
+            // Tipos de arquivo permitidos
+            const allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'txt'];
+            const allowedMimeTypes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-powerpoint',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'image/jpeg',
+                'image/png',
+                'text/plain'
+            ];
+
+            // Tooltips para níveis de segurança
+            const nivelTooltips = {
+                "Publico": "Visível para todos os usuários sem restrições",
+                "Restrito": "Acesso limitado a usuários autorizados",
+                "Confidencial": "Somente administradores podem visualizar/gerenciar (requer token)",
+                "Prioritario": "Documento com prioridade alta (somente admin, requer token)",
+                "Urgente": "Documento com máxima urgência (somente admin, requer token)"
+            };
+
+            // Descrições detalhadas para níveis de segurança
+            const nivelDescriptions = {
+                "Publico": "Todos os usuários podem acessar este documento sem restrições.",
+                "Restrito": "Acesso limitado a usuários autorizados. Não requer token.",
+                "Confidencial": "Documento visível apenas para administradores. Requer token de segurança.",
+                "Prioritario": "Documento com prioridade alta no sistema (apenas admin). Requer token de segurança.",
+                "Urgente": "Documento com máxima prioridade e visibilidade (apenas admin). Requer token de segurança."
+            };
+
+            // Atualiza a descrição do nível de segurança
+            function updateNivelDescription() {
+                const nivel = nivelSeguranca.val();
+                nivelSegurancaHelp.text(nivelDescriptions[nivel] || "");
+            }
+
+            // Alternar visibilidade do token
+            toggleToken.on('click', function() {
+                const type = tokenInput.attr('type') === 'password' ? 'text' : 'password';
+                tokenInput.attr('type', type);
+                $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+            });
+
+            // Função para limpar campos
+            function limparCampos() {
+                form[0].reset();
+                tokenInput.val('');
+                tokenStrength.text('');
+                subPastaGroup.hide();
+                subPastaSelect.html('<option value="">Escolha a Sub Categoria</option>');
+                nivelSeguranca.val('Publico');
+                tokenGroup.hide();
+                $('.is-invalid').removeClass('is-invalid');
+                $('.invalid-feedback').hide();
+                fileError.text('');
+                updateNivelDescription();
+            }
+
+            // Mostra força do token
+            function updateTokenStrength(token) {
+                if (!token) {
+                    tokenStrength.text('').removeClass('strength-weak strength-good strength-strong');
+                    return;
+                }
+
+                const length = token.length;
+                const hasLetter = /[a-zA-Z]/.test(token);
+                const hasNumber = /[0-9]/.test(token);
+                const hasSpecial = /[^a-zA-Z0-9]/.test(token);
+
+                let strength = 0;
+                if (length >= 10) strength++;
+                if (length >= 15) strength++;
+                if (hasLetter && hasNumber) strength++;
+                if (hasSpecial) strength++;
+
+                tokenStrength.removeClass('strength-weak strength-good strength-strong');
+
+                if (length < 10) {
+                    tokenStrength.text('Muito curto (mínimo 10 caracteres)').addClass('strength-weak');
+                } else if (strength <= 2) {
+                    tokenStrength.text('Fraca').addClass('strength-weak');
+                } else if (strength <= 3) {
+                    tokenStrength.text('Boa').addClass('strength-good');
+                } else {
+                    tokenStrength.text('Forte').addClass('strength-strong');
+                }
+            }
+
+            // Validação do arquivo
+            function validateFile(file) {
+                if (!file) {
+                    fileError.text('Por favor, selecione um arquivo.');
+                    return false;
+                }
+
+                const fileName = file.name.toLowerCase();
+                const fileExt = fileName.split('.').pop();
+
+                // Verifica extensão
+                if (!allowedExtensions.includes(fileExt)) {
+                    fileError.text('Tipo de arquivo não permitido. Formatos aceitos: ' + allowedExtensions.join(', '));
+                    return false;
+                }
+
+                // Verifica tipo MIME (se disponível)
+                if (file.type && !allowedMimeTypes.includes(file.type)) {
+                    fileError.text('Tipo de arquivo não permitido.');
+                    return false;
+                }
+
+                // Verifica tamanho máximo (10MB)
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (file.size > maxSize) {
+                    fileError.text('O arquivo é muito grande. Tamanho máximo permitido: 10MB.');
+                    return false;
+                }
+
+                fileError.text('');
+                return true;
+            }
+
+            // Evento de mudança no arquivo
+            arquivoInput.on('change', function() {
+                const file = this.files[0];
+                validateFile(file);
+            });
+
+            // Evento de mudança no token
+            tokenInput.on('input', function() {
+                updateTokenStrength($(this).val());
+            });
+
+            // mostra/esconde token (apenas para níveis 3+) e limpa campo
+            nivelSeguranca.on("change", function() {
+                const nivel = this.value;
+                // Mostrar token apenas para níveis 3, 4 e 5
+                const showToken = ["Confidencial", "Prioritario", "Urgente"].includes(nivel);
+                tokenGroup.toggle(showToken);
+                tokenStrength.text('');
+                updateNivelDescription();
+
+                if (showToken) {
+                    tokenInput.prop('required', true);
+                } else {
+                    tokenInput.prop('required', false);
+                    tokenInput.val('');
+                }
+            });
+
+            // Inicializa a visibilidade do token e descrição
+            tokenGroup.toggle(["Confidencial", "Prioritario", "Urgente"].includes(nivelSeguranca.val()));
+            updateNivelDescription();
+
+            // Subpasta dinâmica
+            pastaPrincipalSelect.on("change", async function() {
+                const pastaPrincipalId = $(this).val();
+                subPastaSelect.html('<option value="">Escolha a Sub Categoria</option>');
+
+                if (!pastaPrincipalId) {
+                    subPastaGroup.hide();
+                    return;
+                }
+
+                try {
+                    btnSubmit.prop('disabled', true);
+                    subPastaGroup.hide();
+
+                    const resp = await fetch(`/Upload/GetSubPastas?pastaPrincipalId=${pastaPrincipalId}`);
+
+                    if (!resp.ok) throw new Error('Erro na requisição: ' + resp.status);
+
+                    const data = await resp.json();
+
+                    if (data.success && data.data && data.data.length > 0) {
+                        data.data.forEach(function(s) {
+                            subPastaSelect.append($('<option></option>').val(s.id).text(s.nomeSubPasta));
+                        });
+                        subPastaGroup.show();
+                    } else {
+                        // Se não houver subpastas, mostra mensagem e impede o envio
+                        showMessage('Esta pasta principal não possui subpastas. Por favor, selecione outra pasta principal.', 'danger');
+                        pastaPrincipalSelect.val('');
+                        subPastaGroup.hide();
+                    }
+                } catch (err) {
+                    console.error("Erro ao carregar subpastas:", err);
+                    subPastaGroup.hide();
+                    showMessage('Erro ao carregar subpastas. Tente novamente.', 'danger');
+                } finally {
+                    btnSubmit.prop('disabled', false);
+                }
+            });
+
+            // Mostrar mensagem de feedback
+            function showMessage(message, type = 'success') {
+                messageContainer.removeClass('alert-success alert-danger alert-warning')
+                               .addClass(`alert-${type}`)
+                               .text(message)
+                               .fadeIn();
+
+                setTimeout(() => {
+                    messageContainer.fadeOut();
+                }, 5000);
+            }
+
+            // Validação do formulário
+            $.validator.setDefaults({
+                errorElement: 'div',
+                errorClass: 'invalid-feedback',
+                highlight: function(element) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function(element) {
+                    $(element).removeClass('is-invalid');
+                },
+                rules: {
+                    TokenSeguranca: {
+                        required: function() {
+                            return ["Confidencial", "Prioritario", "Urgente"].includes($("#NivelSeguranca").val());
+                        },
+                        minlength: 10,
+                        alphanumeric: true
+                    },
+                    Arquivo: {
+                        accept: "application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt",
+                        filesize: 10485760 // 10MB
+                    },
+                    Descricao: {
+                        maxlength: 500
+                    },
+                    SelectedSubPastaId: {
+                        required: true
+                    }
+                },
+                messages: {
+                    TokenSeguranca: {
+                        required: "Token de segurança é obrigatório para documentos confidenciais",
+                        minlength: "O token deve ter no mínimo 10 caracteres",
+                        alphanumeric: "O token deve conter letras e números"
+                    },
+                    Arquivo: {
+                        accept: "Formato de arquivo não suportado. Use: PDF, DOC/DOCX, XLS/XLSX, PPT/PPTX, JPG/JPEG, PNG ou TXT",
+                        filesize: "O arquivo deve ter no máximo 10MB"
+                    },
+                    Descricao: {
+                        maxlength: "A descrição deve ter no máximo 500 caracteres"
+                    },
+                    SelectedSubPastaId: {
+                        required: "A subpasta é obrigatória"
+                    }
+                }
+            });
+
+            // Validador alfanumérico
+            $.validator.addMethod("alphanumeric", function(value, element) {
+                if (!["Confidencial", "Prioritario", "Urgente"].includes($("#NivelSeguranca").val())) return true;
+                return /^(?=.*[a-zA-Z])(?=.*[0-9])/.test(value);
+            }, "O token deve conter letras e números");
+
+            // Validador de tamanho de arquivo
+            $.validator.addMethod("filesize", function(value, element, param) {
+                if (!element.files || element.files.length === 0) return true;
+                return element.files[0].size <= param;
+            });
+
+            // Validador de tipo de arquivo
+            $.validator.addMethod("accept", function(value, element, param) {
+                if (!value) return true;
+
+                const file = element.files[0];
+                if (!file) return true;
+
+                // Verifica extensão
+                const extension = value.split('.').pop().toLowerCase();
+                const allowedExtensions = param.split(',')
+                    .map(ext => ext.replace(/^\./, '').replace(/^application\//, ''))
+                    .filter(ext => ext);
+
+                if (!allowedExtensions.includes(extension)) return false;
+
+                // Verifica tipo MIME (se disponível)
+                if (file.type) {
+                    const allowedMimeTypes = [
+                        'application/pdf',
+                        'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        'application/vnd.ms-excel',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        'application/vnd.ms-powerpoint',
+                        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                        'image/jpeg',
+                        'image/png',
+                        'text/plain'
+                    ];
+
+                    if (!allowedMimeTypes.includes(file.type)) return false;
+                }
+
+                return true;
+            });
+
+            // AJAX submit
+            form.on('submit', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Validação manual do arquivo
+                const file = arquivoInput[0].files[0];
+                if (!validateFile(file)) {
+                    return false;
+                }
+
+                // Validação manual da subpasta
+                if (!subPastaSelect.val()) {
+                    showMessage('Por favor, selecione uma subpasta.', 'danger');
+                    return false;
+                }
+
+                if (!form.valid()) return;
+
+                // Verificação adicional de nível de segurança para não-admins
+                const restrictedLevels = ["Confidencial", "Prioritario", "Urgente"];
+                if (!isAdmin && restrictedLevels.includes(nivelSeguranca.val())) {
+                    showMessage('Apenas administradores podem criar documentos com este nível de segurança.', 'danger');
+                    return false;
+                }
+
+                // Validação adicional do token para níveis 3+
+                if (["Confidencial", "Prioritario", "Urgente"].includes(nivelSeguranca.val())) {
+                    const token = tokenInput.val();
+                    if (!token || token.length < 10) {
+                        showMessage('Token de segurança deve ter no mínimo 10 caracteres alfanuméricos.', 'danger');
+                        return;
+                    }
+
+                    if (!/(?=.*[a-zA-Z])(?=.*[0-9])/.test(token)) {
+                        showMessage('O token deve conter letras e números.', 'danger');
+                        return;
+                    }
+                }
+
+                const formData = new FormData(this);
+                btnSubmit.prop('disabled', true);
+                btnSubmit.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...');
+
+                try {
+                    const resp = await fetch('@Url.Action("Upload", "Upload")', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    });
+
+                    const json = await resp.json();
+
+                    if (json.success) {
+                        showMessage(json.message + ' ID do documento: ' + json.documentoId);
+                        limparCampos();
+                    } else {
+                        let errorMessage = json.message;
+                        if (json.errors && json.errors.length > 0) {
+                            errorMessage += ': ' + json.errors.join(', ');
+                        }
+                        showMessage(errorMessage, 'danger');
+                    }
+                } catch (error) {
+                    console.error("Erro na requisição:", error);
+                    showMessage('Erro ao processar a requisição: ' + error.message, 'danger');
+                } finally {
+                    btnSubmit.prop('disabled', false);
+                    btnSubmit.html('<span class="material-symbols-outlined align-middle">upload</span> Enviar Documento');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

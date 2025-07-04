@@ -1,0 +1,90 @@
+﻿@model VoxDocs.DTO.DocumentoCreateDTO
+
+<div class="modal fade" id="deleteModal-@Model.Id" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Excluir Documento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir permanentemente o documento <strong>@Model.NomeArquivo</strong>?</p>
+
+                @if (Model.NivelPrioridade > 1) // Documentos Restritos ou Confidenciais
+                {
+                    <div class="mb-3">
+                        <label for="tokenInput" class="form-label">Token de Segurança</label>
+                        <input type="password" id="tokenInput" class="form-control"
+                               required minlength="10" maxlength="50"
+                               placeholder="Digite o token de acesso (10-50 caracteres)" />
+                        <small class="text-muted">Obrigatório para documentos restritos ou confidenciais</small>
+                    </div>
+                }
+
+                <div id="deleteMessage" class="alert" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="confirmarExclusao()">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmarExclusao() {
+        const tokenInput = document.getElementById('tokenInput');
+        const messageContainer = document.getElementById('deleteMessage');
+        const nivelPrioridade = @Model.NivelPrioridade;
+        const documentoId = '@Model.Id';
+
+        // Reset mensagem de erro
+        messageContainer.style.display = "none";
+
+        // Validação do token conforme DocumentoUpdateDTO
+        if (nivelPrioridade > 1) {
+            const token = tokenInput?.value;
+            if (!token || token.length < 10 || token.length > 50) {
+                showError("Token de acesso deve ter entre 10 e 50 caracteres");
+                return;
+            }
+        }
+
+        const requestBody = {
+            Id: documentoId,
+            NivelPrioridade: nivelPrioridade,
+            TokenAcesso: nivelPrioridade > 1 ? tokenInput.value : null
+        };
+
+        fetch('/Documentos/Remover', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify(requestBody)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Erro na requisição');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                $('#deleteModal').modal('hide');
+                location.reload();
+            } else {
+                showError(data.message || "Erro ao excluir documento");
+            }
+        })
+        .catch(error => {
+            showError("Erro ao conectar com o servidor");
+            console.error('Error:', error);
+        });
+
+        function showError(message) {
+            messageContainer.textContent = message;
+            messageContainer.className = "alert alert-danger";
+            messageContainer.style.display = "block";
+        }
+    }
+</script>

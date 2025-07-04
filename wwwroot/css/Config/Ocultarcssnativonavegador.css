@@ -1,0 +1,17 @@
+/* Desativa o botão nativo de "mostrar senha" do Chrome/Safari */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container,
+input[type="password"]::-webkit-clear-button {
+    display: none !important;
+    -webkit-appearance: none;
+}
+
+/* Safari e todos os browsers iOS: remove o “eye” nativo */
+input[type="password"]::-webkit-textfield-decoration-button {
+  display: none !important;
+}

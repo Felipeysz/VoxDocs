@@ -1,0 +1,106 @@
+@model VoxDocs.ViewModels.PlanosViewModel
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5 display-5 fw-bold">Compare os Planos</h2>
+        <p class="text-center mb-5 lead">Veja as diferenças entre nossos planos e escolha o ideal para você</p>
+        
+        <div class="comparison-table" data-aos="fade-up">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Recurso</th>
+                        @foreach (var plano in Model.Planos)
+                        {
+                            <th class="text-center" style="width: 18.75%;">@plano.Nome</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Preço Mensal</td>
+                        @foreach (var plano in Model.Planos)
+                        {
+                            var precoMensal = plano.Duracao.HasValue && plano.Duracao > 0 
+                                ? plano.Preco / Convert.ToDecimal(plano.Duracao.Value) 
+                                : plano.Preco;
+                            
+                            <td class="text-center">
+                                @if (plano.Preco == 0)
+                                {
+                                    <span class="fw-bold">Grátis</span>
+                                }
+                                else if (plano.Periodicidade == "Mensal")
+                                {
+                                    <span class="fw-bold">R$ @plano.Preco.ToString("F2")</span>
+                                    <small class="text-muted d-block">por mês</small>
+                                }
+                                else
+                                {
+                                    <span class="fw-bold">R$ @precoMensal.ToString("F2")</span>
+                                    <small class="text-muted d-block">por mês (equivalente)</small>
+                                    <small class="text-muted d-block">@plano.Periodicidade: R$ @plano.Preco.ToString("F2")</small>
+                                }
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>Armazenamento</td>
+                        @foreach (var plano in Model.Planos)
+                        {
+                            <td class="text-center">
+                                @(plano.ArmazenamentoDisponivel.HasValue ? 
+                                    (plano.ArmazenamentoDisponivel.Value == -1 ? "Ilimitado" : $"{plano.ArmazenamentoDisponivel} GB") : 
+                                    "5 GB")
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>Número de Usuários</td>
+                        @foreach (var plano in Model.Planos)
+                        {
+                            <td class="text-center">
+                                @(plano.LimiteUsuario.HasValue ?
+                                    (plano.LimiteUsuario.Value == -1 ? "Ilimitado" : $"Até {plano.LimiteUsuario}") :
+                                    "1 usuário")
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>Administradores</td>
+                        @foreach (var plano in Model.Planos)
+                        {
+                            <td class="text-center">
+                                @(plano.LimiteAdmin.HasValue ?
+                                    (plano.LimiteAdmin.Value == -1 ? "Ilimitado" : $"Até {plano.LimiteAdmin}") :
+                                    "1 admin")
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>Suporte Prioritário</td>
+                        @foreach (var plano in Model.Planos)
+                        {
+                            <td class="text-center">
+                                @Html.Raw(plano.Nome.Contains("Premium") || plano.Nome.Contains("Enterprise") 
+                                    ? "<span class='feature-check'>Incluído</span>" 
+                                    : "<span class='feature-x'>Não incluído</span>")
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>Backup Automático</td>
+                        @foreach (var plano in Model.Planos)
+                        {
+                            <td class="text-center">
+                                @Html.Raw(plano.Nome != "Básico" 
+                                    ? "<span class='feature-check'>Diário</span>" 
+                                    : "<span class='feature-x'>Manual</span>")
+                            </td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
