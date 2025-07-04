@@ -1,4 +1,4 @@
-# Visual Studio cache e arquivos tempor·rios
+# Visual Studio cache e arquivos tempor√°rios
 .vs/                      # essa pasta causou o erro no seu push
 *.dbmdl
 *.psess
@@ -22,19 +22,19 @@ TestResults/
 packages/
 *.snupkg
 
-# Arquivos de publicaÁ„o do Web Deploy
+# Arquivos de publica√ß√£o do Web Deploy
 *.publishsettings
 
-# Arquivos locais de configuraÁıes especÌficas de m·quinas
+# Arquivos locais de configura√ß√µes espec√≠ficas de m√°quinas
 *.local.json
 
 # Arquivos do Windows que devem ser ignorados
 Thumbs.db
 Desktop.ini
 
-# DiretÛrios tempor·rios globais
-_ReSharper*/             # se vocÍ usa o plugin ReSharper
-*.DotSettings.user       # configuraÁıes especÌficas de usu·rio
+# Diret√≥rios tempor√°rios globais
+_ReSharper*/             # se voc√™ usa o plugin ReSharper
+*.DotSettings.user       # configura√ß√µes espec√≠ficas de usu√°rio
 
 # Arquivos de build do MSBuild
 *.tlog
@@ -46,3 +46,10 @@ _ReSharper*/             # se vocÍ usa o plugin ReSharper
 .idea/
 *.sln.iml
 *.sln.DotSettings
+
+# Arquivos de configura√ß√£o com segredos (N√ÉO versionar!)
+appsettings.Development.json
+appsettings.Secrets.json
+appsettings.Production.json
+bin/
+obj/
